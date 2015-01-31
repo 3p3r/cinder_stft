@@ -1,0 +1,10 @@
+/*
+!/build
+!/src
+!/include
+!/thirdparty
+!README.md
+!LICENSE
+!INSTALL
+!CMakeLists.txt
+!.gitignore
