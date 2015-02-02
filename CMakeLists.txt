@@ -84,3 +84,11 @@ SET_TARGET_PROPERTIES(ciEq PROPERTIES SUFFIX "_v${CIEQ_VERSION_STRING}")
 
 # Added a "d" suffix to the executable in debug build
 SET_TARGET_PROPERTIES(ciEq PROPERTIES DEBUG_POSTFIX "d")
+
+# set character set to Unicode
+ADD_DEFINITIONS(-DUNICODE)
+ADD_DEFINITIONS(-D_UNICODE)
+
+# set to MT[d] flag for build (Cinder does not like MD[d])
+SET(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /MT")
+SET(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /MTd")
