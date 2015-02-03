@@ -5,16 +5,27 @@ namespace cieq
 
 void InputAnalyzer::prepareSettings(Settings *settings)
 {
+	// Enables the console window to show up beside the graphical window
+	// We need the console for debugging and logging purposes
 	settings->enableConsoleWindow(true);
+
+	// It's ok if a user resizes the window, we'll respond accordingly
 	settings->setResizable(true);
+
+	// Title of the graphical window when it pops up
 	settings->setTitle("Cinder Audio Equalizer");
 
+	// Get the current display (monitor) dimensions
 	const auto current_display_size = settings->getDisplay()->getSize();
-	const auto window_position = (current_display_size * 5) / 100;
+	// calculate the window size to be 90% of the monitor size
 	const auto window_size = (current_display_size * 9) / 10;
+	// calculate the window position (top left) to be at 10% of monitor size
+	const auto window_position = (current_display_size * 5) / 100;
 
-	settings->setWindowPos(window_position);
+	// set the window size to be 90% of the monitor size
 	settings->setWindowSize(window_size);
+	// set the window position (top left) to be at 10% of monitor size
+	settings->setWindowPos(window_position);
 }
 
 void InputAnalyzer::setup()

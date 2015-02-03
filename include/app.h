@@ -6,10 +6,15 @@
 namespace cieq
 {
 
+/*!
+ * \class InputAnalyzer
+ * \brief The main application class. Handles window initialization
+ * window title, and other common juju.
+ */
 class InputAnalyzer final : public ci::app::AppNative
 {
 public:
-	// Tells Cinder how to prepare the window
+	// \note Tells Cinder how to prepare the window
 	void prepareSettings(Settings *settings) override final;
 
 	void setup();
