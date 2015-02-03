@@ -19,11 +19,31 @@ namespace signal = boost::signals2;
 class AppEvent
 {
 public:
+	/*!
+	 * \brief adds a mouse event processor to events stack.
+	 * \note no matter how many events you may want to occur,
+	 * the all get fired in app::MouseDown method.
+	 */ 
 	void addMouseEvent(const std::function< void(float, float) >&);
+
+	/*!
+	 * \brief adds a keyboard event processor to events stack.
+	 * \note no matter how many events you may want to occur,
+	 * the all get fired in app::KeyDown method.
+	 */ 
 	void addKeyboardEvent(const std::function< void(int) >&);
 
 public:
+	/*!
+	 * \brief fires all events in the stack for an incoming mouse
+	 * event. X, and Y coordinates will be passed inside.
+	 */
 	void processMouseEvents(float x, float y);
+
+	/*!
+	 * \brief fires all events in the stack for an incoming keyboard
+	 * event. character code will be passed inside.
+	 */
 	void processKeybaordEvents(char key);
 
 private:
