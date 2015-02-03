@@ -1,19 +1,19 @@
-#ifndef CIEQ_INCLUDE_APP_EVENTS_H_
-#define CIEQ_INCLUDE_APP_EVENTS_H_
+#ifndef CIEQ_INCLUDE_APP_EVENT_H_
+#define CIEQ_INCLUDE_APP_EVENT_H_
 
 namespace cieq
 {
 
 /*!
- * \class AppEvents
+ * \class AppEvent
  * \brief The class that handles mouse and keyboard input,
  * and potentially other physical inputs (not audio tho!)
  */
-class AppEvents
+class AppEvent
 {
 
 };
 
 } //!cieq
 
-#endif //!CIEQ_INCLUDE_APP_EVENTS_H_
+#endif //!CIEQ_INCLUDE_APP_EVENT_H_
