@@ -3,6 +3,10 @@
 namespace cieq
 {
 
+InputAnalyzer::InputAnalyzer()
+	: mGlobals(mEventProcessor)
+{}
+
 void InputAnalyzer::prepareSettings(Settings *settings)
 {
 	// Enables the console window to show up beside the graphical window

@@ -3,6 +3,7 @@
 
 #include <cinder/app/AppNative.h>
 
+#include "app_globals.h"
 #include "app_event.h"
 
 namespace cieq
@@ -16,6 +17,8 @@ namespace cieq
 class InputAnalyzer final : public ci::app::AppNative
 {
 public:
+	InputAnalyzer();
+
 	// \note Tells Cinder how to prepare the window
 	void		prepareSettings(Settings *settings) override final;
 
@@ -27,8 +30,11 @@ public:
 	void		mouseDown(ci::app::MouseEvent event) override final;
 	void		keyDown(ci::app::KeyEvent event) override final;
 
+	AppGlobals&	getGlobals() { return mGlobals; }
+
 private:
 	AppEvent	mEventProcessor;
+	AppGlobals	mGlobals;
 };
 
 } //!cieq
