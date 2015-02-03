@@ -4,13 +4,6 @@ CMAKE_MINIMUM_REQUIRED (VERSION 2.8)
 # Project code-name and linker language
 PROJECT (ciEq CXX)
 
-# Project name, version, and etc.
-SET (CIEQ_NAME "Cinder Equalizer")
-SET (CIEQ_VERSION_MAJOR 1)
-SET (CIEQ_VERSION_MINOR 0)
-SET (CIEQ_VERSION_PATCH 0)
-SET (CIEQ_VERSION_STRING "${CIEQ_VERSION_MAJOR}-${CIEQ_VERSION_MINOR}-${CIEQ_VERSION_PATCH}")
-
 # debug option
 SET (CMAKE_VERBOSE_MAKEFILE 1)
 
@@ -74,13 +67,15 @@ INCLUDE_DIRECTORIES(
 	"${CMAKE_CURRENT_SOURCE_DIR}/include"
 )
 
-ADD_EXECUTABLE(ciEq ${CIEQ_HEADERS} ${CIEQ_SOURCES})
+LINK_DIRECTORIES(
+	"${CINDER_ROOT}/lib/msw"
+	"${CINDER_ROOT}/lib/msw/x86"
+)
+
+ADD_EXECUTABLE(ciEq WIN32 ${CIEQ_HEADERS} ${CIEQ_SOURCES})
 
 # Link shit together
 TARGET_LINK_LIBRARIES(ciEq ${CINDER_LIBRARY})
-
-# Added version string to the executable in build
-SET_TARGET_PROPERTIES(ciEq PROPERTIES SUFFIX "_v${CIEQ_VERSION_STRING}")
 
 # Added a "d" suffix to the executable in debug build
 SET_TARGET_PROPERTIES(ciEq PROPERTIES DEBUG_POSTFIX "d")
