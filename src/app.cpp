@@ -33,11 +33,6 @@ void InputAnalyzer::setup()
 
 }
 
-void InputAnalyzer::mouseDown(ci::app::MouseEvent event)
-{
-
-}
-
 void InputAnalyzer::update()
 {
 
@@ -46,6 +41,23 @@ void InputAnalyzer::update()
 void InputAnalyzer::draw()
 {
 
+}
+
+void InputAnalyzer::shutdown()
+{
+
+}
+
+void InputAnalyzer::mouseDown(ci::app::MouseEvent event)
+{
+	mEventProcessor.processMouseEvents(
+		static_cast<float>(event.getX()),
+		static_cast<float>(event.getY()));
+}
+
+void InputAnalyzer::keyDown(ci::app::KeyEvent event)
+{
+	mEventProcessor.processKeybaordEvents(event.getChar());
 }
 
 } //!namespace cieq

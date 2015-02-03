@@ -3,6 +3,8 @@
 
 #include <cinder/app/AppNative.h>
 
+#include "app_event.h"
+
 namespace cieq
 {
 
@@ -15,12 +17,18 @@ class InputAnalyzer final : public ci::app::AppNative
 {
 public:
 	// \note Tells Cinder how to prepare the window
-	void prepareSettings(Settings *settings) override final;
+	void		prepareSettings(Settings *settings) override final;
 
-	void setup();
-	void mouseDown(ci::app::MouseEvent event);
-	void update();
-	void draw();
+	void		setup() override final;
+	void		update() override final;
+	void		draw() override final;
+	void		shutdown() override final;
+
+	void		mouseDown(ci::app::MouseEvent event) override final;
+	void		keyDown(ci::app::KeyEvent event) override final;
+
+private:
+	AppEvent	mEventProcessor;
 };
 
 } //!cieq
