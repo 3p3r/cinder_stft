@@ -1,8 +1,15 @@
 #ifndef CIEQ_INCLUDE_APP_EVENT_H_
 #define CIEQ_INCLUDE_APP_EVENT_H_
 
+#include <boost/signals2/signal.hpp>
+
 namespace cieq
 {
+
+// I make an alias of boost here because
+// writing boost::signal2 is unnecessarilly
+// verbose.
+namespace signal = boost::signals2;
 
 /*!
  * \class AppEvent
@@ -11,7 +18,21 @@ namespace cieq
  */
 class AppEvent
 {
+public:
+	void triggerMouse(const std::function< void(float, float) >&);
+	void triggerKeyboard(const std::function< void(int) >&);
 
+public:
+	void processMouseEvents(float x, float y);
+	void processKeybaordEvents(char key);
+
+private:
+	using mouseEvent	= signal::signal < void(float, float) > ;
+	using keyboardEvent = signal::signal < void(char) > ;
+
+private:
+	mouseEvent		mMouseEventsStack;
+	keyboardEvent	mKeyboardEventsStack;
 };
 
 } //!cieq
