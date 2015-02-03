@@ -1,2 +1,0 @@
-This is a test of committing a change to a file...   -ENB
-It works!   -ENB
