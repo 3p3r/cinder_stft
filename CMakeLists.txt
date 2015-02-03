@@ -1,6 +1,10 @@
 # Project Properties
 CMAKE_MINIMUM_REQUIRED (VERSION 2.8)
 
+# We only need debug / release configurations
+# For some reason this should be here before PROJECT(..)
+SET(CMAKE_CONFIGURATION_TYPES Debug Release)
+
 # Project code-name and linker language
 PROJECT (ciEq CXX)
 
@@ -84,6 +88,13 @@ SET_TARGET_PROPERTIES(ciEq PROPERTIES DEBUG_POSTFIX "d")
 ADD_DEFINITIONS(-DUNICODE)
 ADD_DEFINITIONS(-D_UNICODE)
 
+# take out Windows obsolete headers
+ADD_DEFINITIONS(-DWIN32_LEAN_AND_MEAN)
+ADD_DEFINITIONS(-DVC_EXTRALEAN)
+
 # set to MT[d] flag for build (Cinder does not like MD[d])
 SET(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /MT")
 SET(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /MTd")
+
+# exlude libcmt from debug build. Cinder doesn't like it
+SET_TARGET_PROPERTIES(ciEq PROPERTIES LINK_FLAGS_DEBUG "/NODEFAULTLIB:\"libcmt\"")
