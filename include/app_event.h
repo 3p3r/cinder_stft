@@ -19,8 +19,8 @@ namespace signal = boost::signals2;
 class AppEvent
 {
 public:
-	void triggerMouse(const std::function< void(float, float) >&);
-	void triggerKeyboard(const std::function< void(int) >&);
+	void addMouseEvent(const std::function< void(float, float) >&);
+	void addKeyboardEvent(const std::function< void(int) >&);
 
 public:
 	void processMouseEvents(float x, float y);
