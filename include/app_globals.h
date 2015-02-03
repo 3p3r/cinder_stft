@@ -4,6 +4,8 @@
 namespace cieq
 {
 
+class AppEvent;
+
 /*!
  * \class AppGlobals
  * \brief The class that holds app-wide variables. Acts
@@ -11,7 +13,13 @@ namespace cieq
  */
 class AppGlobals
 {
+public:
+	AppGlobals(AppEvent& event_processor);
 
+	AppEvent&	getEventProcessor();
+
+private:
+	AppEvent&	mEventProcessor;
 };
 
 } //!cieq
