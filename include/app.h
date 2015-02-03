@@ -6,9 +6,12 @@
 namespace cieq
 {
 
-class InputAnalyzer : public ci::app::AppNative
+class InputAnalyzer final : public ci::app::AppNative
 {
 public:
+	// Tells Cinder how to prepare the window
+	void prepareSettings(Settings *settings) override final;
+
 	void setup();
 	void mouseDown(ci::app::MouseEvent event);
 	void update();
