@@ -10,6 +10,7 @@ namespace cieq
 
 AudioNodes::AudioNodes(AppGlobals& globals)
 	: mGlobals(globals)
+	, mIsEnabled(false)
 {}
 
 void AudioNodes::setup(bool auto_enable /*= true*/)
@@ -50,14 +51,34 @@ cinder::audio::MonitorSpectralNode* const AudioNodes::getMonitorSpectralNode()
 
 void AudioNodes::enableInput()
 {
+	if (mIsEnabled) return;
+
 	mGlobals.getAudioContext().enable();
 	mInputDeviceNode->enable();
+
+	mIsEnabled = true;
 }
 
 void AudioNodes::disableInput()
 {
+	if (!mIsEnabled) return;
+
 	mGlobals.getAudioContext().disable();
 	mInputDeviceNode->disable();
+
+	mIsEnabled = false;
+}
+
+void AudioNodes::toggleInput()
+{
+	if (mIsEnabled)
+	{
+		disableInput();
+	}
+	else
+	{
+		enableInput();
+	}
 }
 
 } //!cieq

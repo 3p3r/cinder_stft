@@ -36,6 +36,8 @@ public:
 	void												enableInput();
 	// \brief disables reading from input
 	void												disableInput();
+	// \brief toggles reading from input
+	void												toggleInput();
 
 	// \brief returns a pointer to the node which is reading data from input
 	cinder::audio::InputDeviceNode* const				getInputDeviceNode();
@@ -51,6 +53,7 @@ private:
 
 private:
 	AppGlobals&											mGlobals;
+	bool												mIsEnabled;
 };
 
 } //!cieq
