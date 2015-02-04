@@ -1,6 +1,11 @@
 #ifndef CIEQ_INCLUDE_APP_GLOBALS_H_
 #define CIEQ_INCLUDE_APP_GLOBALS_H_
 
+namespace cinder {
+namespace audio {
+class Context;
+}} //!namespace ci::audio
+
 namespace cieq
 {
 
@@ -14,12 +19,13 @@ class AppEvent;
 class AppGlobals
 {
 public:
-	AppGlobals(AppEvent& event_processor);
+	AppGlobals(AppEvent&);
 
-	AppEvent&	getEventProcessor();
+	AppEvent&						getEventProcessor();
+	cinder::audio::Context&			getAudioContext();
 
 private:
-	AppEvent&	mEventProcessor;
+	AppEvent&						mEventProcessor;
 };
 
 } //!cieq
