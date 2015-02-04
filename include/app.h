@@ -5,6 +5,7 @@
 
 #include "app_globals.h"
 #include "app_event.h"
+#include "audio_nodes.h"
 
 namespace cieq
 {
@@ -35,6 +36,7 @@ public:
 private:
 	AppEvent	mEventProcessor;
 	AppGlobals	mGlobals;
+	AudioNodes	mAudioNodes;
 };
 
 } //!cieq

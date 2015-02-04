@@ -5,6 +5,7 @@ namespace cieq
 
 InputAnalyzer::InputAnalyzer()
 	: mGlobals(mEventProcessor)
+	, mAudioNodes(mGlobals)
 {}
 
 void InputAnalyzer::prepareSettings(Settings *settings)
@@ -34,7 +35,7 @@ void InputAnalyzer::prepareSettings(Settings *settings)
 
 void InputAnalyzer::setup()
 {
-
+	mAudioNodes.setup();
 }
 
 void InputAnalyzer::update()
