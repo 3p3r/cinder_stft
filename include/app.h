@@ -6,6 +6,7 @@
 #include "app_globals.h"
 #include "app_event.h"
 #include "audio_nodes.h"
+#include "audio_draw.h"
 
 namespace cieq
 {
@@ -26,6 +27,7 @@ public:
 	void		setup() override final;
 	void		update() override final;
 	void		draw() override final;
+	void		resize() override final;
 	void		shutdown() override final;
 
 	void		mouseDown(ci::app::MouseEvent event) override final;
@@ -34,9 +36,11 @@ public:
 	AppGlobals&	getGlobals() { return mGlobals; }
 
 private:
-	AppEvent	mEventProcessor;
-	AppGlobals	mGlobals;
-	AudioNodes	mAudioNodes;
+	AppEvent		mEventProcessor;
+	AppGlobals		mGlobals;
+	AudioNodes		mAudioNodes;
+	SpectrumPlot	mSpectrumPlot;
+	WaveformPlot	mWaveformPlot;
 };
 
 } //!cieq

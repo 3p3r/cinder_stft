@@ -6,6 +6,8 @@ namespace cieq
 InputAnalyzer::InputAnalyzer()
 	: mGlobals(mEventProcessor)
 	, mAudioNodes(mGlobals)
+	, mSpectrumPlot(mAudioNodes)
+	, mWaveformPlot(mAudioNodes)
 {}
 
 void InputAnalyzer::prepareSettings(Settings *settings)
@@ -38,21 +40,57 @@ void InputAnalyzer::setup()
 	mAudioNodes.setup();
 	mEventProcessor.addKeyboardEvent([this](char c){ if (c == 's' || c == 'S') mAudioNodes.toggleInput(); });
 	mEventProcessor.addMouseEvent([this](float, float){ mAudioNodes.toggleInput(); });
+
+	const auto window_size = ci::app::getWindowSize();
+	const auto plot_size_width = 0.9f * window_size.x; // 90% of window width
+	const auto plot_size_height = 0.8f * 0.5f * window_size.y; // half of 90% of window width
+
+	mSpectrumPlot.setup();
+	mWaveformPlot.setup();
+
+	ci::Vec2f top_left = 0.05f * window_size;
+	mSpectrumPlot.setPlotTitle("FFT Analysis of input data");
+	mSpectrumPlot.setBounds(ci::Rectf(top_left, top_left + ci::Vec2f(plot_size_width, plot_size_height)));
+	mSpectrumPlot.setHorzAxisTitle("Frequency").setHorzAxisUnit("Hz");
+	mSpectrumPlot.setVertAxisTitle("Magnitude").setVertAxisUnit("Db");
+
+	top_left.y += 0.5f * window_size.y;
+	mWaveformPlot.setPlotTitle("RAW input data");
+	mWaveformPlot.setBounds(ci::Rectf(top_left, top_left + ci::Vec2f(plot_size_width, plot_size_height)));
+	mWaveformPlot.setHorzAxisTitle("Time").setHorzAxisUnit("s");
+	mWaveformPlot.setVertAxisTitle("Amplitude").setVertAxisUnit("...");
+}
+
+void InputAnalyzer::resize()
+{
+	const auto window_size = ci::app::getWindowSize();
+	const auto plot_size_width = 0.9f * window_size.x; // 90% of window width
+	const auto plot_size_height = 0.8f * 0.5f * window_size.y; // half of 90% of window width
+
+	ci::Vec2f top_left = 0.05f * window_size;
+	mSpectrumPlot.setBounds(ci::Rectf(top_left, top_left + ci::Vec2f(plot_size_width, plot_size_height)));
+
+	top_left.y += 0.5f * window_size.y;
+	mWaveformPlot.setBounds(ci::Rectf(top_left, top_left + ci::Vec2f(plot_size_width, plot_size_height)));
 }
 
 void InputAnalyzer::update()
 {
-
+	//noop
 }
 
 void InputAnalyzer::draw()
 {
+	ci::gl::clear();
+	ci::gl::enableAlphaBlending();
 
+	mSpectrumPlot.draw();
+	mWaveformPlot.draw();
 }
 
 void InputAnalyzer::shutdown()
 {
-
+	//noop
 }
 
 void InputAnalyzer::mouseDown(ci::app::MouseEvent event)
