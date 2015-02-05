@@ -1,11 +1,9 @@
 #ifndef CIEQ_INCLUDE_AUDIO_DRAW_H_
 #define CIEQ_INCLUDE_AUDIO_DRAW_H_
 
-#include <cinder/audio/Buffer.h>
-
+#include <cinder/Color.h>
 #include <cinder/Vector.h>
-#include <cinder/PolyLine.h>
-#include <cinder/TriMesh.h>
+#include <cinder/Rect.h>
 
 #include <vector>
 
@@ -38,8 +36,6 @@ protected:
 	ci::ColorA	mBoundsColor;
 	bool		mDrawBounds;
 };
-
-void drawAudioBuffer(const ci::audio::Buffer &buffer, const ci::Rectf &bounds, bool drawFrame = false, const ci::ColorA &color = ci::ColorA(0, 0.9f, 0, 1));
 
 class WaveformPlot final : public Plot
 {
