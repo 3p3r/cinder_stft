@@ -1,0 +1,12 @@
+/*
+!.gitignore
+!*.c
+!*.h
+!AUTHORS
+!COPYING
+!NEWS
+!README
+!README.md
+!/include
+!/lib/gitkeep
+!CMakeLists.txt
