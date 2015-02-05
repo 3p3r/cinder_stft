@@ -6,7 +6,7 @@ CMAKE_MINIMUM_REQUIRED (VERSION 2.8)
 SET(CMAKE_CONFIGURATION_TYPES Debug Release)
 
 # Project code-name and linker language
-PROJECT (LibSampleRate)
+PROJECT (LibSampleRate CXX)
 
 # debug option
 SET (CMAKE_VERBOSE_MAKEFILE 1)
