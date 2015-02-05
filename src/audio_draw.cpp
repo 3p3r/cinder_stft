@@ -42,11 +42,11 @@ void Plot::drawLabels()
 	ci::gl::color(0, 0.9f, 0.9f);
 
 	// draw x-axis label
-	mTextureFont->drawString(mHorzText, ci::Vec2f(mTopLeft.x + mBounds.getWidth() / 2.0f - mTextureFont->measureString(mHorzText).x / 2, mBounds.getHeight() - 20.0f));
+	mTextureFont->drawString(mHorzText, ci::Vec2f(mBounds.x1 + mBounds.getWidth() / 2.0f - mTextureFont->measureString(mHorzText).x / 2, mBounds.getHeight() - 20.0f));
 
 	// draw y-axis label
 	ci::gl::pushModelView();
-	ci::gl::translate(30.0f, mTopLeft.y + mBounds.getHeight() / 2.0f + mTextureFont->measureString(mVertText).x / 2);
+	ci::gl::translate(30.0f, mBounds.y1 + mBounds.getHeight() / 2.0f + mTextureFont->measureString(mVertText).x / 2);
 	ci::gl::rotate(-90.0f);
 	mTextureFont->drawString(mVertText, ci::Vec2f::zero());
 	ci::gl::popModelView();

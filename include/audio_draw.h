@@ -31,7 +31,6 @@ public:
 	Plot&			setBoundsColor(const ci::ColorA& color)		{ mBoundsColor = color; return *this; }
 	Plot&			setDrawBounds(bool on = true)				{ mDrawBounds = on; return *this; }
 	Plot&			setDrawLabels(bool on = true)				{ mDrawLabels = on; return *this; }
-	Plot&			setTopLeft(const ci::Vec2f& tl)				{ mTopLeft = tl; return *this; }
 
 	virtual	void	drawLocal() = 0;
 	void			draw();
@@ -43,7 +42,6 @@ protected:
 	std::string	mHorzUnit, mVertUnit;
 	std::string	mHorzText, mVertText;
 	ci::Rectf	mBounds;
-	ci::Vec2f	mTopLeft;
 	ci::ColorA	mBoundsColor;
 	bool		mDrawBounds, mDrawLabels;
 	std::shared_ptr<cinder::gl::TextureFont>
