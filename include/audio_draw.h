@@ -22,11 +22,13 @@ class Plot
 public:
 	Plot();
 	virtual ~Plot() {};
+	void			setup();
 
 	Plot&			setHorzAxisTitle(const std::string& title)	{ mHorzTitle = title; onHorzAxisTextChange(); return *this; }
 	Plot&			setVertAxisTitle(const std::string& title)	{ mVertTitle = title; onVertAxisTextChange(); return *this; }
 	Plot&			setVertAxisUnit(const std::string& unit)	{ mVertUnit = unit; onVertAxisTextChange(); return *this; }
 	Plot&			setHorzAxisUnit(const std::string& unit)	{ mHorzUnit = unit; onHorzAxisTextChange(); return *this; }
+	Plot&			setPlotTitle(const std::string& title)		{ mPlotTitle = title; return *this; }
 	Plot&			setBounds(const ci::Rectf& bounds)			{ mBounds = bounds; return *this; }
 	Plot&			setBoundsColor(const ci::ColorA& color)		{ mBoundsColor = color; return *this; }
 	Plot&			setDrawBounds(bool on = true)				{ mDrawBounds = on; return *this; }
@@ -41,6 +43,7 @@ protected:
 	std::string	mHorzTitle, mVertTitle;
 	std::string	mHorzUnit, mVertUnit;
 	std::string	mHorzText, mVertText;
+	std::string	mPlotTitle;
 	ci::Rectf	mBounds;
 	ci::ColorA	mBoundsColor;
 	bool		mDrawBounds, mDrawLabels;

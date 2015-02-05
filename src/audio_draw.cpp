@@ -13,7 +13,6 @@ namespace cieq
 Plot::Plot()
 	: mDrawBounds(true)
 	, mBoundsColor(0.5f, 0.5f, 0.5f, 1)
-	, mTextureFont(ci::gl::TextureFont::create(ci::Font(ci::Font::getDefault().getName(), 16)))
 {}
 
 void Plot::draw()
@@ -42,11 +41,14 @@ void Plot::drawLabels()
 	ci::gl::color(0, 0.9f, 0.9f);
 
 	// draw x-axis label
-	mTextureFont->drawString(mHorzText, ci::Vec2f(mBounds.x1 + mBounds.getWidth() / 2.0f - mTextureFont->measureString(mHorzText).x / 2, mBounds.getHeight() - 20.0f));
+	mTextureFont->drawString(mHorzText, ci::Vec2f(mBounds.x1 + mBounds.getWidth() / 2.0f - mTextureFont->measureString(mHorzText).x / 2.0f, mBounds.y2 + 20.0f));
+	
+	// draw plot title
+	mTextureFont->drawString(mPlotTitle, ci::Vec2f(mBounds.x1 + mBounds.getWidth() / 2.0f - mTextureFont->measureString(mPlotTitle).x / 2.0f, mBounds.y1 - 20.0f));
 
 	// draw y-axis label
 	ci::gl::pushModelView();
-	ci::gl::translate(30.0f, mBounds.y1 + mBounds.getHeight() / 2.0f + mTextureFont->measureString(mVertText).x / 2);
+	ci::gl::translate(mBounds.x1 - 20.0f, mBounds.y1 + mBounds.getHeight() / 2.0f + mTextureFont->measureString(mVertText).x / 2.0f);
 	ci::gl::rotate(-90.0f);
 	mTextureFont->drawString(mVertText, ci::Vec2f::zero());
 	ci::gl::popModelView();
@@ -60,6 +62,11 @@ void Plot::onHorzAxisTextChange()
 void Plot::onVertAxisTextChange()
 {
 	mVertText = mVertTitle + " (" + mVertUnit + ")";
+}
+
+void Plot::setup()
+{
+	mTextureFont = ci::gl::TextureFont::create(ci::Font(ci::Font::getDefault().getName(), 16));
 }
 
 SpectrumPlot::SpectrumPlot(AudioNodes& nodes)
