@@ -3,7 +3,9 @@
 
 #include <cinder/audio/Utilities.h>
 #include <cinder/audio/MonitorNode.h>
+#include <cinder/Font.h>
 #include <cinder/gl/gl.h>
+#include <cinder/gl/TextureFont.h>
 
 namespace cieq
 {
@@ -11,16 +13,53 @@ namespace cieq
 Plot::Plot()
 	: mDrawBounds(true)
 	, mBoundsColor(0.5f, 0.5f, 0.5f, 1)
+	, mTextureFont(ci::gl::TextureFont::create(ci::Font(ci::Font::getDefault().getName(), 16)))
 {}
 
 void Plot::draw()
 {
 	drawLocal();
 
-	if (mDrawBounds) {
-		ci::gl::color(mBoundsColor);
-		ci::gl::drawStrokedRect(mBounds);
+	if (mDrawBounds)
+	{
+		drawBounds();
 	}
+
+	if (mDrawLabels)
+	{
+		drawLabels();
+	}
+}
+
+void Plot::drawBounds()
+{
+	ci::gl::color(mBoundsColor);
+	ci::gl::drawStrokedRect(mBounds);
+}
+
+void Plot::drawLabels()
+{
+	ci::gl::color(0, 0.9f, 0.9f);
+
+	// draw x-axis label
+	mTextureFont->drawString(mHorzText, ci::Vec2f(mTopLeft.x + mBounds.getWidth() / 2.0f - mTextureFont->measureString(mHorzText).x / 2, mBounds.getHeight() - 20.0f));
+
+	// draw y-axis label
+	ci::gl::pushModelView();
+	ci::gl::translate(30.0f, mTopLeft.y + mBounds.getHeight() / 2.0f + mTextureFont->measureString(mVertText).x / 2);
+	ci::gl::rotate(-90.0f);
+	mTextureFont->drawString(mVertText, ci::Vec2f::zero());
+	ci::gl::popModelView();
+}
+
+void Plot::onHorzAxisTextChange()
+{
+	mHorzText = mHorzTitle + " (" + mHorzUnit +")";
+}
+
+void Plot::onVertAxisTextChange()
+{
+	mVertText = mVertTitle + " (" + mVertUnit + ")";
 }
 
 SpectrumPlot::SpectrumPlot(AudioNodes& nodes)
