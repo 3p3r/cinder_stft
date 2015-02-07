@@ -100,8 +100,8 @@ ADD_DEFINITIONS(-D_SCL_SECURE_NO_WARNINGS)
 SET(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /MT")
 SET(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /MTd")
 
-# exlude libcmt from debug build. Cinder doesn't like it
-SET_TARGET_PROPERTIES(ciEq PROPERTIES LINK_FLAGS_DEBUG "/NODEFAULTLIB:\"libcmt\"")
+# exclude libcmt from debug build. Cinder doesn't like it
+SET_TARGET_PROPERTIES(ciEq PROPERTIES LINK_FLAGS_DEBUG "/NODEFAULTLIB:\"libcmt;libcmtd\"")
 
 # add libsamplerate
 SET(CMAKE_TRY_COMPILE_CONFIGURATION "Debug")
