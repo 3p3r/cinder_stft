@@ -1,5 +1,7 @@
 #include "app.h"
 
+#include <cinder/params/Params.h>
+
 namespace cieq
 {
 
@@ -37,6 +39,15 @@ void InputAnalyzer::prepareSettings(Settings *settings)
 
 void InputAnalyzer::setup()
 {
+	mParamsRef = ci::params::InterfaceGl::create("Parameters", ci::Vec2i(50, 120));
+	mEventProcessor.addKeyboardEvent([this](char c){ if (c == 'p' || c == 'P') {
+		if (mParamsRef->isVisible())
+			mParamsRef->hide();
+		else
+			mParamsRef->show();
+	}});
+	mGlobals.setParamsRef(mParamsRef);
+
 	mAudioNodes.setup();
 	mEventProcessor.addKeyboardEvent([this](char c){ if (c == 's' || c == 'S') mAudioNodes.toggleInput(); });
 	mEventProcessor.addMouseEvent([this](float, float){ mAudioNodes.toggleInput(); });
@@ -86,6 +97,8 @@ void InputAnalyzer::draw()
 
 	mSpectrumPlot.draw();
 	mWaveformPlot.draw();
+
+	mParamsRef->draw();
 }
 
 void InputAnalyzer::shutdown()

@@ -41,6 +41,8 @@ private:
 	AudioNodes		mAudioNodes;
 	SpectrumPlot	mSpectrumPlot;
 	WaveformPlot	mWaveformPlot;
+	std::shared_ptr<ci::params::InterfaceGl>
+					mParamsRef;
 };
 
 } //!cieq
