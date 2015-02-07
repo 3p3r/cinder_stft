@@ -40,6 +40,7 @@ void InputAnalyzer::prepareSettings(Settings *settings)
 void InputAnalyzer::setup()
 {
 	mParamsRef = ci::params::InterfaceGl::create("Parameters", ci::Vec2i(50, 120));
+	mParamsRef->hide(); //let's hide by default
 	mEventProcessor.addKeyboardEvent([this](char c){ if (c == 'p' || c == 'P') {
 		if (mParamsRef->isVisible())
 			mParamsRef->hide();
