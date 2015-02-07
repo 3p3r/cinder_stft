@@ -19,4 +19,14 @@ cinder::audio::Context& AppGlobals::getAudioContext()
 	return *ci::audio::Context::master();
 }
 
+void AppGlobals::setParamsRef(const std::shared_ptr < ci::params::InterfaceGl >& params)
+{
+	mParamsRef = params;
+}
+
+ci::params::InterfaceGl* const AppGlobals::getParamsRef()
+{
+	return mParamsRef.get();
+}
+
 } // !namespace cieq
