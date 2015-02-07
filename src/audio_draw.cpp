@@ -77,7 +77,7 @@ SpectrumPlot::SpectrumPlot(AudioNodes& nodes)
 // original draw function is from Cinder examples _audio/common
 void SpectrumPlot::drawLocal()
 {
-	auto& spectrum = mAudioNodes.getMonitorSpectralNode()->getMagSpectrum();
+	auto spectrum = mAudioNodes.getMonitorSpectralNode()->getMagSpectrum();
 	
 	if (spectrum.empty())
 		return;
@@ -149,7 +149,7 @@ void WaveformPlot::setGraphColor(const ci::ColorA& color)
 // original draw function is from Cinder examples _audio/common
 void WaveformPlot::drawLocal()
 {
-	auto& buffer = mAudioNodes.getMonitorNode()->getBuffer();
+	auto buffer = mAudioNodes.getMonitorNode()->getBuffer();
 
 	ci::gl::color(mGraphColor);
 
