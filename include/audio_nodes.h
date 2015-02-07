@@ -10,9 +10,10 @@ class MonitorNode;
 class MonitorSpectralNode;
 }} //!ci::audio
 
-namespace cieq
-{
-
+namespace cieq {
+namespace audio {
+class ResamplerNode;
+}
 class AppGlobals;
 
 /*!
@@ -45,11 +46,14 @@ public:
 	cinder::audio::MonitorNode* const					getMonitorNode();
 	// \brief returns a pointer to the node which is performing FFT on data
 	cinder::audio::MonitorSpectralNode* const			getMonitorSpectralNode();
+	// \brief returns a pointer to the node which is re-sampling the data
+	cieq::audio::ResamplerNode* const					getResamplerNode();
 
 private:
 	std::shared_ptr<cinder::audio::InputDeviceNode>		mInputDeviceNode;
 	std::shared_ptr<cinder::audio::MonitorNode>			mMonitorNode;
 	std::shared_ptr<cinder::audio::MonitorSpectralNode>	mMonitorSpectralNode;
+	std::shared_ptr<cieq::audio::ResamplerNode>			mResamplerNode;
 
 private:
 	AppGlobals&											mGlobals;
