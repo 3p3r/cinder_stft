@@ -45,14 +45,14 @@ void Plot::drawLabels()
 	ci::gl::color(0, 0.9f, 0.9f);
 
 	// draw x-axis label
-	ci::gl::drawStringCentered(mHorzText, ci::Vec2f(mBounds.x1 + mBounds.getWidth() / 2.0f, mBounds.y2 + 20.0f), ci::ColorA::white(), mLabelFont);
+	ci::gl::drawStringCentered(mHorzText, ci::Vec2f(mBounds.x1 + mBounds.getWidth() / 2.0f, mBounds.y2 + mLabelFont.getSize()), ci::ColorA::white(), mLabelFont);
 	
 	// draw plot title
-	ci::gl::drawStringCentered(mPlotTitle, ci::Vec2f(mBounds.x1 + mBounds.getWidth() / 2.0f, mBounds.y1 - 20.0f), ci::ColorA::white(), mLabelFont);
+	ci::gl::drawStringCentered(mPlotTitle, ci::Vec2f(mBounds.x1 + mBounds.getWidth() / 2.0f, mBounds.y1 - mLabelFont.getSize() * 2.0f), ci::ColorA::white(), mLabelFont);
 
 	// draw y-axis label
 	ci::gl::pushModelView();
-	ci::gl::translate(mBounds.x1 - 20.0f, mBounds.y1 + mBounds.getHeight() / 2.0f);
+	ci::gl::translate(mBounds.x1 - mLabelFont.getSize() * 2.0f, mBounds.y1 + mBounds.getHeight() / 2.0f);
 	ci::gl::rotate(-90.0f);
 	ci::gl::drawStringCentered(mVertText, ci::Vec2f::zero(), ci::ColorA::white(), mLabelFont);
 	ci::gl::popModelView();
