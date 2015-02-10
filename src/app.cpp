@@ -93,6 +93,8 @@ void InputAnalyzer::draw()
 	mSpectrogramPlot.draw();
 
 	mParamsRef->draw();
+
+	drawFps();
 }
 
 void InputAnalyzer::shutdown()
@@ -126,6 +128,13 @@ void InputAnalyzer::positionPlots()
 	mWaveformPlot.setBounds(ci::Rectf(top_left, top_left + ci::Vec2f(plot_size_width_mini, plot_size_height)));
 	top_left.x += plot_size_width_mini + plot_padding_horz;
 	mSpectrogramPlot.setBounds(ci::Rectf(top_left, top_left + ci::Vec2f(plot_size_width_mini, plot_size_height)));
+}
+
+void InputAnalyzer::drawFps()
+{
+	std::stringstream buf;
+	buf << "FPS: " << ci::app::getFrameRate();
+	ci::gl::drawStringRight(buf.str(), ci::Vec2i(ci::app::getWindowWidth() - 25, 10));
 }
 
 } //!namespace cieq
