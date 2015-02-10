@@ -6,6 +6,8 @@
 #include <cinder/Font.h>
 #include <cinder/gl/gl.h>
 #include <cinder/gl/TextureFont.h>
+#include <cinder/app/App.h>
+#include "cinder/Area.h"
 
 namespace cieq
 {
@@ -172,6 +174,68 @@ void WaveformPlot::drawLocal()
 
 		yOffset += waveHeight;
 	}
+}
+
+
+SpectrogramPlot::SpectrogramPlot(AudioNodes& nodes)
+	: mAudioNodes(nodes)
+	, mTexH(0)
+	, mTexW(0)
+	, mFrameCounter(0)
+	, mActiveSurface(0)
+	, mBackBufferSurface(1)
+{}
+
+void SpectrogramPlot::drawLocal()
+{
+	auto spectrum = mAudioNodes.getMonitorSpectralNode()->getMagSpectrum();
+
+	if (spectrum.empty())
+		return;
+
+	auto surface_iter = mSpectrals[mActiveSurface].getIter();
+	while (surface_iter.line())
+	{
+		if (surface_iter.mY != mFrameCounter) continue;
+		while (surface_iter.pixel())
+		{
+			auto m = ci::audio::linearToDecibel(spectrum[surface_iter.mX]) / 100;
+			surface_iter.r() = m;
+			surface_iter.g() = m;
+			surface_iter.b() = 1.0f - m;
+		}
+	}
+
+	//mFrameCounter++;
+
+	const auto available_height = (mTexH - mFrameCounter) * mBounds.getHeight() / mTexH;
+	const auto height_offset = (mFrameCounter) * mBounds.getHeight() / mTexH;
+
+	ci::gl::draw(mSpectrals[mActiveSurface], mBounds);
+	ci::Area requested_area(0, mFrameCounter, mTexW, mTexH);
+	ci::Rectf requested_rect(mBounds.x1, mBounds.y1 + height_offset, mBounds.x2, mBounds.y2);
+	ci::gl::draw(mSpectrals[mBackBufferSurface], requested_area, requested_rect);
+
+
+	mFrameCounter++;
+
+
+	if (mFrameCounter >= mTexH)
+	{
+		mFrameCounter = 0;
+		std::swap(mActiveSurface, mBackBufferSurface);
+	}
+}
+
+void SpectrogramPlot::setup()
+{
+	Plot::setup();
+	mTexW = mAudioNodes.getMonitorSpectralNode()->getNumBins();
+	//swap out the texture every 3 seconds
+	mTexH = static_cast<std::size_t>(ci::app::getFrameRate() * 3.0f);
+
+	mSpectrals[0] = ci::Surface32f(mTexW, mTexH, false);
+	mSpectrals[1] = ci::Surface32f(mTexW, mTexH, false);
 }
 
 } //!namespace cieq

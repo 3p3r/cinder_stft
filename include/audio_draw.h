@@ -4,8 +4,10 @@
 #include <cinder/Color.h>
 #include <cinder/Vector.h>
 #include <cinder/Rect.h>
+#include <cinder/Surface.h>
 
 #include <vector>
+#include <array>
 
 namespace cinder {
 namespace gl {
@@ -22,7 +24,7 @@ class Plot
 public:
 	Plot();
 	virtual ~Plot() {};
-	void			setup();
+	virtual void	setup();
 
 	Plot&			setHorzAxisTitle(const std::string& title)	{ mHorzTitle = title; onHorzAxisTextChange(); return *this; }
 	Plot&			setVertAxisTitle(const std::string& title)	{ mVertTitle = title; onVertAxisTextChange(); return *this; }
@@ -81,6 +83,23 @@ private:
 	std::vector<ci::Vec2f>	mVerts;
 	std::vector<ci::ColorA>	mColors;
 	AudioNodes&				mAudioNodes;
+};
+
+class SpectrogramPlot final : public Plot
+{
+public:
+	SpectrogramPlot(AudioNodes& nodes);
+
+	void drawLocal() override;
+	void setup() override;
+
+private:
+	AudioNodes&						mAudioNodes;
+	std::array<ci::Surface32f, 2>	mSpectrals;
+	std::size_t						mTexW, mTexH;
+	int								mFrameCounter;
+	int								mActiveSurface;
+	int								mBackBufferSurface;
 };
 
 } //!namespace cieq
