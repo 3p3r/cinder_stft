@@ -10,6 +10,7 @@ InputAnalyzer::InputAnalyzer()
 	, mAudioNodes(mGlobals)
 	, mSpectrumPlot(mAudioNodes)
 	, mWaveformPlot(mAudioNodes)
+	, mSpectrogramPlot(mAudioNodes)
 {}
 
 void InputAnalyzer::prepareSettings(Settings *settings)
@@ -53,37 +54,28 @@ void InputAnalyzer::setup()
 	mEventProcessor.addKeyboardEvent([this](char c){ if (c == 's' || c == 'S') mAudioNodes.toggleInput(); });
 	mEventProcessor.addMouseEvent([this](float, float){ mAudioNodes.toggleInput(); });
 
-	const auto window_size = ci::app::getWindowSize();
-	const auto plot_size_width = 0.9f * window_size.x; // 90% of window width
-	const auto plot_size_height = 0.8f * 0.5f * window_size.y; // half of 90% of window width
-
 	mSpectrumPlot.setup();
 	mWaveformPlot.setup();
+	mSpectrogramPlot.setup();
 
-	ci::Vec2f top_left = 0.05f * window_size;
 	mSpectrumPlot.setPlotTitle("FFT Analysis of input data");
-	mSpectrumPlot.setBounds(ci::Rectf(top_left, top_left + ci::Vec2f(plot_size_width, plot_size_height)));
 	mSpectrumPlot.setHorzAxisTitle("Frequency").setHorzAxisUnit("Hz");
 	mSpectrumPlot.setVertAxisTitle("Magnitude").setVertAxisUnit("Db");
 
-	top_left.y += 0.5f * window_size.y;
 	mWaveformPlot.setPlotTitle("RAW input data");
-	mWaveformPlot.setBounds(ci::Rectf(top_left, top_left + ci::Vec2f(plot_size_width, plot_size_height)));
 	mWaveformPlot.setHorzAxisTitle("Time").setHorzAxisUnit("s");
 	mWaveformPlot.setVertAxisTitle("Amplitude").setVertAxisUnit("...");
+
+	mSpectrogramPlot.setPlotTitle("Spectrogram");
+	mSpectrogramPlot.setHorzAxisTitle("Frequency").setHorzAxisUnit("Hz");
+	mSpectrogramPlot.setVertAxisTitle("Time").setVertAxisUnit("s");
+
+	positionPlots();
 }
 
 void InputAnalyzer::resize()
 {
-	const auto window_size = ci::app::getWindowSize();
-	const auto plot_size_width = 0.9f * window_size.x; // 90% of window width
-	const auto plot_size_height = 0.8f * 0.5f * window_size.y; // half of 90% of window width
-
-	ci::Vec2f top_left = 0.05f * window_size;
-	mSpectrumPlot.setBounds(ci::Rectf(top_left, top_left + ci::Vec2f(plot_size_width, plot_size_height)));
-
-	top_left.y += 0.5f * window_size.y;
-	mWaveformPlot.setBounds(ci::Rectf(top_left, top_left + ci::Vec2f(plot_size_width, plot_size_height)));
+	positionPlots();
 }
 
 void InputAnalyzer::update()
@@ -98,6 +90,7 @@ void InputAnalyzer::draw()
 
 	mSpectrumPlot.draw();
 	mWaveformPlot.draw();
+	mSpectrogramPlot.draw();
 
 	mParamsRef->draw();
 }
@@ -117,6 +110,22 @@ void InputAnalyzer::mouseDown(ci::app::MouseEvent event)
 void InputAnalyzer::keyDown(ci::app::KeyEvent event)
 {
 	mEventProcessor.processKeybaordEvents(event.getChar());
+}
+
+void InputAnalyzer::positionPlots()
+{
+	const auto window_size = ci::app::getWindowSize();
+	const auto plot_size_width = 0.9f * window_size.x; // 90% of window width
+	const auto plot_size_width_mini = 0.425f * window_size.x; // 42.5% of window width
+	const auto plot_padding_horz = 0.05f * window_size.x; // 5% of window width
+	const auto plot_size_height = 0.8f * 0.5f * window_size.y; // half of 90% of window width
+
+	ci::Vec2f top_left = 0.05f * window_size;
+	mSpectrumPlot.setBounds(ci::Rectf(top_left, top_left + ci::Vec2f(plot_size_width, plot_size_height)));
+	top_left.y += 0.5f * window_size.y;
+	mWaveformPlot.setBounds(ci::Rectf(top_left, top_left + ci::Vec2f(plot_size_width_mini, plot_size_height)));
+	top_left.x += plot_size_width_mini + plot_padding_horz;
+	mSpectrogramPlot.setBounds(ci::Rectf(top_left, top_left + ci::Vec2f(plot_size_width_mini, plot_size_height)));
 }
 
 } //!namespace cieq

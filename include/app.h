@@ -29,6 +29,7 @@ public:
 	void		draw() override final;
 	void		resize() override final;
 	void		shutdown() override final;
+	void		positionPlots();
 
 	void		mouseDown(ci::app::MouseEvent event) override final;
 	void		keyDown(ci::app::KeyEvent event) override final;
@@ -41,6 +42,7 @@ private:
 	AudioNodes		mAudioNodes;
 	SpectrumPlot	mSpectrumPlot;
 	WaveformPlot	mWaveformPlot;
+	SpectrogramPlot	mSpectrogramPlot;
 	std::shared_ptr<ci::params::InterfaceGl>
 					mParamsRef;
 };
