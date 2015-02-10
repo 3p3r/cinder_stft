@@ -25,11 +25,11 @@ void AudioNodes::setup(bool auto_enable /*= true*/)
 	auto monitorSpectralFormat = ci::audio::MonitorSpectralNode::Format().fftSize(2048).windowSize(1024);
 	mMonitorSpectralNode = mGlobals.getAudioContext().makeNode(new ci::audio::MonitorSpectralNode(monitorSpectralFormat));
 
-	auto resamplerFormat = cieq::audio::ResamplerNode::Format().windowSize(512).targetSampleRate(8000.0f);
-	mResamplerNode = mGlobals.getAudioContext().makeNode(new audio::ResamplerNode(resamplerFormat));
+	/*auto resamplerFormat = cieq::audio::ResamplerNode::Format().windowSize(512).targetSampleRate(8000.0f);
+	mResamplerNode = mGlobals.getAudioContext().makeNode(new audio::ResamplerNode(resamplerFormat));*/
 
 	mInputDeviceNode >> mMonitorNode;
-	mInputDeviceNode >> mResamplerNode;
+	//mInputDeviceNode >> mResamplerNode;
 	mInputDeviceNode >> mMonitorSpectralNode;
 
 	ci::app::getWindow()->setTitle(ci::app::getWindow()->getTitle() + " (" + mInputDeviceNode->getDevice()->getName() + ")");
