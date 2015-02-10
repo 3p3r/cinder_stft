@@ -1,0 +1,5 @@
+#include "Resources.h"
+
+ID FONTX "../thirdparty/gnufont/FreeSans.ttf"
+
+LABEL_FONT
