@@ -5,6 +5,7 @@
 #include <cinder/Vector.h>
 #include <cinder/Rect.h>
 #include <cinder/Surface.h>
+#include <cinder/Font.h>
 
 #include <vector>
 #include <array>
@@ -49,8 +50,7 @@ protected:
 	ci::Rectf	mBounds;
 	ci::ColorA	mBoundsColor;
 	bool		mDrawBounds, mDrawLabels;
-	std::shared_ptr<cinder::gl::TextureFont>
-				mTextureFont;
+	ci::Font	mLabelFont;
 
 private:
 	void			onHorzAxisTextChange();
