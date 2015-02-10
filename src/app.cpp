@@ -122,7 +122,7 @@ void InputAnalyzer::positionPlots()
 	const auto plot_padding_horz = 0.05f * window_size.x; // 5% of window width
 	const auto plot_size_height = 0.8f * 0.5f * window_size.y; // half of 90% of window width
 
-	ci::Vec2f top_left = 0.05f * window_size;
+	ci::Vec2f top_left(0.05f * window_size.x, 0.05f * window_size.y);
 	mSpectrumPlot.setBounds(ci::Rectf(top_left, top_left + ci::Vec2f(plot_size_width, plot_size_height)));
 	top_left.y += 0.5f * window_size.y;
 	mWaveformPlot.setBounds(ci::Rectf(top_left, top_left + ci::Vec2f(plot_size_width_mini, plot_size_height)));
