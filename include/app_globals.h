@@ -28,12 +28,11 @@ public:
 
 	AppEvent&							getEventProcessor();
 	cinder::audio::Context&				getAudioContext();
-	void								setParamsRef(const std::shared_ptr < cinder::params::InterfaceGl >& params);
-	cinder::params::InterfaceGl* const	getParamsRef();
+	void								setParamsPtr(cinder::params::InterfaceGl* const params);
+	cinder::params::InterfaceGl* const	getParamsPtr();
 private:
 	AppEvent&							mEventProcessor;
-	std::shared_ptr < cinder::params::InterfaceGl >
-										mParamsRef;
+	cinder::params::InterfaceGl*		mParamsPtr;
 };
 
 } //!cieq

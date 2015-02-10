@@ -47,7 +47,7 @@ void InputAnalyzer::setup()
 		else
 			mParamsRef->show();
 	}});
-	mGlobals.setParamsRef(mParamsRef);
+	mGlobals.setParamsPtr(mParamsRef.get());
 
 	mAudioNodes.setup();
 	mEventProcessor.addKeyboardEvent([this](char c){ if (c == 's' || c == 'S') mAudioNodes.toggleInput(); });
