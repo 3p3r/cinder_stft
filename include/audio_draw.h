@@ -6,6 +6,7 @@
 #include <cinder/Rect.h>
 #include <cinder/Surface.h>
 #include <cinder/Font.h>
+#include <cinder/gl/Texture.h>
 
 #include <vector>
 #include <array>
@@ -96,6 +97,7 @@ public:
 private:
 	AudioNodes&						mAudioNodes;
 	std::array<ci::Surface32f, 2>	mSpectrals;
+	ci::gl::Texture					mTexCache;
 	std::size_t						mTexW, mTexH;
 	int								mFrameCounter;
 	int								mActiveSurface;

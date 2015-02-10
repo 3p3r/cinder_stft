@@ -216,8 +216,7 @@ void SpectrogramPlot::drawLocal()
 	ci::gl::draw(mSpectrals[mActiveSurface], mBounds);
 	ci::Area requested_area(0, mFrameCounter, mTexW, mTexH);
 	ci::Rectf requested_rect(mBounds.x1, mBounds.y1 + height_offset, mBounds.x2, mBounds.y2);
-	ci::gl::draw(mSpectrals[mBackBufferSurface], requested_area, requested_rect);
-
+	ci::gl::draw(mTexCache, requested_area, requested_rect);
 
 	mFrameCounter++;
 
@@ -226,6 +225,7 @@ void SpectrogramPlot::drawLocal()
 	{
 		mFrameCounter = 0;
 		std::swap(mActiveSurface, mBackBufferSurface);
+		mTexCache.update(mSpectrals[mBackBufferSurface]);
 	}
 }
 
@@ -238,6 +238,8 @@ void SpectrogramPlot::setup()
 
 	mSpectrals[0] = ci::Surface32f(mTexW, mTexH, false);
 	mSpectrals[1] = ci::Surface32f(mTexW, mTexH, false);
+
+	mTexCache = ci::gl::Texture(mSpectrals.back());
 }
 
 } //!namespace cieq
