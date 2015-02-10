@@ -210,8 +210,8 @@ void SpectrogramPlot::drawLocal()
 
 	//mFrameCounter++;
 
-	const auto available_height = (mTexH - mFrameCounter) * mBounds.getHeight() / mTexH;
-	const auto height_offset = (mFrameCounter) * mBounds.getHeight() / mTexH;
+	const auto height_offset = (mFrameCounter)* (mBounds.getHeight() / mTexH);
+	const auto available_height = mBounds.getHeight() - height_offset;
 
 	ci::gl::draw(mSpectrals[mActiveSurface], mBounds);
 	ci::Area requested_area(0, mFrameCounter, mTexW, mTexH);
