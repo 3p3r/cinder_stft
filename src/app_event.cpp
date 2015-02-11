@@ -27,4 +27,16 @@ void AppEvent::processKeybaordEvents(char key)
 	mKeyboardEventsStack(key);
 }
 
+void AppEvent::addMouseDragEvent(const std::function< void(float, float, bool, bool, bool) >& fn)
+{
+	mMouseDragEventsStack.connect(fn);
+}
+
+void AppEvent::processMouseDragEvents(float x, float y, bool l, bool m, bool r)
+{
+	if (mMouseDragEventsStack.empty()) return;
+
+	mMouseDragEventsStack(x, y, l, m, r);
+}
+
 } // !namespace cieq

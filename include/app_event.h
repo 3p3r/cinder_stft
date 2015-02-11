@@ -25,6 +25,12 @@ public:
 	 * the all get fired in app::MouseDown method.
 	 */ 
 	void addMouseEvent(const std::function< void(float, float) >&);
+	/*!
+	 * \brief adds a mouse event processor to events stack.
+	 * \note no matter how many events you may want to occur,
+	 * the all get fired in app::MouseDrag method.
+	 */ 
+	void addMouseDragEvent(const std::function< void(float, float, bool, bool, bool) >&);
 
 	/*!
 	 * \brief adds a keyboard event processor to events stack.
@@ -34,6 +40,11 @@ public:
 	void addKeyboardEvent(const std::function< void(int) >&);
 
 public:
+	/*!
+	 * \brief fires all events in the stack for an incoming mouse
+	 * drag event. X, and Y coordinates will be passed inside.
+	 */
+	void processMouseDragEvents(float x, float y, bool, bool, bool);
 	/*!
 	 * \brief fires all events in the stack for an incoming mouse
 	 * event. X, and Y coordinates will be passed inside.
@@ -47,10 +58,12 @@ public:
 	void processKeybaordEvents(char key);
 
 private:
+	using mouseDragEvent= signal::signal < void(float, float, bool, bool, bool) > ;
 	using mouseEvent	= signal::signal < void(float, float) > ;
 	using keyboardEvent = signal::signal < void(char) > ;
 
 private:
+	mouseDragEvent	mMouseDragEventsStack;
 	mouseEvent		mMouseEventsStack;
 	keyboardEvent	mKeyboardEventsStack;
 };
