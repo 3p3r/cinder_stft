@@ -11,6 +11,7 @@ InputAnalyzer::InputAnalyzer()
 	, mSpectrumPlot(mAudioNodes)
 	, mWaveformPlot(mAudioNodes)
 	, mSpectrogramPlot(mAudioNodes)
+	, mCameras(mGlobals)
 {}
 
 void InputAnalyzer::prepareSettings(Settings *settings)
@@ -40,6 +41,8 @@ void InputAnalyzer::prepareSettings(Settings *settings)
 
 void InputAnalyzer::setup()
 {
+	mCameras.setup();
+
 	mParamsRef = ci::params::InterfaceGl::create("Parameters", ci::Vec2i(50, 120));
 	mParamsRef->hide(); //let's hide by default
 	mEventProcessor.addKeyboardEvent([this](char c){ if (c == 'p' || c == 'P') {
@@ -76,6 +79,7 @@ void InputAnalyzer::setup()
 void InputAnalyzer::resize()
 {
 	positionPlots();
+	mCameras.resize();
 }
 
 void InputAnalyzer::update()
@@ -87,6 +91,14 @@ void InputAnalyzer::draw()
 {
 	ci::gl::clear();
 	ci::gl::enableAlphaBlending();
+	
+	// set up the camera 
+	ci::gl::pushMatrices();
+	ci::gl::setMatrices(mCameras.getMayaCamera().getCamera());
+
+	// enable the depth buffer (after all, we are doing 3D)
+	ci::gl::enableDepthRead();
+	ci::gl::enableDepthWrite();
 
 	mSpectrumPlot.draw();
 	mWaveformPlot.draw();
@@ -95,6 +107,9 @@ void InputAnalyzer::draw()
 	mParamsRef->draw();
 
 	drawFps();
+
+	ci::gl::disableAlphaBlending();
+	ci::gl::popMatrices();
 }
 
 void InputAnalyzer::shutdown()
@@ -107,6 +122,16 @@ void InputAnalyzer::mouseDown(ci::app::MouseEvent event)
 	mEventProcessor.processMouseEvents(
 		static_cast<float>(event.getX()),
 		static_cast<float>(event.getY()));
+}
+
+void InputAnalyzer::mouseDrag(ci::app::MouseEvent event)
+{
+	mEventProcessor.processMouseDragEvents(
+		static_cast<float>(event.getX()),
+		static_cast<float>(event.getY()),
+		event.isLeftDown(),
+		event.isMiddleDown(),
+		event.isRightDown());
 }
 
 void InputAnalyzer::keyDown(ci::app::KeyEvent event)

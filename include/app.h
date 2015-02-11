@@ -7,6 +7,7 @@
 #include "app_event.h"
 #include "audio_nodes.h"
 #include "audio_draw.h"
+#include "app_camera.h"
 
 namespace cieq
 {
@@ -33,6 +34,7 @@ public:
 	void		drawFps();
 
 	void		mouseDown(ci::app::MouseEvent event) override final;
+	void		mouseDrag(ci::app::MouseEvent event) override final;
 	void		keyDown(ci::app::KeyEvent event) override final;
 
 	AppGlobals&	getGlobals() { return mGlobals; }
@@ -40,6 +42,7 @@ public:
 private:
 	AppEvent		mEventProcessor;
 	AppGlobals		mGlobals;
+	AppCamera		mCameras;
 	AudioNodes		mAudioNodes;
 	SpectrumPlot	mSpectrumPlot;
 	WaveformPlot	mWaveformPlot;
