@@ -41,22 +41,25 @@ void InputAnalyzer::prepareSettings(Settings *settings)
 
 void InputAnalyzer::setup()
 {
+	// setup camera rig
 	mCameras.setup();
-
+	// setup the interface GL params
 	setupParamsGl();
-
+	// setup audio I/O
 	mAudioNodes.setup();
-
+	// setup plots
 	mSpectrumPlot.setup();
 	mWaveformPlot.setup();
 	mSpectrogramPlot.setup();
-
+	// position the plots
 	positionPlots();
 }
 
 void InputAnalyzer::resize()
 {
+	// re position the plots
 	positionPlots();
+	// tell camera we've resized
 	mCameras.resize();
 }
 
@@ -67,17 +70,19 @@ void InputAnalyzer::update()
 
 void InputAnalyzer::draw()
 {
+	// clear screen black
 	ci::gl::clear();
+	// enable alpha channel
 	ci::gl::enableAlphaBlending();
-
+	// draw plots
 	mSpectrumPlot.draw();
 	mWaveformPlot.draw();
 	mSpectrogramPlot.draw();
-
+	// draw interface GL params
 	mParamsRef->draw();
-
+	// draw FPS
 	drawFps();
-
+	// disable alpha channel and exit
 	ci::gl::disableAlphaBlending();
 }
 
