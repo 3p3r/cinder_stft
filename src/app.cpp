@@ -53,18 +53,6 @@ void InputAnalyzer::setup()
 	mWaveformPlot.setup();
 	mSpectrogramPlot.setup();
 
-	mSpectrumPlot.setPlotTitle("FFT Analysis of input data");
-	mSpectrumPlot.setHorzAxisTitle("Frequency").setHorzAxisUnit("Hz");
-	mSpectrumPlot.setVertAxisTitle("Magnitude").setVertAxisUnit("Db");
-
-	mWaveformPlot.setPlotTitle("RAW input data");
-	mWaveformPlot.setHorzAxisTitle("Time").setHorzAxisUnit("s");
-	mWaveformPlot.setVertAxisTitle("Amplitude").setVertAxisUnit("...");
-
-	mSpectrogramPlot.setPlotTitle("Spectrogram");
-	mSpectrogramPlot.setHorzAxisTitle("Frequency").setHorzAxisUnit("Hz");
-	mSpectrogramPlot.setVertAxisTitle("Time").setVertAxisUnit("s");
-
 	positionPlots();
 }
 

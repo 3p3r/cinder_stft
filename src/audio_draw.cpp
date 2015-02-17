@@ -76,7 +76,11 @@ void Plot::setup()
 SpectrumPlot::SpectrumPlot(AudioNodes& nodes)
 	: mScaleDecibels( true )
 	, mAudioNodes(nodes)
-{}
+{
+	setPlotTitle("FFT Analysis of input data");
+	setHorzAxisTitle("Frequency").setHorzAxisUnit("Hz");
+	setVertAxisTitle("Magnitude").setVertAxisUnit("Db");
+}
 
 // original draw function is from Cinder examples _audio/common
 void SpectrumPlot::drawLocal()
@@ -143,7 +147,11 @@ void SpectrumPlot::enableDecibelsScale(bool on /*= true*/)
 WaveformPlot::WaveformPlot(AudioNodes& nodes)
 	: mGraphColor(0, 0.9f, 0, 1)
 	, mAudioNodes(nodes)
-{}
+{
+	setPlotTitle("RAW input data");
+	setHorzAxisTitle("Time").setHorzAxisUnit("s");
+	setVertAxisTitle("Amplitude").setVertAxisUnit("...");
+}
 
 void WaveformPlot::setGraphColor(const ci::ColorA& color)
 {
@@ -186,7 +194,11 @@ SpectrogramPlot::SpectrogramPlot(AudioNodes& nodes)
 	, mFrameCounter(0)
 	, mActiveSurface(0)
 	, mBackBufferSurface(1)
-{}
+{
+	setPlotTitle("Spectrogram");
+	setHorzAxisTitle("Frequency").setHorzAxisUnit("Hz");
+	setVertAxisTitle("Time").setVertAxisUnit("s");
+}
 
 void SpectrogramPlot::drawLocal()
 {
