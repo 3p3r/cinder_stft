@@ -44,6 +44,8 @@ public:
 private:
 	//! repositions the plots after a resize is fired.
 	void			positionPlots();
+	//! sets up the ci::Gl::Params interface
+	void			setupParamsGl();
 
 private:
 	//! the event processor class instance

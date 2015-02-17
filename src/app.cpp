@@ -43,15 +43,7 @@ void InputAnalyzer::setup()
 {
 	mCameras.setup();
 
-	mParamsRef = ci::params::InterfaceGl::create("Parameters", ci::Vec2i(50, 120));
-	mParamsRef->hide(); //let's hide by default
-	mEventProcessor.addKeyboardEvent([this](char c){ if (c == 'p' || c == 'P') {
-		if (mParamsRef->isVisible())
-			mParamsRef->hide();
-		else
-			mParamsRef->show();
-	}});
-	mGlobals.setParamsPtr(mParamsRef.get());
+	setupParamsGl();
 
 	mAudioNodes.setup();
 	mEventProcessor.addKeyboardEvent([this](char c){ if (c == 's' || c == 'S') mAudioNodes.toggleInput(); });
@@ -91,14 +83,6 @@ void InputAnalyzer::draw()
 {
 	ci::gl::clear();
 	ci::gl::enableAlphaBlending();
-	
-	// set up the camera 
-	ci::gl::pushMatrices();
-	ci::gl::setMatrices(mCameras.getMayaCamera().getCamera());
-
-	// enable the depth buffer (after all, we are doing 3D)
-	ci::gl::enableDepthRead();
-	ci::gl::enableDepthWrite();
 
 	mSpectrumPlot.draw();
 	mWaveformPlot.draw();
@@ -109,12 +93,6 @@ void InputAnalyzer::draw()
 	drawFps();
 
 	ci::gl::disableAlphaBlending();
-	ci::gl::popMatrices();
-}
-
-void InputAnalyzer::shutdown()
-{
-	//noop
 }
 
 void InputAnalyzer::mouseDown(ci::app::MouseEvent event)
@@ -160,6 +138,25 @@ void InputAnalyzer::drawFps()
 	std::stringstream buf;
 	buf << "FPS: " << ci::app::getFrameRate();
 	ci::gl::drawStringRight(buf.str(), ci::Vec2i(ci::app::getWindowWidth() - 25, 10));
+}
+
+void InputAnalyzer::setupParamsGl()
+{
+	// make sure this is called only once
+	// do note local statics gets instantiated once and only once.
+	static std::once_flag isParamsSetup;
+	// call it actually once
+	std::call_once(isParamsSetup, [this] {
+		mParamsRef = ci::params::InterfaceGl::create("Parameters", ci::Vec2i(50, 120));
+		mParamsRef->hide(); //let's hide by default
+		mEventProcessor.addKeyboardEvent([this](char c){ if (c == 'p' || c == 'P') {
+			if (mParamsRef->isVisible())
+				mParamsRef->hide();
+			else
+				mParamsRef->show();
+		}});
+		mGlobals.setParamsPtr(mParamsRef.get());
+	});
 }
 
 } //!namespace cieq
