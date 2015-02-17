@@ -46,8 +46,6 @@ void InputAnalyzer::setup()
 	setupParamsGl();
 
 	mAudioNodes.setup();
-	mEventProcessor.addKeyboardEvent([this](char c){ if (c == 's' || c == 'S') mAudioNodes.toggleInput(); });
-	mEventProcessor.addMouseEvent([this](float, float){ mAudioNodes.toggleInput(); });
 
 	mSpectrumPlot.setup();
 	mWaveformPlot.setup();

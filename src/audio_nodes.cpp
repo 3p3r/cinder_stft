@@ -1,11 +1,11 @@
 #include "audio_nodes.h"
 #include "app_globals.h"
+#include "app_event.h"
+#include "resampler_node.h"
 
 #include <cinder/audio/Context.h>
 #include <cinder/audio/MonitorNode.h>
 #include <cinder/app/App.h>
-
-#include "resampler_node.h"
 
 namespace cieq
 {
@@ -38,6 +38,14 @@ void AudioNodes::setup(bool auto_enable /*= true*/)
 	{
 		enableInput();
 	}
+
+	mGlobals
+		.getEventProcessor()
+		.addKeyboardEvent([this](char c){ if (c == 's' || c == 'S') toggleInput(); });
+
+	mGlobals
+		.getEventProcessor()
+		.addMouseEvent([this](float, float){ toggleInput(); });
 }
 
 cinder::audio::InputDeviceNode* const AudioNodes::getInputDeviceNode()
