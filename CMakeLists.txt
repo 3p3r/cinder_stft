@@ -102,24 +102,3 @@ SET(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /MTd")
 
 # exclude libcmt from debug build. Cinder doesn't like it
 SET_TARGET_PROPERTIES(ciEq PROPERTIES LINK_FLAGS_DEBUG "/NODEFAULTLIB:\"libcmt\"")
-
-# add libsamplerate
-SET(CMAKE_TRY_COMPILE_CONFIGURATION "Debug")
-TRY_COMPILE(LibSampleRateDebug "${LIBSAMPLERATE_ROOT}/build" "${LIBSAMPLERATE_ROOT}" LibSampleRate)
-IF(NOT LibSampleRateDebug)
-MESSAGE(FATAL_ERROR "Failed to build libsamplerate under Debug configuration.")
-ENDIF(NOT LibSampleRateDebug)
-
-SET(CMAKE_TRY_COMPILE_CONFIGURATION "Release")
-TRY_COMPILE(LibSampleRateRelease "${LIBSAMPLERATE_ROOT}/build" "${LIBSAMPLERATE_ROOT}" LibSampleRate)
-IF(NOT LibSampleRateRelease)
-MESSAGE(FATAL_ERROR "Failed to build libsamplerate under Release configuration.")
-ENDIF(NOT LibSampleRateRelease)
-
-# appropriately set the Cinder lib variable for linking
-SET( LIBSAMPLERATE_LIBRARY
-	optimized "${LIBSAMPLERATE_ROOT}/lib/libsamplerate.lib"
-	debug "${LIBSAMPLERATE_ROOT}/lib/libsamplerated.lib"
-)
-# Link shit together
-TARGET_LINK_LIBRARIES(ciEq ${LIBSAMPLERATE_LIBRARY})
