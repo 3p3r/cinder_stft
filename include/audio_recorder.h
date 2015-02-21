@@ -1,12 +1,22 @@
 #ifndef CIEQ_INCLUDE_AUDIO_RECORDER_H_
 #define CIEQ_INCLUDE_AUDIO_RECORDER_H_
 
-#include "fmod.hpp"
+#include <memory>
 
 namespace cieq
 {
 
-class AudioRecorder
+//! \note a shallow struct forward declared here.
+//! I do not need to expose the entire fmod.hpp
+//! header through this class. Should be private.
+struct FmodWrapper;
+
+/*!
+ * \class AudioRecorder
+ * \brief Records and audio stream from PC's default input
+ * at a specified sample rate in Hz and duration in time.
+ */
+class  AudioRecorder
 {
 public:
 	class Options
@@ -14,34 +24,29 @@ public:
 	public:
 		Options();
 		Options&	setSampleRate(int sample_rate);
-		int			getSampleRate() const;
-		Options&	setDuration(int sample_rate);
+		Options&	setDuration(int duration);
+		Options&	setAutoStart(bool on);
+		
 		int			getDuration() const;
+		int			getSampleRate() const;
+		bool		getAutoStart() const;
+
 	private:
-		int mSampleRate;
-		int mDuration;
+		int			mSampleRate;
+		int			mDuration;
+		bool		mAutoStart;
 	};
 
 public:
 	AudioRecorder(const Options& opts = Options());
-	~AudioRecorder();
+
+private:
+	//! aliasing my shallow forward declaration here.
+	using FmodWrapperRef = std::shared_ptr < FmodWrapper >;
 
 private:
 	Options			mOpts;
-	FMOD::System*	mSystem = 0;
-	FMOD::Sound*	mSound = 0;
-	FMOD_RESULT     mResult = FMOD_OK;
-	unsigned int    mVersion = 0;
-	unsigned int    mSoundLength = 0;
-	unsigned int    mRecordPos = 0;
-	int             mRecordRate = 0;
-	int             mRecordChannels = 0;
-	int             mRecordNumDrivers = 0;
-	FMOD_CREATESOUNDEXINFO
-					mExInfo;
-
-private:
-	void			checkFmodError(FMOD_RESULT result) const;
+	FmodWrapperRef	mFmodWrapper;
 };
 
 }
