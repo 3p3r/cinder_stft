@@ -17,8 +17,9 @@ namespace cieq
  * \note this class is not exposed publicly simply because the
  * entire FMOD functionality is not needed.
  */
-struct FmodWrapper final : public std::enable_shared_from_this<FmodWrapper>
+class FmodWrapper final : public std::enable_shared_from_this<FmodWrapper>
 {
+public:
 	//! \brief a C++ exception utility for throwing FMOD errors.
 	//! \note provides construction by FMOD_RESULT.
 	class FmodWrapperException final : public std::runtime_error
@@ -76,12 +77,14 @@ struct FmodWrapper final : public std::enable_shared_from_this<FmodWrapper>
 		zeroOutExInfo();
 	}
 
+	//! \brief sets up ExInfo struct for FMOD and initializes the sound pointer.
 	void					setup(const FmodWrapperExInfoOptions& opts)
 	{
 		setupExInfo(opts);
 		setupSound();
 	}
 
+	//! \brief Starts recording via microphone.
 	void					startRecording()
 	{
 		if (!isRecording())
@@ -91,6 +94,7 @@ struct FmodWrapper final : public std::enable_shared_from_this<FmodWrapper>
 		}
 	}
 
+	//! \brief Stops recording via microphone.
 	void					stopRecording()
 	{
 		if (isRecording())
@@ -100,18 +104,21 @@ struct FmodWrapper final : public std::enable_shared_from_this<FmodWrapper>
 		}
 	}
 
+	//! \brief Returns true if we're already recording.
 	bool					isRecording()
 	{
 		mSystem->isRecording(0, &mRecordStatus);
 		return mRecordStatus;
 	}
 
+	//! \brief updates the FMOD engine for one tick.
 	void					update()
 	{
 		mResult = mSystem->update();
 		checkLastResult();
 	}
 
+	//! \brief deallocates and cleans up FMOD engine.
 	~FmodWrapper()
 	{
 		if (mSound)
@@ -128,6 +135,8 @@ struct FmodWrapper final : public std::enable_shared_from_this<FmodWrapper>
 	}
 
 private:
+	//! \brief checks and THROWS if the last FMOD operation
+	//! stored in mResult was not successful.
 	void					checkLastResult() const
 	{
 		if (mResult != FMOD_OK)
@@ -136,12 +145,14 @@ private:
 		}
 	}
 
+	//! \brief initializes mSystem
 	void					initializeSystem()
 	{
 		mResult = mSystem->init(100, FMOD_INIT_NORMAL, nullptr);
 		checkLastResult();
 	}
 
+	//! \brief Sets up FMOD's ExInfo struct. Options class found above.
 	void					setupExInfo(const FmodWrapperExInfoOptions& opts)
 	{
 		mExInfo.cbsize = sizeof(FMOD_CREATESOUNDEXINFO);
@@ -151,6 +162,7 @@ private:
 		mExInfo.length = mExInfo.defaultfrequency * sizeof(float) * mExInfo.numchannels * opts.getLength();
 	}
 
+	//! \brief sets up mSound pointer.
 	void					setupSound()
 	{
 		mResult = mSystem->createSound(0, FMOD_LOOP_NORMAL | FMOD_OPENUSER, &mExInfo, &mSound);
@@ -160,6 +172,7 @@ private:
 		checkLastResult();
 	}
 
+	//! \brief queries microphone driver information.
 	void					getDriverInfo()
 	{
 		mResult = mSystem->getRecordNumDrivers(&mRecordNumDrivers);
@@ -174,12 +187,12 @@ private:
 		checkLastResult();
 	}
 
+	//! Sets the ExInfo struct to all zeros.
 	void					zeroOutExInfo()
 	{
 		std::memset(&mExInfo, 0, sizeof(FMOD_CREATESOUNDEXINFO));
 	}
 
-public:
 	FMOD::System*			mSystem{ nullptr };
 	FMOD::Sound*			mSound{ nullptr };
 	FMOD_RESULT				mResult{ FMOD_OK };

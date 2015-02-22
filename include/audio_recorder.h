@@ -6,10 +6,10 @@
 namespace cieq
 {
 
-//! \note a shallow struct forward declared here.
+//! \note a shallow class forward declared here.
 //! I do not need to expose the entire fmod.hpp
 //! header through this class. Should be private.
-struct FmodWrapper;
+class FmodWrapper;
 
 /*!
  * \class AudioRecorder
