@@ -3,8 +3,6 @@
 
 #include <memory>
 
-#include "audio_recorder.h"
-
 namespace cinder {
 namespace audio {
 class InputDeviceNode;
@@ -13,9 +11,6 @@ class MonitorSpectralNode;
 }} //!ci::audio
 
 namespace cieq {
-namespace audio {
-class RecorderNode;
-} //!cieq::audio
 class AppGlobals;
 
 /*!
@@ -50,11 +45,9 @@ public:
 	cinder::audio::MonitorSpectralNode* const			getMonitorSpectralNode();
 
 private:
-	AudioRecorder										mRecorder; //we own this guy
 	std::shared_ptr<cinder::audio::InputDeviceNode>		mInputDeviceNode;
 	std::shared_ptr<cinder::audio::MonitorNode>			mMonitorNode;
 	std::shared_ptr<cinder::audio::MonitorSpectralNode>	mMonitorSpectralNode;
-	std::shared_ptr<cieq::audio::RecorderNode>			mRecorderNode;
 
 private:
 	AppGlobals&											mGlobals;

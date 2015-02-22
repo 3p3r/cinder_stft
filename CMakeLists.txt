@@ -13,7 +13,6 @@ SET (CMAKE_VERBOSE_MAKEFILE 1)
 
 # Cinder root
 SET (CINDER_ROOT "${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/cinder")
-SET (FMOD_ROOT "${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/fmod")
 
 # we only support MSVC, so check for it.
 IF (NOT MSVC)
@@ -61,8 +60,6 @@ ENDIF("${CINDER_RELEASE_LIB}" STREQUAL "")
 
 # appropriately set the Cinder lib variable for linking
 SET(CINDER_LIBRARY optimized ${CINDER_RELEASE_LIB} debug ${CINDER_DEBUG_LIB})
-# appropriately set the FMOD lib variable for linking
-SET(FMOD_LIBRARY optimized "fmod_vc" debug "fmodL_vc")
 
 # Look for all sources that will participate in this build session
 FILE(GLOB_RECURSE CIEQ_HEADERS "${CMAKE_CURRENT_SOURCE_DIR}/include/*.h")
@@ -72,19 +69,17 @@ INCLUDE_DIRECTORIES(
 	"${CINDER_ROOT}/include"
 	"${CINDER_ROOT}/boost"
 	"${CMAKE_CURRENT_SOURCE_DIR}/include"
-	"${FMOD_ROOT}/include"
 )
 
 LINK_DIRECTORIES(
 	"${CINDER_ROOT}/lib/msw"
 	"${CINDER_ROOT}/lib/msw/x86"
-	"${FMOD_ROOT}/lib"
 )
 
 ADD_EXECUTABLE(ciEq WIN32 ${CIEQ_HEADERS} ${CIEQ_SOURCES} "${CMAKE_CURRENT_SOURCE_DIR}/src/Resources.rc")
 
 # Link shit together
-TARGET_LINK_LIBRARIES(ciEq ${CINDER_LIBRARY} ${FMOD_LIBRARY})
+TARGET_LINK_LIBRARIES(ciEq ${CINDER_LIBRARY})
 
 # Added a "d" suffix to the executable in debug build
 SET_TARGET_PROPERTIES(ciEq PROPERTIES DEBUG_POSTFIX "d")

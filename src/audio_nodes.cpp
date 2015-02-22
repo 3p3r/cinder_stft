@@ -1,5 +1,4 @@
 #include "audio_nodes.h"
-#include "recorder_node.h"
 #include "app_globals.h"
 #include "app_event.h"
 
@@ -13,7 +12,6 @@ namespace cieq
 AudioNodes::AudioNodes(AppGlobals& globals)
 	: mGlobals(globals)
 	, mIsEnabled(false)
-	, mRecorder(AudioRecorder::Options().setSampleRate(8000).setDuration(10 * 60).setAutoStart(true))
 {}
 
 void AudioNodes::setup(bool auto_enable /*= true*/)
@@ -26,10 +24,7 @@ void AudioNodes::setup(bool auto_enable /*= true*/)
 	auto monitorSpectralFormat = ci::audio::MonitorSpectralNode::Format().fftSize(2048).windowSize(1024);
 	mMonitorSpectralNode = mGlobals.getAudioContext().makeNode(new ci::audio::MonitorSpectralNode(monitorSpectralFormat));
 
-	mRecorderNode = mGlobals.getAudioContext().makeNode(new cieq::audio::RecorderNode(mRecorder));
-
 	mInputDeviceNode >> mMonitorNode;
-	mInputDeviceNode >> mRecorderNode;
 	mInputDeviceNode >> mMonitorSpectralNode;
 
 	ci::app::getWindow()->setTitle(ci::app::getWindow()->getTitle() + " (" + mInputDeviceNode->getDevice()->getName() + ")");
