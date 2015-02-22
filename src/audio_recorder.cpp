@@ -8,6 +8,53 @@
 namespace cieq
 {
 
+template<FMOD_SOUND_FORMAT fmt>
+/*!
+* \struct SizeOfFmodDataType
+* \brief a template-ized struct that returns size in bytes of a
+* FMOD PCM sample datatype.
+*/
+struct SizeOfFmodDataType
+{
+	static const std::size_t value = 0;
+};
+template<>
+struct SizeOfFmodDataType<FMOD_SOUND_FORMAT_PCMFLOAT>
+{
+	static const std::size_t value = sizeof(float);
+};
+template<>
+struct SizeOfFmodDataType<FMOD_SOUND_FORMAT_PCM16>
+{
+	static const std::size_t value = sizeof(short);
+};
+template<>
+struct SizeOfFmodDataType<FMOD_SOUND_FORMAT_PCM32>
+{
+	static const std::size_t value = sizeof(int);
+};
+/*!
+ * \name getFmodTypeSize
+ * \brief A utility that uses \a SizeOfFmodDataType to retrieve
+ * the FMOD PCM sample size dynamically.
+ * \see SizeOfFmodDataType
+ */
+std::size_t getFmodTypeSize(FMOD_SOUND_FORMAT fmt)
+{
+	switch (fmt)
+	{
+	case FMOD_SOUND_FORMAT_PCMFLOAT:
+		return SizeOfFmodDataType<FMOD_SOUND_FORMAT_PCMFLOAT>::value;
+	case FMOD_SOUND_FORMAT_PCM32:
+		return SizeOfFmodDataType<FMOD_SOUND_FORMAT_PCM32>::value;
+	case FMOD_SOUND_FORMAT_PCM16:
+		return SizeOfFmodDataType<FMOD_SOUND_FORMAT_PCM16>::value;
+	default:
+		throw std::logic_error("FMOD type not implemented / recognized.");
+		break;
+	}
+}
+
 /*!
  * \class FmodWrapper
  * \private
@@ -49,6 +96,7 @@ public:
 		FMOD_SOUND_FORMAT	getFormat() const { return mFormat; }
 		int					getFrequency() const { return mFrequency; }
 		std::size_t			getLength() const { return mLength; }
+		std::size_t			getFormatSize() const { return getFmodTypeSize(mFormat); }
 
 	private:
 		FMOD_SOUND_FORMAT	mFormat{ FMOD_SOUND_FORMAT_PCMFLOAT };
@@ -159,7 +207,7 @@ private:
 		mExInfo.numchannels = mRecordChannels;
 		mExInfo.format = opts.getFormat();
 		mExInfo.defaultfrequency = opts.getFrequency();
-		mExInfo.length = mExInfo.defaultfrequency * sizeof(float) * mExInfo.numchannels * opts.getLength();
+		mExInfo.length = mExInfo.defaultfrequency * opts.getFormatSize() * mExInfo.numchannels * opts.getLength();
 	}
 
 	//! \brief sets up mSound pointer.
