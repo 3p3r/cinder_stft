@@ -3,6 +3,8 @@
 
 #include <memory>
 
+#include "audio_recorder.h"
+
 namespace cinder {
 namespace audio {
 class InputDeviceNode;
@@ -13,7 +15,7 @@ class MonitorSpectralNode;
 namespace cieq {
 namespace audio {
 class RecorderNode;
-}
+} //!cieq::audio
 class AppGlobals;
 
 /*!
@@ -46,10 +48,9 @@ public:
 	cinder::audio::MonitorNode* const					getMonitorNode();
 	// \brief returns a pointer to the node which is performing FFT on data
 	cinder::audio::MonitorSpectralNode* const			getMonitorSpectralNode();
-	// \brief returns a pointer to the node which is re-sampling the data
-	cieq::audio::RecorderNode* const					getRecorderNode();
 
 private:
+	AudioRecorder										mRecorder; //we own this guy
 	std::shared_ptr<cinder::audio::InputDeviceNode>		mInputDeviceNode;
 	std::shared_ptr<cinder::audio::MonitorNode>			mMonitorNode;
 	std::shared_ptr<cinder::audio::MonitorSpectralNode>	mMonitorSpectralNode;

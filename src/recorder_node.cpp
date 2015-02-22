@@ -3,9 +3,9 @@
 namespace cieq {
 namespace audio {
 
-RecorderNode::RecorderNode(const Format& fmt)
-	: cinder::audio::NodeAutoPullable(fmt)
-	, mAudioRecorder(fmt)
+RecorderNode::RecorderNode(AudioRecorder& rec)
+	: cinder::audio::NodeAutoPullable(RecorderNode::Format())
+	, mAudioRecorder(rec)
 {}
 
 void RecorderNode::process(cinder::audio::Buffer*)

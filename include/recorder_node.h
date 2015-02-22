@@ -15,14 +15,14 @@ public:
 		, public AudioRecorder::Options
 	{};
 
-	RecorderNode(const Format& fmt);
+	RecorderNode(AudioRecorder&);
 	virtual ~RecorderNode() {}
 
 protected:
 	void process( cinder::audio::Buffer* )	override;
 
 private:
-	AudioRecorder	mAudioRecorder;
+	AudioRecorder&	mAudioRecorder;
 };
 
 }} // !namespace cieq::audio
