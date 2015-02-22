@@ -106,7 +106,8 @@ public:
 	//! \brief Returns true if we're already recording.
 	bool					isRecording()
 	{
-		mSystem->isRecording(0, &mRecordStatus);
+		mResult = mSystem->isRecording(0, &mRecordStatus);
+		checkLastResult();
 		return mRecordStatus;
 	}
 
