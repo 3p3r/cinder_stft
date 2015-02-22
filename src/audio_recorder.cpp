@@ -4,7 +4,6 @@
 #include <fmod_errors.h>
 
 #include <stdexcept>
-#include <thread>
 
 namespace cieq
 {
@@ -264,6 +263,26 @@ AudioRecorder::AudioRecorder(const Options& opts /*= Options()*/)
 	}
 
 	mFmodWrapper = fmod_wrapper->shared_from_this();
+}
+
+void AudioRecorder::start()
+{
+	mFmodWrapper->startRecording();
+}
+
+void AudioRecorder::pause()
+{
+	mFmodWrapper->stopRecording();
+}
+
+void AudioRecorder::update()
+{
+	mFmodWrapper->update();
+}
+
+bool AudioRecorder::isRecording()
+{
+	return mFmodWrapper->isRecording();
 }
 
 }

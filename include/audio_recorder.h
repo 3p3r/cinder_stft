@@ -39,6 +39,10 @@ public:
 
 public:
 	AudioRecorder(const Options& opts = Options());
+	void			start();
+	void			pause();
+	void			update();
+	bool			isRecording();
 
 private:
 	//! aliasing my shallow forward declaration here.
