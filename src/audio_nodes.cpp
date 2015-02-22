@@ -5,6 +5,7 @@
 #include <cinder/audio/Context.h>
 #include <cinder/audio/MonitorNode.h>
 #include <cinder/app/App.h>
+#include "recorder_node.h"
 
 namespace cieq
 {
@@ -24,7 +25,12 @@ void AudioNodes::setup(bool auto_enable /*= true*/)
 	auto monitorSpectralFormat = ci::audio::MonitorSpectralNode::Format().fftSize(2048).windowSize(1024);
 	mMonitorSpectralNode = mGlobals.getAudioContext().makeNode(new ci::audio::MonitorSpectralNode(monitorSpectralFormat));
 
+	auto recorderFormat = cieq::audio::RecorderNode::Format();
+	recorderFormat.setSampleRate(8000).setDuration(60).setAutoStart(true);
+	mRecorderNode = mGlobals.getAudioContext().makeNode(new cieq::audio::RecorderNode(recorderFormat));
+
 	mInputDeviceNode >> mMonitorNode;
+	mInputDeviceNode >> mRecorderNode;
 	mInputDeviceNode >> mMonitorSpectralNode;
 
 	ci::app::getWindow()->setTitle(ci::app::getWindow()->getTitle() + " (" + mInputDeviceNode->getDevice()->getName() + ")");
@@ -90,9 +96,9 @@ void AudioNodes::toggleInput()
 	}
 }
 
-cieq::audio::ResamplerNode* const AudioNodes::getResamplerNode()
+cieq::audio::RecorderNode* const AudioNodes::getRecorderNode()
 {
-	return mResamplerNode.get();
+	return mRecorderNode.get();
 }
 
 } //!cieq
