@@ -10,7 +10,7 @@ namespace cieq
 {
 
 /*!
- * \struct FmodWrapper
+ * \class FmodWrapper
  * \private
  * \brief A thin wrapper over the FMOD sound engine, designed for
  * audio recording via microphone / other physical inputs.
