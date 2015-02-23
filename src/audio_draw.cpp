@@ -259,6 +259,7 @@ void SpectrogramPlot::setup()
 ContiguousWaveformPlot::ContiguousWaveformPlot(AudioNodes& nodes)
 	: mGraphColor(0, 0.9f, 0, 1)
 	, mAudioNodes(nodes)
+	, mSampleToSkip(0)
 {
 	setPlotTitle("Recorded input data");
 	setHorzAxisTitle("Time").setHorzAxisUnit("s");
@@ -277,24 +278,46 @@ void ContiguousWaveformPlot::drawLocal()
 	ci::gl::color(mGraphColor);
 
 	const float waveHeight = mBounds.getHeight() / (float)points->getNumChannels();
-	const float xScale = mBounds.getWidth() / (float)points->getNumFrames();
+	const float xScale = 1.0f;
 
 	float yOffset = mBounds.y1;
-	for (std::size_t ch = 0; ch < points->getNumChannels(); ch++) {
-		ci::PolyLine2f waveform;
+	for (auto ch = 0; ch < points->getNumChannels(); ch++)
+	{
 		const float *channel = points->getChannel(ch);
 		float x = mBounds.x1;
-		for (std::size_t i = 0; i < points->getNumFrames(); i++) {
-			x += xScale;
-			float y = (1 - (channel[i] * 0.5f + 0.5f)) * waveHeight + yOffset;
-			waveform.push_back(ci::Vec2f(x, y));
+		for (auto i = 0; i < mAudioNodes.getBufferRecorderNode()->getWritePosition(); i += mSampleToSkip)
+		{
+			if (mGraphs[ch].size() <= i / mSampleToSkip)
+			{
+				x += xScale * mGraphs[ch].getPoints().size();
+				float y = (1 - (channel[i] * 0.5f + 0.5f));
+				
+				for (auto j = i; i > mSampleToSkip && j > i - mSampleToSkip; --j)
+				{
+					y = (y + (1 - (channel[j] * 0.5f + 0.5f))) / 2.0f;
+				}
+
+				y *= waveHeight;
+				if (ci::math<float>::abs(y) > waveHeight) y = 0; //fix me
+				y += yOffset;
+				
+				mGraphs[ch].push_back(ci::Vec2f(x, y));
+			}
 		}
 
-		if (!waveform.getPoints().empty())
-			ci::gl::draw(waveform);
+		if (!mGraphs[ch].getPoints().empty())
+			ci::gl::draw(mGraphs[ch]);
 
 		yOffset += waveHeight;
 	}
+}
+
+void ContiguousWaveformPlot::setup()
+{
+	Plot::setup();
+	auto recorder = mAudioNodes.getBufferRecorderNode();
+	mGraphs.resize(mAudioNodes.getBufferRecorderNode()->getNumChannels());
+	mSampleToSkip = static_cast<std::size_t>(recorder->getNumFrames() / mBounds.getWidth());
 }
 
 } //!namespace cieq

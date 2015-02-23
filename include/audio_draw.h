@@ -7,6 +7,7 @@
 #include <cinder/Surface.h>
 #include <cinder/Font.h>
 #include <cinder/gl/Texture.h>
+#include <cinder/PolyLine.h>
 
 #include <vector>
 #include <array>
@@ -76,8 +77,8 @@ class SpectrumPlot final : public Plot
 public:
 	SpectrumPlot(AudioNodes& nodes);
 
-	void enableDecibelsScale(bool on = true);
-	void drawLocal() override;
+	void					enableDecibelsScale(bool on = true);
+	void					drawLocal() override;
 
 private:
 	bool					mScaleDecibels;
@@ -91,8 +92,8 @@ class SpectrogramPlot final : public Plot
 public:
 	SpectrogramPlot(AudioNodes& nodes);
 
-	void drawLocal() override;
-	void setup() override;
+	void							drawLocal() override;
+	void							setup() override;
 
 private:
 	AudioNodes&						mAudioNodes;
@@ -109,12 +110,15 @@ class ContiguousWaveformPlot final : public Plot
 public:
 	ContiguousWaveformPlot(AudioNodes& nodes);
 
-	void					setGraphColor(const ci::ColorA& color);
-	void					drawLocal() override;
+	void							setGraphColor(const ci::ColorA& color);
+	void							drawLocal() override;
+	void							setup() override;
 
 private:
-	ci::ColorA				mGraphColor;
-	AudioNodes&				mAudioNodes;
+	ci::ColorA						mGraphColor;
+	AudioNodes&						mAudioNodes;
+	std::vector<ci::PolyLine2f>		mGraphs; //one per channel
+	std::size_t						mSampleToSkip; //for drawing only
 };
 
 } //!namespace cieq
