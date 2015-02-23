@@ -284,12 +284,11 @@ void ContiguousWaveformPlot::drawLocal()
 	for (auto ch = 0; ch < points->getNumChannels(); ch++)
 	{
 		const float *channel = points->getChannel(ch);
-		float x = mBounds.x1;
 		for (auto i = 0; i < mAudioNodes.getBufferRecorderNode()->getWritePosition(); i += mSampleToSkip)
 		{
 			if (mGraphs[ch].size() <= i / mSampleToSkip)
 			{
-				x += xScale * mGraphs[ch].getPoints().size();
+				float x = mBounds.x1 + mGraphs[ch].getPoints().size();
 				float y = (1 - (channel[i] * 0.5f + 0.5f));
 				
 				for (auto j = i; i > mSampleToSkip && j > i - mSampleToSkip; --j)
