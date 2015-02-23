@@ -47,12 +47,12 @@ void InputAnalyzer::setup()
 	setupParamsGl();
 	// setup audio I/O
 	mAudioNodes.setup();
+	// position the plots
+	positionPlots();
 	// setup plots
 	mSpectrumPlot.setup();
 	mWaveformPlot.setup();
 	mSpectrogramPlot.setup();
-	// position the plots
-	positionPlots();
 }
 
 void InputAnalyzer::resize()
