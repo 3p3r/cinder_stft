@@ -78,8 +78,12 @@ void InputAnalyzer::draw()
 	ci::gl::enableAlphaBlending();
 	// draw plots
 	mSpectrumPlot.draw();
-	mWaveformPlot.draw();
-	mContiguousPlot.draw();
+
+	if (mGlobals.getDrawContiguous())
+		mContiguousPlot.draw();
+	else
+		mWaveformPlot.draw();
+	
 	mSpectrogramPlot.draw();
 	// draw interface GL params
 	mParamsRef->draw();
