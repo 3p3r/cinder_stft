@@ -30,9 +30,13 @@ public:
 	cinder::audio::Context&				getAudioContext();
 	void								setParamsPtr(cinder::params::InterfaceGl* const params);
 	cinder::params::InterfaceGl* const	getParamsPtr();
+	void								setDrawContiguous(bool on);
+	bool								getDrawContiguous() const;
+
 private:
 	AppEvent&							mEventProcessor;
 	cinder::params::InterfaceGl*		mParamsPtr;
+	bool								mDrawContiguous;
 };
 
 } //!cieq
