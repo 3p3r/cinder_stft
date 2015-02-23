@@ -65,7 +65,7 @@ void InputAnalyzer::resize()
 
 void InputAnalyzer::update()
 {
-	//noop
+	mAudioNodes.update();
 }
 
 void InputAnalyzer::draw()

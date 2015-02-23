@@ -34,7 +34,10 @@ void AudioNodes::setup(bool auto_enable /*= true*/)
 	mInputDeviceNode >> mBufferRecorderNode;
 	mInputDeviceNode >> mMonitorSpectralNode;
 
-	ci::app::getWindow()->setTitle(ci::app::getWindow()->getTitle() + " (" + mInputDeviceNode->getDevice()->getName() + ")");
+	mBufferRecorderNode->start();
+
+	mOriginalTitle = ci::app::getWindow()->getTitle();
+	ci::app::getWindow()->setTitle(mOriginalTitle + " (" + mInputDeviceNode->getDevice()->getName() + ")");
 
 	if (auto_enable)
 	{
@@ -48,6 +51,18 @@ void AudioNodes::setup(bool auto_enable /*= true*/)
 	mGlobals
 		.getEventProcessor()
 		.addMouseEvent([this](float, float){ toggleInput(); });
+}
+
+void AudioNodes::update()
+{
+	if (mBufferRecorderNode->getWritePosition() != mBufferRecorderNode->getNumFrames())
+	{
+		ci::app::getWindow()->setTitle(mOriginalTitle + " ( Recording... )");
+	}
+	else
+	{
+		ci::app::getWindow()->setTitle(mOriginalTitle + " (" + mInputDeviceNode->getDevice()->getName() + ")");
+	}
 }
 
 cinder::audio::InputDeviceNode* const AudioNodes::getInputDeviceNode()

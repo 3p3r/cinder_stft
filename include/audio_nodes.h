@@ -2,6 +2,7 @@
 #define CIEQ_INCLUDE_AUDIO_NODES_H_
 
 #include <memory>
+#include <string>
 
 namespace cinder {
 namespace audio {
@@ -37,6 +38,8 @@ public:
 	void												disableInput();
 	// \brief toggles reading from input
 	void												toggleInput();
+	// \brief updates audio nodes class for one tick.
+	void												update();
 
 	// \brief returns a pointer to the node which is reading data from input
 	cinder::audio::InputDeviceNode* const				getInputDeviceNode();
@@ -56,6 +59,7 @@ private:
 private:
 	AppGlobals&											mGlobals;
 	bool												mIsEnabled;
+	std::string											mOriginalTitle;
 };
 
 } //!cieq
