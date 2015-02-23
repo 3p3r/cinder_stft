@@ -60,6 +60,9 @@ private:
 	SpectrumPlot	mSpectrumPlot;
 	//! plot of the current window's raw input
 	WaveformPlot	mWaveformPlot;
+	//! plot of the entire samples recorded
+	ContiguousWaveformPlot
+					mContiguousPlot;
 	//! entire spectrogram plot instance
 	SpectrogramPlot	mSpectrogramPlot;
 	//! cinder's param ref, for tweaking variables at the runtime

@@ -11,6 +11,7 @@ InputAnalyzer::InputAnalyzer()
 	, mSpectrumPlot(mAudioNodes)
 	, mWaveformPlot(mAudioNodes)
 	, mSpectrogramPlot(mAudioNodes)
+	, mContiguousPlot(mAudioNodes)
 	, mCameras(mGlobals)
 {}
 
@@ -52,6 +53,7 @@ void InputAnalyzer::setup()
 	// setup plots
 	mSpectrumPlot.setup();
 	mWaveformPlot.setup();
+	mContiguousPlot.setup();
 	mSpectrogramPlot.setup();
 }
 
@@ -77,6 +79,7 @@ void InputAnalyzer::draw()
 	// draw plots
 	mSpectrumPlot.draw();
 	mWaveformPlot.draw();
+	mContiguousPlot.draw();
 	mSpectrogramPlot.draw();
 	// draw interface GL params
 	mParamsRef->draw();
@@ -120,6 +123,7 @@ void InputAnalyzer::positionPlots()
 	mSpectrumPlot.setBounds(ci::Rectf(top_left, top_left + ci::Vec2f(plot_size_width, plot_size_height)));
 	top_left.y += 0.5f * window_size.y;
 	mWaveformPlot.setBounds(ci::Rectf(top_left, top_left + ci::Vec2f(plot_size_width_mini, plot_size_height)));
+	mContiguousPlot.setBounds(ci::Rectf(top_left, top_left + ci::Vec2f(plot_size_width_mini, plot_size_height)));
 	top_left.x += plot_size_width_mini + plot_padding_horz;
 	mSpectrogramPlot.setBounds(ci::Rectf(top_left, top_left + ci::Vec2f(plot_size_width_mini, plot_size_height)));
 }
