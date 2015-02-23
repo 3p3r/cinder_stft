@@ -281,17 +281,17 @@ void ContiguousWaveformPlot::drawLocal()
 	const float xScale = 1.0f;
 
 	float yOffset = mBounds.y1;
-	for (auto ch = 0; ch < points->getNumChannels(); ch++)
+	for (std::size_t ch = 0; ch < points->getNumChannels(); ch++)
 	{
 		const float *channel = points->getChannel(ch);
-		for (auto i = 0; i < mAudioNodes.getBufferRecorderNode()->getWritePosition(); i += mSampleToSkip)
+		for (std::size_t i = 0; i < mAudioNodes.getBufferRecorderNode()->getWritePosition(); i += mSampleToSkip)
 		{
 			if (mGraphs[ch].size() <= i / mSampleToSkip)
 			{
 				float x = mBounds.x1 + mGraphs[ch].getPoints().size();
 				float y = (1 - (channel[i] * 0.5f + 0.5f));
 				
-				for (auto j = i; i > mSampleToSkip && j > i - mSampleToSkip; --j)
+				for (std::size_t j = i; i > mSampleToSkip && j > i - mSampleToSkip; --j)
 				{
 					y = (y + (1 - (channel[j] * 0.5f + 0.5f))) / 2.0f;
 				}

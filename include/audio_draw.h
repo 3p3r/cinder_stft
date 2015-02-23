@@ -100,7 +100,7 @@ private:
 	std::array<ci::Surface32f, 2>	mSpectrals;
 	ci::gl::Texture					mTexCache;
 	std::size_t						mTexW, mTexH;
-	int								mFrameCounter;
+	std::size_t						mFrameCounter;
 	int								mActiveSurface;
 	int								mBackBufferSurface;
 };
