@@ -104,6 +104,19 @@ private:
 	int								mBackBufferSurface;
 };
 
+class ContiguousWaveformPlot final : public Plot
+{
+public:
+	ContiguousWaveformPlot(AudioNodes& nodes);
+
+	void					setGraphColor(const ci::ColorA& color);
+	void					drawLocal() override;
+
+private:
+	ci::ColorA				mGraphColor;
+	AudioNodes&				mAudioNodes;
+};
+
 } //!namespace cieq
 
 #endif //!CIEQ_INCLUDE_AUDIO_DRAW_H_

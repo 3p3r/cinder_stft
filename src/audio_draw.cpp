@@ -3,6 +3,7 @@
 
 #include <cinder/audio/Utilities.h>
 #include <cinder/audio/MonitorNode.h>
+#include <cinder/audio/SampleRecorderNode.h>
 #include <cinder/Font.h>
 #include <cinder/gl/gl.h>
 #include <cinder/gl/TextureFont.h>
@@ -252,6 +253,48 @@ void SpectrogramPlot::setup()
 	mSpectrals[1] = ci::Surface32f(mTexW, mTexH, false);
 
 	mTexCache = ci::gl::Texture(mSpectrals.back());
+}
+
+
+ContiguousWaveformPlot::ContiguousWaveformPlot(AudioNodes& nodes)
+	: mGraphColor(0, 0.9f, 0, 1)
+	, mAudioNodes(nodes)
+{
+	setPlotTitle("Recorded input data");
+	setHorzAxisTitle("Time").setHorzAxisUnit("s");
+	setVertAxisTitle("Sample").setVertAxisUnit("units");
+}
+
+void ContiguousWaveformPlot::setGraphColor(const ci::ColorA& color)
+{
+	mGraphColor = color;
+}
+
+void ContiguousWaveformPlot::drawLocal()
+{
+	auto points = mAudioNodes.getBufferRecorderNode()->getRecordedCopy();
+
+	ci::gl::color(mGraphColor);
+
+	const float waveHeight = mBounds.getHeight() / (float)points->getNumChannels();
+	const float xScale = mBounds.getWidth() / (float)points->getNumFrames();
+
+	float yOffset = mBounds.y1;
+	for (std::size_t ch = 0; ch < points->getNumChannels(); ch++) {
+		ci::PolyLine2f waveform;
+		const float *channel = points->getChannel(ch);
+		float x = mBounds.x1;
+		for (std::size_t i = 0; i < points->getNumFrames(); i++) {
+			x += xScale;
+			float y = (1 - (channel[i] * 0.5f + 0.5f)) * waveHeight + yOffset;
+			waveform.push_back(ci::Vec2f(x, y));
+		}
+
+		if (!waveform.getPoints().empty())
+			ci::gl::draw(waveform);
+
+		yOffset += waveHeight;
+	}
 }
 
 } //!namespace cieq
