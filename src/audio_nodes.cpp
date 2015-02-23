@@ -25,8 +25,10 @@ void AudioNodes::setup(bool auto_enable /*= true*/)
 	auto monitorSpectralFormat = ci::audio::MonitorSpectralNode::Format().fftSize(2048).windowSize(1024);
 	mMonitorSpectralNode = mGlobals.getAudioContext().makeNode(new ci::audio::MonitorSpectralNode(monitorSpectralFormat));
 
+	auto num_seconds = 20 * 60;
+	auto sample_rate = mInputDeviceNode->getSampleRate();
 	auto recorderFormat = ci::audio::BufferRecorderNode::Format();
-	mBufferRecorderNode = mGlobals.getAudioContext().makeNode(new ci::audio::BufferRecorderNode(44100));
+	mBufferRecorderNode = mGlobals.getAudioContext().makeNode(new ci::audio::BufferRecorderNode(num_seconds * sample_rate));
 
 	mInputDeviceNode >> mMonitorNode;
 	mInputDeviceNode >> mBufferRecorderNode;
