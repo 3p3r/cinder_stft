@@ -40,6 +40,8 @@ public:
 	void												toggleInput();
 	// \brief updates audio nodes class for one tick.
 	void												update();
+	// \brief returns true if everything is setup correctly for audio nodes
+	bool												ready() const;
 
 	// \brief returns a pointer to the node which is reading data from input
 	cinder::audio::InputDeviceNode* const				getInputDeviceNode();
@@ -59,6 +61,7 @@ private:
 private:
 	AppGlobals&											mGlobals;
 	bool												mIsEnabled;
+	bool												mIsReady;
 	std::string											mOriginalTitle;
 };
 

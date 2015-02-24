@@ -13,11 +13,40 @@ namespace cieq
 AudioNodes::AudioNodes(AppGlobals& globals)
 	: mGlobals(globals)
 	, mIsEnabled(false)
+	, mIsReady(false)
 {}
 
 void AudioNodes::setup(bool auto_enable /*= true*/)
 {
-	mInputDeviceNode = mGlobals.getAudioContext().createInputDeviceNode();
+	try
+	{
+		// Iterate through all devices on this machine and see if we can find any inputs.
+		std::size_t num_inputs = 0;
+		for (auto it = mGlobals.getAudioContext().deviceManager()->getDevices().cbegin()
+			, end = mGlobals.getAudioContext().deviceManager()->getDevices().end(); it != end; ++it)
+		{
+			if ((*it)->getNumInputChannels() > 0) num_inputs++;
+		}
+
+		if (num_inputs == 0)
+		{
+			throw std::runtime_error("Could not find any input channels. Make sure your computer comes with a mic!");
+		}
+
+		mInputDeviceNode = mGlobals.getAudioContext().createInputDeviceNode();
+	}
+	catch (const std::exception& ex)
+	{
+		ci::app::getWindow()->setTitle(ci::app::getWindow()->getTitle() + " ( No audio input found. )");
+		ci::app::console() << "no audio input found: " << ex.what() << std::endl;
+		return;
+	}
+	catch (...)
+	{
+		ci::app::getWindow()->setTitle(ci::app::getWindow()->getTitle() + " ( Error occurred creating input node. )");
+		ci::app::console() << "Unknown error occurred creating input node." << std::endl;
+		return;
+	}
 	
 	auto monitorFormat = ci::audio::MonitorNode::Format().windowSize(1024);
 	mMonitorNode = mGlobals.getAudioContext().makeNode(new ci::audio::MonitorNode(monitorFormat));
@@ -51,10 +80,14 @@ void AudioNodes::setup(bool auto_enable /*= true*/)
 	mGlobals
 		.getEventProcessor()
 		.addMouseEvent([this](float, float){ toggleInput(); });
+
+	mIsReady = true;
 }
 
 void AudioNodes::update()
 {
+	if (!ready()) return;
+
 	if (mBufferRecorderNode->getWritePosition() != mBufferRecorderNode->getNumFrames())
 	{
 		ci::app::getWindow()->setTitle(mOriginalTitle + " ( Recording... )");
@@ -115,6 +148,11 @@ void AudioNodes::toggleInput()
 	{
 		enableInput();
 	}
+}
+
+bool AudioNodes::ready() const
+{
+	return mIsReady;
 }
 
 } //!cieq

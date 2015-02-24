@@ -50,11 +50,14 @@ void InputAnalyzer::setup()
 	mAudioNodes.setup();
 	// position the plots
 	positionPlots();
-	// setup plots
-	mSpectrumPlot.setup();
-	mWaveformPlot.setup();
-	mContiguousPlot.setup();
-	mSpectrogramPlot.setup();
+	if (mAudioNodes.ready())
+	{
+		// setup plots
+		mSpectrumPlot.setup();
+		mWaveformPlot.setup();
+		mContiguousPlot.setup();
+		mSpectrogramPlot.setup();
+	}
 }
 
 void InputAnalyzer::resize()
@@ -76,15 +79,18 @@ void InputAnalyzer::draw()
 	ci::gl::clear();
 	// enable alpha channel
 	ci::gl::enableAlphaBlending();
-	// draw plots
-	mSpectrumPlot.draw();
+	if (mAudioNodes.ready())
+	{
+		// draw plots
+		mSpectrumPlot.draw();
 
-	if (mGlobals.getDrawContiguous())
-		mContiguousPlot.draw();
-	else
-		mWaveformPlot.draw();
-	
-	mSpectrogramPlot.draw();
+		if (mGlobals.getDrawContiguous())
+			mContiguousPlot.draw();
+		else
+			mWaveformPlot.draw();
+
+		mSpectrogramPlot.draw();
+	}
 	// draw interface GL params
 	mParamsRef->draw();
 	// draw FPS
