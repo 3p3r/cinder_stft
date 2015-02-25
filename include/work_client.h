@@ -6,6 +6,9 @@
 namespace cieq {
 namespace work {
 
+//! \note a shallow type for Client shared_ptr's
+typedef std::shared_ptr< class Client > ClientRef;
+
 /*!
  * \class Client
  * \namespace cieq::work
@@ -13,32 +16,38 @@ namespace work {
  * \brief the external interface of Work Manager. can be used
  * to submit works to the work manager.
  *
- * \note can be ONLY constructed to be shared pointers.
+ * \note SHOULD be only constructed to be shared pointers.
  * \note Work Manager keeps these guys
  * by shared_ptr's and thus, have a shared ownership over them in conjunction with
  * whomever constructs them.
- * \note Work Manager assigns ID to these guys.
  */
-
-using ClientRef = std::shared_ptr< class Client >;
 class Client : public std::enable_shared_from_this< Client >
 {
 public:
+	//! \brief Client constructor, should NOT be called directly. use factory method "make"
 	Client(Manager& manager) : mManager(manager) {}
 
-	virtual void		handle(std::unique_ptr< class Request >) {}
-	virtual void		request(std::unique_ptr<class Request > work) { mManager.post(shared_from_this(), std::move(work)); }
+	//! \brief callback, called inside a thread as soon as a request is done.
+	//! \note this is called inside a thread! it is SHARED with the main thread. be aware!
+	virtual void		handle(std::unique_ptr< class Request >) { /*no op*/ }
+	//! \brief requests a new work from the manager.
+	virtual void		request(std::unique_ptr< class Request >& work) { mManager.post(shared_from_this(), work); }
 
-	template<class T, class... Args, typename std::enable_if<std::is_base_of<Client, T>::value>::type* = nullptr>
+	template<class T, class... Args>
 	static ClientRef	make(Manager& manager, Args... args);
 
 private:
 	Manager&			mManager;
 };
 
-template<class T, class... Args, typename std::enable_if<std::is_base_of<Client, T>::value>::type*>
+/* IMPLEMENTATION */
+template<class T, class... Args>
 ClientRef cieq::work::Client::make(Manager& manager, Args... args)
 {
+	// check if T is a subclass of Client.
+	static_assert(std::is_base_of<Client, T>::value,
+		"ClientRef factory method only accepts types derived from cieq::work::Client");
+	// copy elision will happen here by the compiler, no std::forward required.
 	return std::shared_ptr<T>(new T(manager, args...));
 }
 

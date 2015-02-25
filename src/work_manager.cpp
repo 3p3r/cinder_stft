@@ -24,14 +24,14 @@ void Manager::run(std::shared_ptr< Client > requester, std::unique_ptr< Request 
 {
 	if (requester && request)
 	{
-		request->run();
-		requester->handle(std::move(request));
+		request->run(); //run request
+		requester->handle(std::move(request)); //call client for recycling
 	}
 }
 
-void Manager::post(std::shared_ptr< Client > requester, std::unique_ptr< Request > request)
+void Manager::post(const std::shared_ptr< Client >& requester, std::unique_ptr< Request >& request)
 {
-	if (requester && request)
+	if (requester && request) //HACK ALERT: this is due to lack of official support of moving unique_ptr's inside a lambda!
 		mIoService.post(std::bind([=](std::unique_ptr< Request >& w){ run(requester, std::move(w)); }, std::move(request)));
 }
 
