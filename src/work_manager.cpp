@@ -1,20 +1,38 @@
 #include "work_manager.h"
+#include "work_client.h"
+#include "work_request.h"
 
 namespace cieq {
 namespace work {
 
-void Manager::add(std::shared_ptr<Client> requester, std::unique_ptr<Request> request)
+Manager::Manager(std::size_t num_threads /*= 4*/)
+	: mWorker(mIoService)
 {
-	//first take ownership appropriately locally inside our memory.
-	mClientWorks.push_back(std::make_pair(requester, std::move(request)));
-	//Then pass to pending queue to process
-	mPending.push(mClientWorks.size() - 1);
+	for (auto count = num_threads; count > 0; --count)
+	{
+		mThreadPool.create_thread(boost::bind(&boost::asio::io_service::run, &mIoService));
+	}
 }
 
-void Manager::update()
+Manager::~Manager()
 {
-	//while pending pop --> post to ASIO
-	//while finished pop and bounded to max --> call clients by finished work
+	mIoService.stop();
+	mThreadPool.join_all();
+}
+
+void Manager::run(std::shared_ptr< Client > requester, std::unique_ptr< Request > request)
+{
+	if (requester && request)
+	{
+		request->run();
+		requester->handle(std::move(request));
+	}
+}
+
+void Manager::post(std::shared_ptr< Client > requester, std::unique_ptr< Request > request)
+{
+	if (requester && request)
+		mIoService.post(std::bind([=](std::unique_ptr< Request >& w){ run(requester, std::move(w)); }, std::move(request)));
 }
 
 }} //!cieq::work
