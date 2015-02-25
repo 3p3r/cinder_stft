@@ -1,3 +1,4 @@
+#include <windows.h> //To get rid of boost's warning about Windows version
 #include "work_manager.h"
 #include "work_client.h"
 #include "work_request.h"
