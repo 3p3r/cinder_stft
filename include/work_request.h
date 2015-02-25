@@ -26,15 +26,11 @@ class Request
 public:
 	//! \brief main processing call. Background thread will call this.
 	virtual void		run() {};
-	
-	//! \brief factory function for work requests. returns a unique_ptr.
-	template<class T, class... Args>
-	static RequestRef	make(Args...);
 };
 
-/* IMPLEMENTATION */
+//! \brief factory function for work requests. returns a unique_ptr.
 template<class T, class... Args>
-RequestRef cieq::work::Request::make(Args... args)
+static RequestRef make_request(Args... args)
 {
 	// check if T is a subclass of Request.
 	static_assert(std::is_base_of<Request, T>::value,
