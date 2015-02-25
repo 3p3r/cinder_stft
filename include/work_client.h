@@ -32,16 +32,13 @@ public:
 	//! \brief requests a new work from the manager.
 	virtual void		request(RequestRef& work) { mManager.post(shared_from_this(), work); }
 
-	template<class T, class... Args>
-	static ClientRef	make(Manager& manager, Args... args);
-
 private:
 	Manager&			mManager;
 };
 
 /* IMPLEMENTATION */
 template<class T, class... Args>
-ClientRef cieq::work::Client::make(Manager& manager, Args... args)
+static ClientRef make_client(Manager& manager, Args... args)
 {
 	// check if T is a subclass of Client.
 	static_assert(std::is_base_of<Client, T>::value,
