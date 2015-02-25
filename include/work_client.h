@@ -7,9 +7,6 @@
 namespace cieq {
 namespace work {
 
-//! \note a shallow type for Client shared_ptr's
-typedef std::shared_ptr< class Client > ClientRef;
-
 /*!
  * \class Client
  * \namespace cieq::work
@@ -22,6 +19,7 @@ typedef std::shared_ptr< class Client > ClientRef;
  * by shared_ptr's and thus, have a shared ownership over them in conjunction with
  * whomever constructs them.
  */
+
 class Client : public std::enable_shared_from_this< Client >
 {
 public:
@@ -30,9 +28,9 @@ public:
 
 	//! \brief callback, called inside a thread as soon as a request is done.
 	//! \note this is called inside a thread! it is SHARED with the main thread. be aware!
-	virtual void		handle(std::unique_ptr< Request >) { /*no op*/ }
+	virtual void		handle(RequestRef) { /*no op*/ }
 	//! \brief requests a new work from the manager.
-	virtual void		request(std::unique_ptr< Request >& work) { mManager.post(shared_from_this(), work); }
+	virtual void		request(RequestRef& work) { mManager.post(shared_from_this(), work); }
 
 	template<class T, class... Args>
 	static ClientRef	make(Manager& manager, Args... args);
@@ -50,7 +48,7 @@ ClientRef cieq::work::Client::make(Manager& manager, Args... args)
 		"ClientRef factory method only accepts types derived from cieq::work::Client");
 	// check if T properly overloaded the constructor
 	static_assert(std::is_constructible<T, Manager&>::value,
-		"ClientRef does not provide a constructor for cieq::work::Client")
+		"ClientRef does not provide a constructor for cieq::work::Client");
 	// copy elision will happen here by the compiler, no std::forward required.
 	return std::shared_ptr<T>(new T(manager, args...));
 }

@@ -7,6 +7,11 @@
 namespace cieq {
 namespace work {
 
+//! \note a shallow type for Client shared_ptr's
+typedef std::shared_ptr< class Client > ClientRef;
+//! \note a shallow type for Request unique_ptr's
+typedef std::unique_ptr< class Request > RequestRef;
+
 /*!
  * \class Manager
  * \namespace cieq::work
@@ -15,6 +20,7 @@ namespace work {
  * handles work requests from the main thread and executes them in the
  * background.
  */
+
 class Manager
 {
 public:
@@ -24,9 +30,9 @@ public:
 	virtual ~Manager();
 
 	//! \brief runs a work request synchronously.
-	void							run(std::shared_ptr< class Client >, std::unique_ptr< class Request >);
+	void							run(ClientRef, RequestRef);
 	//! \brief send a work request to the worker pool and runs it asynchronously.
-	void							post(const std::shared_ptr< class Client >&, std::unique_ptr< class Request >&);
+	void							post(const ClientRef&, RequestRef&);
 
 private:
 	boost::asio::io_service			mIoService;

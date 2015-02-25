@@ -1,14 +1,12 @@
 #ifndef CIEQ_INCLUDE_WORK_REQUEST_H_
 #define CIEQ_INCLUDE_WORK_REQUEST_H_
 
+#include "work_manager.h"
+
 #include <memory>
 
 namespace cieq {
 namespace work {
-
-//! \note a shallow type for Request unique_ptr's
-typedef std::unique_ptr< class Request > RequestRef;
-
 
 /*!
  * \class Request
@@ -22,6 +20,7 @@ typedef std::unique_ptr< class Request > RequestRef;
  * \note subclass Request to get custom processing done.
  * \note use Request::make as the factory function.
  */
+
 class Request
 {
 public:
