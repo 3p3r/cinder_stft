@@ -6,8 +6,9 @@
 namespace cieq
 {
 
-AppGlobals::AppGlobals(AppEvent& event_processor)
+AppGlobals::AppGlobals(AppEvent& event_processor, work::Manager& work_manager)
 	: mEventProcessor(event_processor)
+	, mWorkManager(work_manager)
 	, mDrawContiguous(false)
 {
 	getEventProcessor().addKeyboardEvent([this](int k) {
@@ -53,6 +54,11 @@ void AppGlobals::setDrawContiguous(bool on)
 bool AppGlobals::getDrawContiguous() const
 {
 	return mDrawContiguous;
+}
+
+work::Manager& AppGlobals::getWorkManager()
+{
+	return mWorkManager;
 }
 
 } // !namespace cieq

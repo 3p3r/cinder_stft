@@ -14,6 +14,9 @@ class InterfaceGl;
 namespace cieq
 {
 
+namespace work {
+class Manager;
+}; //!cieq::work
 class AppEvent;
 
 /*!
@@ -24,9 +27,10 @@ class AppEvent;
 class AppGlobals
 {
 public:
-	AppGlobals(AppEvent&);
+	AppGlobals(AppEvent&, work::Manager&);
 
 	AppEvent&							getEventProcessor();
+	work::Manager&						getWorkManager();
 	cinder::audio::Context&				getAudioContext();
 	void								setParamsPtr(cinder::params::InterfaceGl* const params);
 	cinder::params::InterfaceGl* const	getParamsPtr();
@@ -35,6 +39,7 @@ public:
 
 private:
 	AppEvent&							mEventProcessor;
+	work::Manager&						mWorkManager;
 	cinder::params::InterfaceGl*		mParamsPtr;
 	bool								mDrawContiguous;
 };

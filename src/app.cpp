@@ -6,7 +6,7 @@ namespace cieq
 {
 
 InputAnalyzer::InputAnalyzer()
-	: mGlobals(mEventProcessor)
+	: mGlobals(mEventProcessor, mWorkManager)
 	, mAudioNodes(mGlobals)
 	, mSpectrumPlot(mAudioNodes)
 	, mWaveformPlot(mAudioNodes)

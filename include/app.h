@@ -8,6 +8,7 @@
 #include "audio_nodes.h"
 #include "audio_draw.h"
 #include "app_camera.h"
+#include "work_manager.h"
 
 namespace cieq
 {
@@ -50,6 +51,8 @@ private:
 private:
 	//! the event processor class instance
 	AppEvent		mEventProcessor;
+	//! the work manager that accepts background works from main thread
+	work::Manager	mWorkManager;
 	//! the globals class instance, used to store common data
 	AppGlobals		mGlobals;
 	//! camera rig class instance
