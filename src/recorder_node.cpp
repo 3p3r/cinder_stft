@@ -36,7 +36,7 @@ ci::audio::BufferDynamic& RecorderNode::getBufferRaw()
 
 void RecorderNode::getBufferChunk(size_t start, size_t len, ci::audio::Buffer& other)
 {
-	getBufferRaw().copyOffset(other, len, start, 0);
+	other.copyOffset(getBufferRaw(), len, 0, start);
 }
 
 void RecorderNode::getBufferChunk(size_t start, ci::audio::Buffer& other)
