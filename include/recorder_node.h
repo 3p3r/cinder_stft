@@ -24,8 +24,8 @@ public:
 		size_t		getHopSize() const			{ return mHopSize; }
 
 	protected:
-		size_t		mWindowSize{ 0 };
-		size_t		mHopSize{ 0 };
+		size_t		mWindowSize{ 1024 };
+		size_t		mHopSize{ 256 };
 	};
 
 	RecorderNode(const Format &format = Format());
@@ -35,14 +35,18 @@ public:
 	RecorderNode(float numSeconds, const Format &format = Format());
 
 	ci::audio::BufferDynamic&		getBufferRaw();
-	void							getBufferChunk(size_t start, size_t end, ci::audio::Buffer& other);
-	void							getBufferWindow(size_t start, ci::audio::Buffer& other);
+	size_t							getWindowSize() const;
+	size_t							getHopSize() const;
+	void							getBufferChunk(size_t start, size_t len, ci::audio::Buffer& other);
+	void							getBufferChunk(size_t start, ci::audio::Buffer& other);
 	bool							popBufferWindow(ci::audio::Buffer& other);
+	bool							canQuery() const;
 
 protected:
 	size_t	mWindowSize;
 	size_t	mHopSize;
 	size_t	mLastQueried;
+	bool	mCanQuery;
 
 private:
 	using inherited = ci::audio::BufferRecorderNode;

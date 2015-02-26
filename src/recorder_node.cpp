@@ -10,6 +10,7 @@ RecorderNode::RecorderNode(const Format &format /*= Format()*/)
 	, mWindowSize(format.getWindowSize())
 	, mHopSize(format.getHopSize())
 	, mLastQueried(0)
+	, mCanQuery(true)
 {}
 
 RecorderNode::RecorderNode(size_t numFrames, const Format &format /*= Format()*/)
@@ -17,6 +18,7 @@ RecorderNode::RecorderNode(size_t numFrames, const Format &format /*= Format()*/
 	, mWindowSize(format.getWindowSize())
 	, mHopSize(format.getHopSize())
 	, mLastQueried(0)
+	, mCanQuery(true)
 {}
 
 RecorderNode::RecorderNode(float numSeconds, const Format &format /*= Format()*/)
@@ -24,35 +26,62 @@ RecorderNode::RecorderNode(float numSeconds, const Format &format /*= Format()*/
 	, mWindowSize(format.getWindowSize())
 	, mHopSize(format.getHopSize())
 	, mLastQueried(0)
+	, mCanQuery(true)
 {}
-
-void RecorderNode::getBufferChunk(size_t start, size_t end, ci::audio::Buffer& other)
-{
-	getBufferRaw().copyOffset(other, mWindowSize, start, end);
-}
 
 ci::audio::BufferDynamic& RecorderNode::getBufferRaw()
 {
 	return mRecorderBuffer;
 }
 
-void RecorderNode::getBufferWindow(size_t start, ci::audio::Buffer& other)
+void RecorderNode::getBufferChunk(size_t start, size_t len, ci::audio::Buffer& other)
 {
-	getBufferChunk(start, start + mWindowSize, other);
+	getBufferRaw().copyOffset(other, len, start, 0);
+}
+
+void RecorderNode::getBufferChunk(size_t start, ci::audio::Buffer& other)
+{
+	getBufferChunk(start, mWindowSize, other);
 }
 
 bool RecorderNode::popBufferWindow(ci::audio::Buffer& other)
 {
-	if (mLastQueried + mWindowSize >= getWritePosition())
+	if (!canQuery()) return false;
+
+	if (mLastQueried + mWindowSize <= getWritePosition())
 	{
-		getBufferWindow(mLastQueried, other);
+		getBufferChunk(mLastQueried, other);
 		mLastQueried += mHopSize;
+		return true;
+	}
+	// This is the critical situation that can happen at the end of samples
+	// where there's not enough number of samples for the last buffer.
+	else if (getNumFrames() - mLastQueried < mWindowSize)
+	{
+		getBufferChunk(mLastQueried, getNumFrames() - mLastQueried, other);
+		mLastQueried = getNumFrames();
+		mCanQuery = false;
 		return true;
 	}
 	else
 	{
 		return false;
 	}
+}
+
+size_t RecorderNode::getWindowSize() const
+{
+	return mWindowSize;
+}
+
+size_t RecorderNode::getHopSize() const
+{
+	return mHopSize;
+}
+
+bool RecorderNode::canQuery() const
+{
+	return mCanQuery;
 }
 
 }} //!cieq::node
