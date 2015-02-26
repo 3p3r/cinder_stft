@@ -34,12 +34,19 @@ public:
 	//! Constructs a RecorderNode and initializes its buffer to be large enough to hold \a numSeconds frames.
 	RecorderNode(float numSeconds, const Format &format = Format());
 
+	//! answers the raw internal recording buffer. Not thread safe.
 	ci::audio::BufferDynamic&		getBufferRaw();
+	//! answers the current window size set for returned sample via pop operation
 	size_t							getWindowSize() const;
+	//! answers the current hop size set for returned sample via pop operation
 	size_t							getHopSize() const;
+	//! copies a chunk of the recording buffer inside another buffer. Not thread safe.
 	void							getBufferChunk(size_t start, size_t len, ci::audio::Buffer& other);
+	//! copies a chunk (window size) of the recording buffer inside another buffer. Not thread safe.
 	void							getBufferChunk(size_t start, ci::audio::Buffer& other);
+	//! pops a window size chunk and moves the internal pointer, hop size to the forward. Not thread safe.
 	bool							popBufferWindow(ci::audio::Buffer& other);
+	//! answers if there's more pop operations left to do.
 	bool							canQuery() const;
 
 protected:
