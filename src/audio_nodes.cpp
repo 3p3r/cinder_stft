@@ -1,10 +1,10 @@
 #include "audio_nodes.h"
 #include "app_globals.h"
 #include "app_event.h"
+#include "recorder_node.h"
 
 #include <cinder/audio/Context.h>
 #include <cinder/audio/MonitorNode.h>
-#include <cinder/audio/SampleRecorderNode.h>
 #include <cinder/app/App.h>
 
 namespace cieq
@@ -56,8 +56,8 @@ void AudioNodes::setup(bool auto_enable /*= true*/)
 
 	auto num_seconds = 20 * 60;
 	auto sample_rate = mInputDeviceNode->getSampleRate();
-	auto recorderFormat = ci::audio::BufferRecorderNode::Format();
-	mBufferRecorderNode = mGlobals.getAudioContext().makeNode(new ci::audio::BufferRecorderNode(num_seconds * sample_rate));
+	auto recorderFormat = cieq::audio::RecorderNode::Format();
+	mBufferRecorderNode = mGlobals.getAudioContext().makeNode(new cieq::audio::RecorderNode(num_seconds * sample_rate));
 
 	mInputDeviceNode >> mMonitorNode;
 	mInputDeviceNode >> mBufferRecorderNode;
@@ -113,7 +113,7 @@ cinder::audio::MonitorSpectralNode* const AudioNodes::getMonitorSpectralNode()
 	return mMonitorSpectralNode.get();
 }
 
-cinder::audio::BufferRecorderNode* const AudioNodes::getBufferRecorderNode()
+cieq::audio::RecorderNode* const AudioNodes::getBufferRecorderNode()
 {
 	return mBufferRecorderNode.get();
 }

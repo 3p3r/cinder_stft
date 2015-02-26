@@ -8,11 +8,13 @@ namespace cinder {
 namespace audio {
 class InputDeviceNode;
 class MonitorNode;
-class BufferRecorderNode;
 class MonitorSpectralNode;
 }} //!ci::audio
 
 namespace cieq {
+namespace audio {
+class RecorderNode;
+} //!cieq::audio
 class AppGlobals;
 
 /*!
@@ -50,13 +52,13 @@ public:
 	// \brief returns a pointer to the node which is performing FFT on data
 	cinder::audio::MonitorSpectralNode* const			getMonitorSpectralNode();
 	// \brief returns a pointer to the node which is recording audio
-	cinder::audio::BufferRecorderNode* const			getBufferRecorderNode();
+	cieq::audio::RecorderNode* const					getBufferRecorderNode();
 
 private:
 	std::shared_ptr<cinder::audio::InputDeviceNode>		mInputDeviceNode;
 	std::shared_ptr<cinder::audio::MonitorNode>			mMonitorNode;
 	std::shared_ptr<cinder::audio::MonitorSpectralNode>	mMonitorSpectralNode;
-	std::shared_ptr<cinder::audio::BufferRecorderNode>	mBufferRecorderNode;
+	std::shared_ptr<cieq::audio::RecorderNode>			mBufferRecorderNode;
 
 private:
 	AppGlobals&											mGlobals;

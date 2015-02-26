@@ -1,9 +1,9 @@
 #include "audio_draw.h"
 #include "audio_nodes.h"
+#include "recorder_node.h"
 
 #include <cinder/audio/Utilities.h>
 #include <cinder/audio/MonitorNode.h>
-#include <cinder/audio/SampleRecorderNode.h>
 #include <cinder/Font.h>
 #include <cinder/gl/gl.h>
 #include <cinder/gl/TextureFont.h>
