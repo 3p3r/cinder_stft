@@ -280,7 +280,7 @@ void ContiguousWaveformPlot::drawLocal()
 	const float waveHeight = mBounds.getHeight() / (float)points->getNumChannels();
 	const float xScale = 1.0f;
 
-	float yOffset = mBounds.y1;
+	float yOffset = mBounds.y1 + 0.25f * mBounds.getHeight();
 	for (std::size_t ch = 0; ch < points->getNumChannels(); ch++)
 	{
 		const float *channel = points->getChannel(ch);
@@ -289,18 +289,29 @@ void ContiguousWaveformPlot::drawLocal()
 			if (mGraphs[ch].size() <= i / mSampleToSkip)
 			{
 				float x = mBounds.x1 + mGraphs[ch].getPoints().size();
-				float y = (1 - (channel[i] * 0.5f + 0.5f));
+				
+				float y_min = 0.0f;
+				float y_max = 0.0f;
 				
 				for (std::size_t j = i; i > mSampleToSkip && j > i - mSampleToSkip; --j)
 				{
-					y = (y + (1 - (channel[j] * 0.5f + 0.5f))) / 2.0f;
+					const auto current_y = channel[j] * 0.5f;
+					y_min = ci::math<float>::min(y_min, current_y);
+					y_max = ci::math<float>::max(y_max, current_y);
 				}
 
-				y *= waveHeight;
-				if (ci::math<float>::abs(y) > waveHeight) y = 0; //fix me
-				y += yOffset;
+				y_min *= waveHeight;
+				y_max *= waveHeight;
+
+				// handle abnormal noise
+				if (ci::math<float>::abs(y_max) > waveHeight) y_max = 0;
+				if (ci::math<float>::abs(y_min) > waveHeight) y_min = 0;
+
+				y_min += yOffset;
+				y_max += yOffset;
 				
-				mGraphs[ch].push_back(ci::Vec2f(x, y));
+				mGraphs[ch].push_back(ci::Vec2f(x - 0.01f, y_min));
+				mGraphs[ch].push_back(ci::Vec2f(x + 0.01f, y_max));
 			}
 		}
 
