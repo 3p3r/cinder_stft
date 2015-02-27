@@ -50,6 +50,11 @@ static ClientRef make_client(Manager& manager, Args... args)
 	return std::shared_ptr<T>(new T(manager, args...));
 }
 
+/* C++11's thread_local define */
+#ifndef thread_local
+#define thread_local __declspec(thread)
+#endif // !thread_local
+
 }}
 
 #endif //!CIEQ_INCLUDE_WORK_CLIENT_H_
