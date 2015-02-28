@@ -3,12 +3,6 @@
 
 #include "work_client.h"
 
-#include <unordered_map>
-#include <thread>
-
-#include <cinder/audio/dsp/Fft.h>
-#include <cinder/audio/Buffer.h>
-
 namespace cieq {
 namespace stft {
 
@@ -26,21 +20,24 @@ public:
 	public:
 		Format&			windowSize(std::size_t size);
 		Format&			fftSize(std::size_t size);
+		Format&			channels(std::size_t size);
 
 		std::size_t		getWindowSize() const;
 		std::size_t		getFftSize() const;
+		std::size_t		getChannelSize() const;
 
 	private:
 		std::size_t		mWindowSize;
 		std::size_t		mFftSize;
+		std::size_t		mChannels;
 	};
 
 public:
-	Client(work::Manager& m, Format fmt = Format());
-	void							handle(work::RequestRef) override;
+	Client(work::Manager&, Format fmt = Format());
+	void			handle(work::RequestRef) override;
 
 private:
-	Format							mFormat;
+	Format			mFormat;
 };
 
 }} // !namespace cieq::stft
