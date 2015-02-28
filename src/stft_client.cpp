@@ -3,6 +3,7 @@
 #include "audio_nodes.h"
 #include "recorder_node.h"
 #include "stft_request.h"
+#include "stft_client_storage.h"
 
 #include <cinder/audio/dsp/Fft.h>
 #include <cinder/audio/Buffer.h>
@@ -23,9 +24,7 @@ namespace {
  */
 thread_local static struct ClientResources
 {
-	ci::audio::dsp::Fft*		mFftProcessor;
-	ci::audio::AlignedArrayPtr*	mWindowingTable;
-	ci::audio::Buffer*			mAudioBuffer;
+	ClientStorage*				mPrivateStorage;
 } _resources;
 
 static class ClientResourcesAllocator
@@ -35,34 +34,16 @@ public:
 					ClientResources& local_rsc)
 	{
 		std::lock_guard<std::mutex> _lock(mResourceLock);
-		
-		mPrivateMemory.push_back(std::make_tuple(
-			std::make_unique<ci::audio::dsp::Fft>(fmt.getFftSize()),
-			ci::audio::makeAlignedArray<float>(fmt.getWindowSize()),
-			std::make_shared<ci::audio::Buffer>(fmt.getWindowSize(), fmt.getChannelSize())));
-
-		setup(fmt);
-
-		local_rsc.mFftProcessor		= std::get<0>(mPrivateMemory.back()).get();
-		local_rsc.mWindowingTable	= &std::get<1>(mPrivateMemory.back());
-		local_rsc.mAudioBuffer		= std::get<2>(mPrivateMemory.back()).get();
-	}
-
-	void setup(const Client::Format& fmt)
-	{
-		// each thread gets its own copy of Window Table
-		ci::audio::dsp::generateWindow(fmt.getWindowType(), std::get<1>(mPrivateMemory.back()).get(), fmt.getWindowSize());
+		mPrivateMemory.push_back(std::make_unique<ClientStorage>(fmt.getFftSize(), fmt.getWindowSize(), fmt.getWindowType()));
+		local_rsc.mPrivateStorage = mPrivateMemory.back().get();
 	}
 
 private:
 	std::mutex	mResourceLock;
 	/* mind: blown. */
-	std::vector < std::tuple <
-		std::unique_ptr< ci::audio::dsp::Fft >,
-		ci::audio::AlignedArrayPtr,
-		ci::audio::BufferRef > >
-
+	std::vector < std::unique_ptr < ClientStorage > >
 				mPrivateMemory;
+
 } _resources_allocator;
 
 } //!namespace
