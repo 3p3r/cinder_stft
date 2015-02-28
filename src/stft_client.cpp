@@ -31,21 +31,27 @@ thread_local static struct ClientResources
 static class ClientResourcesAllocator
 {
 public:
-	void allocate(	std::size_t fft_size,
-					std::size_t window_size,
-					std::size_t channel_size,
+	void allocate(	const Client::Format& fmt,
 					ClientResources& local_rsc)
 	{
 		std::lock_guard<std::mutex> _lock(mResourceLock);
 		
 		mPrivateMemory.push_back(std::make_tuple(
-			std::make_unique<ci::audio::dsp::Fft>(fft_size),
-			ci::audio::makeAlignedArray<float>(window_size),
-			std::make_shared<ci::audio::Buffer>(window_size, channel_size)));
+			std::make_unique<ci::audio::dsp::Fft>(fmt.getFftSize()),
+			ci::audio::makeAlignedArray<float>(fmt.getWindowSize()),
+			std::make_shared<ci::audio::Buffer>(fmt.getWindowSize(), fmt.getChannelSize())));
+
+		setup(fmt);
 
 		local_rsc.mFftProcessor		= std::get<0>(mPrivateMemory.back()).get();
 		local_rsc.mWindowingTable	= &std::get<1>(mPrivateMemory.back());
 		local_rsc.mAudioBuffer		= std::get<2>(mPrivateMemory.back()).get();
+	}
+
+	void setup(const Client::Format& fmt)
+	{
+		// each thread gets its own copy of Window Table
+		ci::audio::dsp::generateWindow(fmt.getWindowType(), std::get<1>(mPrivateMemory.back()).get(), fmt.getWindowSize());
 	}
 
 private:
@@ -73,11 +79,7 @@ void Client::handle(work::RequestRef req)
 	if (!_ready)
 	{
 		// pass thread's local storage to the allocator function
-		_resources_allocator.allocate(
-			mFormat.getFftSize(),
-			mFormat.getWindowSize(),
-			mFormat.getChannelSize(),
-			_resources);
+		_resources_allocator.allocate( mFormat, _resources );
 		_ready = true;
 	}
 

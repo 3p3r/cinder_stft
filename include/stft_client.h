@@ -3,6 +3,8 @@
 
 #include "work_client.h"
 
+#include <cinder/audio/dsp/Dsp.h>
+
 namespace cieq {
 namespace stft {
 
