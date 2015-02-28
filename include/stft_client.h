@@ -21,15 +21,20 @@ public:
 		Format&			windowSize(std::size_t size);
 		Format&			fftSize(std::size_t size);
 		Format&			channels(std::size_t size);
+		Format&			windowType(ci::audio::dsp::WindowType type);
 
 		std::size_t		getWindowSize() const;
 		std::size_t		getFftSize() const;
 		std::size_t		getChannelSize() const;
+		ci::audio::dsp::WindowType
+						getWindowType() const;
 
 	private:
 		std::size_t		mWindowSize;
 		std::size_t		mFftSize;
 		std::size_t		mChannels;
+		ci::audio::dsp::WindowType
+						mWindowType;
 	};
 
 public:

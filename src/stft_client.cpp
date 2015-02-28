@@ -115,5 +115,15 @@ std::size_t Client::Format::getChannelSize() const
 	return mChannels;
 }
 
+Client::Format& Client::Format::windowType(ci::audio::dsp::WindowType type)
+{
+	mWindowType = type; return *this;
+}
+
+ci::audio::dsp::WindowType Client::Format::getWindowType() const
+{
+	return mWindowType;
+}
+
 }
 } //!cieq::stft
