@@ -5,10 +5,11 @@
 namespace cieq {
 namespace stft {
 
-ClientStorage::ClientStorage(std::size_t fft_size, std::size_t window_size, ci::audio::dsp::WindowType win_type)
-	: mFftSize(fft_size)
-	, mWindowType(win_type)
-	, mWindowSize(window_size)
+ClientStorage::ClientStorage(const Client::Format& fmt)
+	: mFftSize(fmt.getFftSize())
+	, mWindowType(fmt.getWindowType())
+	, mWindowSize(fmt.getWindowSize())
+	, mChannelSize(fmt.getChannelSize())
 {
 	if (mFftSize < mWindowSize)
 		mFftSize = mWindowSize;
@@ -16,7 +17,7 @@ ClientStorage::ClientStorage(std::size_t fft_size, std::size_t window_size, ci::
 		mFftSize = ci::nextPowerOf2(static_cast<uint32_t>(mFftSize));
 
 	mFft = std::make_unique<ci::audio::dsp::Fft>(mFftSize);
-	mFftBuffer = ci::audio::Buffer(mFftSize);
+	mFftBuffer = ci::audio::Buffer(mFftSize, mChannelSize);
 	mBufferSpectral = ci::audio::BufferSpectral(mFftSize);
 	mMagSpectrum.resize(mFftSize / 2);
 
