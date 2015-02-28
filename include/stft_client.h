@@ -13,7 +13,14 @@ namespace stft {
  * \class Client
  * \namespace cieq::stft
  * \brief a Client that will fork requests for performing STFT.
- * \note owns one Fft class and one WindowTable per thread.
+ * \note The forked request contains a Query position obtained by
+ * the main thread. The Query position will be used by myself to
+ * consume data from the audio thread. The query position is
+ * guaranteed to have data inside it because it was obtained
+ * from the main thread.
+ * \note This is the meat of the processing. Everything happens
+ * here, from windowing to the actual FFT.
+ * \see ClientStorage
  */
 class Client : public work::Client
 {
