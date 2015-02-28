@@ -17,6 +17,7 @@ namespace cieq
 namespace work {
 class Manager;
 }; //!cieq::work
+class AudioNodes;
 class AppEvent;
 
 /*!
@@ -27,10 +28,11 @@ class AppEvent;
 class AppGlobals
 {
 public:
-	AppGlobals(AppEvent&, work::Manager&);
+	AppGlobals(AppEvent&, work::Manager&, AudioNodes&);
 
 	AppEvent&							getEventProcessor();
 	work::Manager&						getWorkManager();
+	AudioNodes&							getAudioNodes();
 	cinder::audio::Context&				getAudioContext();
 	void								setParamsPtr(cinder::params::InterfaceGl* const params);
 	cinder::params::InterfaceGl* const	getParamsPtr();
@@ -40,6 +42,7 @@ public:
 private:
 	AppEvent&							mEventProcessor;
 	work::Manager&						mWorkManager;
+	AudioNodes&							mAudioNodes;
 	cinder::params::InterfaceGl*		mParamsPtr;
 	bool								mDrawContiguous;
 };

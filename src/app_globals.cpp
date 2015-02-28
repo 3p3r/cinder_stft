@@ -6,9 +6,10 @@
 namespace cieq
 {
 
-AppGlobals::AppGlobals(AppEvent& event_processor, work::Manager& work_manager)
+AppGlobals::AppGlobals(AppEvent& event_processor, work::Manager& work_manager, AudioNodes& nodes)
 	: mEventProcessor(event_processor)
 	, mWorkManager(work_manager)
+	, mAudioNodes(nodes)
 	, mDrawContiguous(false)
 {
 	getEventProcessor().addKeyboardEvent([this](int k) {
@@ -59,6 +60,11 @@ bool AppGlobals::getDrawContiguous() const
 work::Manager& AppGlobals::getWorkManager()
 {
 	return mWorkManager;
+}
+
+AudioNodes& AppGlobals::getAudioNodes()
+{
+	return mAudioNodes;
 }
 
 } // !namespace cieq
