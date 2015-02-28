@@ -69,6 +69,54 @@ bool RecorderNode::popBufferWindow(ci::audio::Buffer& other)
 	}
 }
 
+bool RecorderNode::popBufferWindow(size_t& query_pos)
+{
+	if (!canQuery()) return false;
+
+	if (mLastQueried + mWindowSize <= getWritePosition())
+	{
+		query_pos = mLastQueried;
+		mLastQueried += mHopSize;
+		return true;
+	}
+	// This is the critical situation that can happen at the end of samples
+	// where there's not enough number of samples for the last buffer.
+	else if (getNumFrames() - mLastQueried < mWindowSize)
+	{
+		query_pos = mLastQueried;
+		mLastQueried = getNumFrames();
+		mCanQuery = false;
+		return true;
+	}
+	else
+	{
+		return false;
+	}
+}
+
+bool RecorderNode::popBufferWindow(ci::audio::Buffer& other, size_t query_pos)
+{
+	if (query_pos + mWindowSize <= getWritePosition())
+	{
+		getBufferChunk(query_pos, other);
+		query_pos += mHopSize;
+		return true;
+	}
+	// This is the critical situation that can happen at the end of samples
+	// where there's not enough number of samples for the last buffer.
+	else if (getNumFrames() - query_pos < mWindowSize)
+	{
+		getBufferChunk(query_pos, getNumFrames() - query_pos, other);
+		query_pos = getNumFrames();
+		mCanQuery = false;
+		return true;
+	}
+	else
+	{
+		return false;
+	}
+}
+
 size_t RecorderNode::getWindowSize() const
 {
 	return mWindowSize;
