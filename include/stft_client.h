@@ -6,6 +6,7 @@
 #include <cinder/audio/dsp/Dsp.h>
 
 namespace cieq {
+class AppGlobals;
 namespace stft {
 
 /*!
@@ -40,11 +41,12 @@ public:
 	};
 
 public:
-	Client(work::Manager&, Format fmt = Format());
+	Client(work::Manager&, AppGlobals* = nullptr, Format fmt = Format());
 	void			handle(work::RequestRef) override;
 
 private:
 	Format			mFormat;
+	AppGlobals*		mGlobals;
 };
 
 }} // !namespace cieq::stft

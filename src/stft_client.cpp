@@ -34,7 +34,7 @@ public:
 					ClientResources& local_rsc)
 	{
 		std::lock_guard<std::mutex> _lock(mResourceLock);
-		mPrivateMemory.push_back(std::make_unique<ClientStorage>(fmt.getFftSize(), fmt.getWindowSize(), fmt.getWindowType()));
+		mPrivateMemory.push_back(std::make_unique<ClientStorage>(fmt));
 		local_rsc.mPrivateStorage = mPrivateMemory.back().get();
 	}
 
@@ -48,9 +48,10 @@ private:
 
 } //!namespace
 
-Client::Client(work::Manager& m, Format fmt /*= Format()*/)
+Client::Client(work::Manager& m, AppGlobals* g /*= nullptr*/, Format fmt /*= Format()*/)
 	: work::Client(m)
 	, mFormat(fmt)
+	, mGlobals(g)
 {}
 
 void Client::handle(work::RequestRef req)
@@ -64,7 +65,13 @@ void Client::handle(work::RequestRef req)
 		_ready = true;
 	}
 
-	std::cout << "request for query pos: " << (static_cast<stft::Request*>(req.get())->getQueryPos()) << std::endl;
+	auto request_ptr = static_cast<stft::Request*>(req.get());
+	mGlobals
+		->getAudioNodes()
+		.getBufferRecorderNode()
+		->popBufferWindow(_resources.mPrivateStorage->mFftBuffer, request_ptr->getQueryPos());
+	
+
 }
 
 Client::Format& Client::Format::windowSize(std::size_t size)
