@@ -141,7 +141,7 @@ void InputAnalyzer::positionPlots()
 void InputAnalyzer::drawFps()
 {
 	std::stringstream buf;
-	buf << "FPS: " << ci::app::getFrameRate();
+	buf << "FPS: " << ci::app::App::getAverageFps();
 	ci::gl::drawStringRight(buf.str(), ci::Vec2i(ci::app::getWindowWidth() - 25, 10));
 }
 
