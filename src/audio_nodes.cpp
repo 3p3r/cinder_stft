@@ -72,6 +72,7 @@ void AudioNodes::setup(bool auto_enable /*= true*/)
 	mStftClient = work::make_client<stft::Client>(mGlobals.getWorkManager(), &mGlobals, fmt);
 
 	mThreadRenderer = std::make_unique<ThreadRenderer>(*this, 50, 2048 / 2, 350);
+	mGlobals.setThreadRenderer(mThreadRenderer.get());
 
 	mOriginalTitle = ci::app::getWindow()->getTitle();
 	ci::app::getWindow()->setTitle(mOriginalTitle + " (" + mInputDeviceNode->getDevice()->getName() + ")");
