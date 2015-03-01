@@ -12,7 +12,7 @@ public:
 	SmartSurface(int width, int height) : ci::SurfaceT<T>(width, height, false) {}
 	SmartSurface() = delete;
 
-	void			fillRow(int row, std::vector<T>&&);
+	void			fillRow(int row, const std::vector<T>&);
 	virtual void	processRow(int row, const std::vector<T>&) = 0;
 	bool			allRowsTouched() const { return mTouchedRows == getHeight(); }
 
@@ -21,10 +21,10 @@ private:
 };
 
 template<typename T>
-void SmartSurface<T>::fillRow(int row, std::vector<T>&& data)
+void SmartSurface<T>::fillRow(int row, const std::vector<T>& data)
 {
 	CI_ASSERT_MSG(row < getHeight(), "SmartSurface rows exceeded height.");
-	processRow(row, std::forward(data));
+	processRow(row, data);
 	mTouchedRows++;
 }
 
