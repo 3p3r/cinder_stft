@@ -2,6 +2,9 @@
 #include "app_globals.h"
 #include "app_event.h"
 #include "recorder_node.h"
+#include "stft_client.h"
+#include "stft_request.h"
+#include "smart_surface.h"
 
 #include <cinder/audio/Context.h>
 #include <cinder/audio/MonitorNode.h>
@@ -64,6 +67,12 @@ void AudioNodes::setup(bool auto_enable /*= true*/)
 
 	mBufferRecorderNode->start();
 
+	auto fmt = stft::Client::Format();
+	fmt.channels(mBufferRecorderNode->getNumChannels()).fftSize(2048).windowSize(1024);
+	mStftClient = work::make_client<stft::Client>(mGlobals.getWorkManager(), &mGlobals, fmt);
+
+	mThreadRenderer = std::make_unique<ThreadRenderer>(*this, 50, 2048 / 2, 350);
+
 	mOriginalTitle = ci::app::getWindow()->getTitle();
 	ci::app::getWindow()->setTitle(mOriginalTitle + " (" + mInputDeviceNode->getDevice()->getName() + ")");
 
@@ -86,6 +95,14 @@ void AudioNodes::setup(bool auto_enable /*= true*/)
 void AudioNodes::update()
 {
 	if (!ready()) return;
+
+	mThreadRenderer->update();
+
+	std::size_t query_pos = 0;
+	while (mBufferRecorderNode->popBufferWindow(query_pos))
+	{
+		mStftClient->request(work::make_request<stft::Request>(query_pos));
+	}
 
 	if (mBufferRecorderNode->getWritePosition() != mBufferRecorderNode->getNumFrames())
 	{

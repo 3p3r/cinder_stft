@@ -4,6 +4,9 @@
 #include <memory>
 #include <string>
 
+#include "work_manager.h"
+#include "thread_renderer.h"
+
 namespace cinder {
 namespace audio {
 class InputDeviceNode;
@@ -65,6 +68,8 @@ private:
 	bool												mIsEnabled;
 	bool												mIsReady;
 	std::string											mOriginalTitle;
+	work::ClientRef										mStftClient;
+	std::unique_ptr<ThreadRenderer>						mThreadRenderer;
 };
 
 } //!cieq
