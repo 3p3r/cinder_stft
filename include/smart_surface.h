@@ -14,10 +14,10 @@ public:
 
 	void			fillRow(int row, const std::vector<T>&);
 	virtual void	processRow(int row, const std::vector<T>&) = 0;
-	bool			allRowsTouched() const { return mTouchedRows == getHeight(); }
+	bool			allColsTouched() const { return mTouchedCols == getWidth(); }
 
 private:
-	int				mTouchedRows{ 0 };
+	int				mTouchedCols{ 0 };
 };
 
 template<typename T>
@@ -25,7 +25,7 @@ void SmartSurface<T>::fillRow(int row, const std::vector<T>& data)
 {
 	CI_ASSERT_MSG(row < getHeight(), "SmartSurface rows exceeded height.");
 	processRow(row, data);
-	mTouchedRows++;
+	mTouchedCols++;
 }
 
 typedef SmartSurface<float> SmartSurface32f;
