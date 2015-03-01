@@ -66,11 +66,11 @@ void Client::handle(work::RequestRef req)
 		_ready = true;
 	}
 
-	auto request_ptr = static_cast<stft::Request*>(req.get());
-	mGlobals
-		->getAudioNodes()
-		.getBufferRecorderNode()
-		->popBufferWindow(_resources.mPrivateStorage->mCopiedBuffer, request_ptr->getQueryPos());
+	auto request_ptr	= static_cast<stft::Request*>(req.get());
+	auto recorder_ptr	= mGlobals->getAudioNodes().getBufferRecorderNode();
+	auto renderer_ptr	= mGlobals->getThreadRenderer();
+
+	recorder_ptr->popBufferWindow(_resources.mPrivateStorage->mCopiedBuffer, request_ptr->getQueryPos());
 	
 	// window the copied buffer and compute forward FFT transform
 	if (_resources.mPrivateStorage->mChannelSize > 1) {
@@ -113,15 +113,11 @@ void Client::handle(work::RequestRef req)
 			magScale * (1 - _resources.mPrivateStorage->mSmoothingFactor);
 	}
 
-	/* what block of audio are we processing? */
-	const auto block_pos = request_ptr->getQueryPos() / (mGlobals->getAudioNodes().getBufferRecorderNode()->getWindowSize() + mGlobals->getAudioNodes().getBufferRecorderNode()->getHopSize());
-	
-	thread_local static int block_index = 0;
-	throw std::logic_error("Figure out the math to calculate index!");
+	const auto pos = request_ptr->getQueryPos();
+	const auto surface_index = renderer_ptr->getSurfaceIndexByPos(pos);
+	const auto index_in_surface = renderer_ptr->getSurfaceInIndexByPos(pos);
 
-	mGlobals->getThreadRenderer()
-		->getSurface(block_pos)
-		.fillRow(block_index, _resources.mPrivateStorage->mMagSpectrum);
+	renderer_ptr->getSurface(surface_index).fillRow(index_in_surface, _resources.mPrivateStorage->mMagSpectrum);
 }
 
 Client::Format& Client::Format::windowSize(std::size_t size)
