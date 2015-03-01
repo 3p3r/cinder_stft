@@ -10,6 +10,7 @@ ClientStorage::ClientStorage(const Client::Format& fmt)
 	, mWindowType(fmt.getWindowType())
 	, mWindowSize(fmt.getWindowSize())
 	, mChannelSize(fmt.getChannelSize())
+	, mSmoothingFactor(0.5f)
 {
 	if (mFftSize < mWindowSize)
 		mFftSize = mWindowSize;
@@ -18,6 +19,7 @@ ClientStorage::ClientStorage(const Client::Format& fmt)
 
 	mFft = std::make_unique<ci::audio::dsp::Fft>(mFftSize);
 	mFftBuffer = ci::audio::Buffer(mFftSize, mChannelSize);
+	mCopiedBuffer = ci::audio::Buffer(mFftSize, mChannelSize);
 	mBufferSpectral = ci::audio::BufferSpectral(mFftSize);
 	mMagSpectrum.resize(mFftSize / 2);
 

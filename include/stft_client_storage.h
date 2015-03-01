@@ -15,6 +15,7 @@ struct ClientStorage
 	ClientStorage(const Client::Format& fmt);
 
 	std::unique_ptr<ci::audio::dsp::Fft>	mFft;
+	ci::audio::Buffer						mCopiedBuffer;		// not windowed samples before transform
 	ci::audio::Buffer						mFftBuffer;			// windowed samples before transform
 	ci::audio::BufferSpectral				mBufferSpectral;	// transformed samples
 	std::vector<float>						mMagSpectrum;		// computed magnitude spectrum from frequency-domain samples
