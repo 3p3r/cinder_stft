@@ -4,56 +4,27 @@
 
 namespace cieq {
 
-ThreadRenderer::ThreadRenderer(AudioNodes& nodes, int frames_per_unit, int fft_size, int viewable_frames)
+ThreadRenderer::ThreadRenderer(AudioNodes& nodes, std::size_t frames_per_surface, std::size_t fft_size, std::size_t viewable_frames)
 	: mViewableFrames(viewable_frames)
+	, mFramesPerSurface(frames_per_surface)
+	, mFftSize(fft_size)
 {
-	// num_blocks * (hopSize + windowSize) >= numFrames:
-	int num_processings = (nodes.getBufferRecorderNode()->getNumFrames() / (nodes.getBufferRecorderNode()->getWindowSize() + nodes.getBufferRecorderNode()->getHopSize()));
-	int num_blocks = num_processings / frames_per_unit + 1;
-	for (auto index = 0; index < num_blocks; ++index)
-	{
-		mSurfacePool.push_back(std::make_unique<SpectralSurface>(frames_per_unit, fft_size));
-		mTexturePool.push_back(ci::gl::Texture::create(*mSurfacePool.back()));
-	}
-
-	mFramebuffer = ci::gl::Fbo(viewable_frames, fft_size);
+	mFramebuffer = ci::gl::Fbo(mViewableFrames, mFftSize);
 }
 
 void ThreadRenderer::update()
 {
-	auto index = 0;
-	for (SpectralSurfaceRef& surface : mSurfacePool)
-	{
-		if (*surface && surface->allRowsTouched())
-		{
-			mTexturePool[index]->update(*surface);
-			surface->reset();
-		}
-		++index;
-	}
+	// change surfaces to textures here
 }
 
 void ThreadRenderer::draw()
 {
-	auto index = 0;
-
 	ci::gl::SaveFramebufferBinding _bindings;
 	
 	//! draw everything to a frame buffer
 	mFramebuffer.bindFramebuffer();
 
-	for (SpectralSurfaceRef& surface : mSurfacePool)
-	{
-		if (*surface)
-		{
-			//draw surface here.
-		}
-		else
-		{
-			//draw mTexturePool[index] here.
-		}
-		++index;
-	}
+	// draw here
 
 	mFramebuffer.unbindFramebuffer();
 }
@@ -66,6 +37,21 @@ SpectralSurface& ThreadRenderer::getSurface(int index)
 ci::gl::Texture& ThreadRenderer::getTexture(int index)
 {
 	return *mTexturePool[index].get();
+}
+
+std::size_t ThreadRenderer::getViewableFrames() const
+{
+	return mViewableFrames;
+}
+
+std::size_t ThreadRenderer::getFramesPerSurface() const
+{
+	return mFramesPerSurface;
+}
+
+std::size_t ThreadRenderer::getFftSize() const
+{
+	return mFftSize;
 }
 
 } //!cieq
