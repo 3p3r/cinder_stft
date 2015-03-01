@@ -2,6 +2,7 @@
 #define CIEQ_INCLUDE_THREAD_RENDERER_H_
 
 #include <vector>
+#include <mutex>
 
 #include "smart_surface.h"
 
@@ -22,14 +23,19 @@ public:
 	std::size_t							getViewableFrames() const;
 	std::size_t							getFramesPerSurface() const;
 	std::size_t							getFftSize() const;
+	std::size_t							getSurfaceIndexByPos(std::size_t pos) const;
+	std::size_t							getSurfaceInIndexByPos(std::size_t pos) const;
 
 private:
 	std::vector<SpectralSurfaceRef>		mSurfacePool;
 	std::vector<ci::gl::TextureRef>		mTexturePool;
+	std::mutex							mSurfaceLock;
 	ci::gl::Fbo							mFramebuffer;
 	std::size_t							mViewableFrames;
 	std::size_t							mFramesPerSurface;
 	std::size_t							mFftSize;
+	std::size_t							mNumSurfaces;
+	AudioNodes&							mAudioNodes;
 };
 
 } // !namespace cieq

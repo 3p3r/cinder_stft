@@ -8,13 +8,30 @@ ThreadRenderer::ThreadRenderer(AudioNodes& nodes, std::size_t frames_per_surface
 	: mViewableFrames(viewable_frames)
 	, mFramesPerSurface(frames_per_surface)
 	, mFftSize(fft_size)
+	, mAudioNodes(nodes)
 {
+	mNumSurfaces = mAudioNodes.getBufferRecorderNode()->getMaxPossiblePops() / mFramesPerSurface;
+	if (mAudioNodes.getBufferRecorderNode()->getMaxPossiblePops() % mFramesPerSurface != 0)
+		mNumSurfaces += 1;
+
+	mSurfacePool.resize(mNumSurfaces);
+	mTexturePool.resize(mNumSurfaces);
+
 	mFramebuffer = ci::gl::Fbo(mViewableFrames, mFftSize);
 }
 
 void ThreadRenderer::update()
 {
-	// change surfaces to textures here
+	int index = 0;
+	for (SpectralSurfaceRef& surface : mSurfacePool)
+	{
+		if (surface && surface->allColsTouched())
+		{
+			mTexturePool[index] = ci::gl::Texture::create(*surface);
+			surface.reset(); //clear surface
+		}
+		index++;
+	}
 }
 
 void ThreadRenderer::draw()
@@ -31,6 +48,14 @@ void ThreadRenderer::draw()
 
 SpectralSurface& ThreadRenderer::getSurface(int index)
 {
+	if (!mSurfacePool[index])
+	{
+		std::lock_guard<std::mutex> _lock(mSurfaceLock);
+		if (!mSurfacePool[index]) //double check
+		{
+			mSurfacePool[index] = std::make_unique<SpectralSurface>(getFramesPerSurface(), getFftSize());
+		}
+	}
 	return *(mSurfacePool[index]);
 }
 
@@ -52,6 +77,18 @@ std::size_t ThreadRenderer::getFramesPerSurface() const
 std::size_t ThreadRenderer::getFftSize() const
 {
 	return mFftSize;
+}
+
+std::size_t ThreadRenderer::getSurfaceIndexByPos(std::size_t pos) const
+{
+	const auto pop_index = mAudioNodes.getBufferRecorderNode()->getQueryIndexByPos(pos);
+	return pop_index / getFramesPerSurface();
+}
+
+std::size_t ThreadRenderer::getSurfaceInIndexByPos(std::size_t pos) const
+{
+	const auto pop_index = mAudioNodes.getBufferRecorderNode()->getQueryIndexByPos(pos);
+	return pop_index % getFramesPerSurface();
 }
 
 } //!cieq
