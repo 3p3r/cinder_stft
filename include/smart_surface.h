@@ -14,7 +14,7 @@ public:
 
 	void			fillRow(int row, std::vector<T>&&);
 	virtual void	processRow(int row, const std::vector<T>&) = 0;
-	bool			allRowsTouched() const { return mTouchedRows = getHeight(); }
+	bool			allRowsTouched() const { return mTouchedRows == getHeight(); }
 
 private:
 	int				mTouchedRows{ 0 };
@@ -36,6 +36,8 @@ public:
 	SpectralSurface(int width, int height);
 	void processRow(int row, const std::vector<float>&) override final;
 };
+
+typedef std::unique_ptr<SpectralSurface> SpectralSurfaceRef;
 
 } // !namespace cieq
 
