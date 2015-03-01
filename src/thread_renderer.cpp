@@ -7,9 +7,9 @@ namespace cieq {
 ThreadRenderer::ThreadRenderer(AudioNodes& nodes, int frames_per_unit, int fft_size, int viewable_frames)
 	: mViewableFrames(viewable_frames)
 {
-	int num_blocks = (nodes.getBufferRecorderNode()->getNumFrames() / frames_per_unit) + 1;
-	mSurfacePool.resize(num_blocks);
-	mTexturePool.resize(num_blocks);
+	// num_blocks * (hopSize + windowSize) >= numFrames:
+	int num_processings = (nodes.getBufferRecorderNode()->getNumFrames() / (nodes.getBufferRecorderNode()->getWindowSize() + nodes.getBufferRecorderNode()->getHopSize()));
+	int num_blocks = num_processings / frames_per_unit + 1;
 	for (auto index = 0; index < num_blocks; ++index)
 	{
 		mSurfacePool.push_back(std::make_unique<SpectralSurface>(frames_per_unit, fft_size));
