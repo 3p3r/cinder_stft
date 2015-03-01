@@ -13,7 +13,7 @@ class InterfaceGl;
 
 namespace cieq
 {
-
+class ThreadRenderer;
 namespace work {
 class Manager;
 }; //!cieq::work
@@ -36,6 +36,8 @@ public:
 	cinder::audio::Context&				getAudioContext();
 	void								setParamsPtr(cinder::params::InterfaceGl* const params);
 	cinder::params::InterfaceGl* const	getParamsPtr();
+	void								setThreadRenderer(ThreadRenderer* const);
+	ThreadRenderer* const				getThreadRenderer();
 	void								setDrawContiguous(bool on);
 	bool								getDrawContiguous() const;
 
@@ -43,6 +45,7 @@ private:
 	AppEvent&							mEventProcessor;
 	work::Manager&						mWorkManager;
 	AudioNodes&							mAudioNodes;
+	ThreadRenderer*						mThreadRenderer;
 	cinder::params::InterfaceGl*		mParamsPtr;
 	bool								mDrawContiguous;
 };

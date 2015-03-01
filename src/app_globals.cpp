@@ -67,4 +67,14 @@ AudioNodes& AppGlobals::getAudioNodes()
 	return mAudioNodes;
 }
 
+void AppGlobals::setThreadRenderer(ThreadRenderer* const ptr)
+{
+	mThreadRenderer = ptr;
+}
+
+ThreadRenderer* const AppGlobals::getThreadRenderer()
+{
+	return mThreadRenderer;
+}
+
 } // !namespace cieq
