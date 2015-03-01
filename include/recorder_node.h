@@ -50,12 +50,17 @@ public:
 	bool							popBufferWindow(size_t& query_pos);
 	//! answers if there's more pop operations left to do.
 	bool							canQuery() const;
+	//! answers maximum possible number of processing operations
+	size_t							getMaxPossiblePops() const;
+	//! answers index of operation by write position
+	size_t							getQueryIndexByPos(size_t pos);
 
 protected:
 	size_t	mWindowSize;
 	size_t	mHopSize;
 	size_t	mLastQueried;
 	bool	mCanQuery;
+	size_t	mMaxPopsPossible;
 
 private:
 	using inherited = ci::audio::BufferRecorderNode;

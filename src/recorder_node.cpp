@@ -27,7 +27,11 @@ RecorderNode::RecorderNode(float numSeconds, const Format &format /*= Format()*/
 	, mHopSize(format.getHopSize())
 	, mLastQueried(0)
 	, mCanQuery(true)
-{}
+{
+	mMaxPopsPossible = (getNumFrames() - getWindowSize()) / getHopSize();
+	if ((getNumFrames() - getWindowSize()) % getHopSize() != 0)
+		mMaxPopsPossible += 1;
+}
 
 ci::audio::BufferDynamic& RecorderNode::getBufferRaw()
 {
@@ -130,6 +134,16 @@ size_t RecorderNode::getHopSize() const
 bool RecorderNode::canQuery() const
 {
 	return mCanQuery;
+}
+
+size_t RecorderNode::getMaxPossiblePops() const
+{
+	return mMaxPopsPossible;
+}
+
+size_t RecorderNode::getQueryIndexByPos(size_t pos)
+{
+	return pos / mHopSize;
 }
 
 }} //!cieq::node
