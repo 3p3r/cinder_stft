@@ -7,6 +7,7 @@
 
 #include <cinder/audio/dsp/Fft.h>
 #include <cinder/audio/Buffer.h>
+#include <cinder/CinderMath.h>
 
 #include <mutex>
 #include <thread>
@@ -69,9 +70,48 @@ void Client::handle(work::RequestRef req)
 	mGlobals
 		->getAudioNodes()
 		.getBufferRecorderNode()
-		->popBufferWindow(_resources.mPrivateStorage->mFftBuffer, request_ptr->getQueryPos());
+		->popBufferWindow(_resources.mPrivateStorage->mCopiedBuffer, request_ptr->getQueryPos());
 	
+	// window the copied buffer and compute forward FFT transform
+	if (_resources.mPrivateStorage->mChannelSize > 1) {
+		// naive average of all channels
+		_resources.mPrivateStorage->mFftBuffer.zero();
+		float scale = 1.0f / _resources.mPrivateStorage->mChannelSize;
+		for (size_t ch = 0; ch < _resources.mPrivateStorage->mChannelSize; ch++) {
+			for (size_t i = 0; i < _resources.mPrivateStorage->mWindowSize; i++)
+				_resources.mPrivateStorage->mFftBuffer[i] += _resources.mPrivateStorage->mCopiedBuffer.getChannel(ch)[i] * scale;
+		}
+		ci::audio::dsp::mul(	_resources.mPrivateStorage->mFftBuffer.getData(),
+								_resources.mPrivateStorage->mWindowingTable.get(),
+								_resources.mPrivateStorage->mFftBuffer.getData(),
+								_resources.mPrivateStorage->mWindowSize);
+	}
+	else
+		ci::audio::dsp::mul(	_resources.mPrivateStorage->mCopiedBuffer.getData(),
+								_resources.mPrivateStorage->mWindowingTable.get(),
+								_resources.mPrivateStorage->mFftBuffer.getData(),
+								_resources.mPrivateStorage->mWindowSize);
 
+	_resources.mPrivateStorage->mFft->forward(&_resources.mPrivateStorage->mFftBuffer, &_resources.mPrivateStorage->mBufferSpectral);
+
+	float *real = _resources.mPrivateStorage->mBufferSpectral.getReal();
+	float *imag = _resources.mPrivateStorage->mBufferSpectral.getImag();
+
+	// remove Nyquist component
+	imag[0] = 0.0f;
+
+	// compute normalized magnitude spectrum
+	// TODO: break this into vector Cartesian -> polar and then vector lowpass. skip lowpass if smoothing factor is very small
+	const float magScale = 1.0f / _resources.mPrivateStorage->mFft->getSize();
+	for (size_t i = 0; i < _resources.mPrivateStorage->mMagSpectrum.size(); i++) {
+		float re = real[i];
+		float im = imag[i];
+		_resources.mPrivateStorage->mMagSpectrum[i] =
+			_resources.mPrivateStorage->mMagSpectrum[i] *
+			_resources.mPrivateStorage->mSmoothingFactor +
+			ci::math<float>::sqrt(re * re + im * im) *
+			magScale * (1 - _resources.mPrivateStorage->mSmoothingFactor);
+	}
 }
 
 Client::Format& Client::Format::windowSize(std::size_t size)
