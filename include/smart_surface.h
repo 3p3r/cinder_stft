@@ -17,10 +17,10 @@ public:
 
 	void				fillRow(int row, const std::vector<T>&);
 	virtual void		processRow(int row, const std::vector<T>&) = 0;
-	bool				allColsTouched() const { return mTouchedCols == getWidth(); }
+	bool				allRowsTouched() const { return mTouchedRows == getWidth(); }
 
 private:
-	std::atomic<int>	mTouchedCols{ 0 };
+	std::atomic<int>	mTouchedRows{ 0 };
 	std::mutex			mWriteLock;
 };
 
@@ -30,7 +30,7 @@ void SmartSurface<T>::fillRow(int row, const std::vector<T>& data)
 	CI_ASSERT_MSG(row < getHeight(), "SmartSurface rows exceeded height.");
 	std::lock_guard<std::mutex> _lock(mWriteLock);
 	processRow(row, data);
-	mTouchedCols++;
+	mTouchedRows++;
 }
 
 typedef SmartSurface<float> SmartSurface32f;
