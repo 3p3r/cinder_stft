@@ -14,30 +14,23 @@ class AudioNodes;
 class ThreadRenderer
 {
 public:
-	ThreadRenderer(AudioNodes&, std::size_t frames_per_surface, std::size_t fft_size, std::size_t viewable_frames);
+	ThreadRenderer(AudioNodes&, std::size_t frames_per_surface, std::size_t fft_size);
 
 	void								update();
 	void								draw();
 	SpectralSurface&					getSurface(int index);
-	std::size_t							getViewableFrames() const;
 	std::size_t							getFramesPerSurface() const;
-	std::size_t							getFftSize() const;
 	std::size_t							getSurfaceIndexByPos(std::size_t pos) const;
 	std::size_t							getSurfaceInIndexByPos(std::size_t pos) const;
-	ci::gl::Fbo&						getFbo();
 
 private:
 	std::vector<SpectralSurfaceRef>		mSurfacePool;
 	std::vector<ci::gl::TextureRef>		mTexturePool;
 	std::mutex							mSurfaceLock;
-	ci::gl::Fbo							mFramebuffer;
-	std::size_t							mViewableFrames;
-	std::size_t							mViewableSurfaces;
 	std::size_t							mFramesPerSurface;
 	std::size_t							mFftSize;
 	std::size_t							mNumSurfaces;
 	AudioNodes&							mAudioNodes;
-	int									mLastActiveSurface;
 };
 
 } // !namespace cieq
