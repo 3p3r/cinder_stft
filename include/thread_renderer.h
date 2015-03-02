@@ -25,6 +25,7 @@ public:
 	std::size_t							getFftSize() const;
 	std::size_t							getSurfaceIndexByPos(std::size_t pos) const;
 	std::size_t							getSurfaceInIndexByPos(std::size_t pos) const;
+	ci::gl::Fbo&						getFbo();
 
 private:
 	std::vector<SpectralSurfaceRef>		mSurfacePool;

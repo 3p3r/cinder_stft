@@ -18,6 +18,13 @@ ThreadRenderer::ThreadRenderer(AudioNodes& nodes, std::size_t frames_per_surface
 	mTexturePool.resize(mNumSurfaces);
 
 	mFramebuffer = ci::gl::Fbo(mViewableFrames, mFftSize);
+
+	{
+		ci::gl::SaveFramebufferBinding _bindings;
+		mFramebuffer.bindFramebuffer();
+		ci::gl::clear(ci::Color::black());
+		mFramebuffer.unbindFramebuffer();
+	}
 }
 
 void ThreadRenderer::update()
@@ -25,7 +32,7 @@ void ThreadRenderer::update()
 	int index = 0;
 	for (SpectralSurfaceRef& surface : mSurfacePool)
 	{
-		if (surface && surface->allColsTouched())
+		if (surface && surface->allRowsTouched())
 		{
 			mTexturePool[index] = ci::gl::Texture::create(*surface);
 			surface.reset(); //clear surface
@@ -40,8 +47,28 @@ void ThreadRenderer::draw()
 	
 	//! draw everything to a frame buffer
 	mFramebuffer.bindFramebuffer();
+	
+	ci::gl::clear(ci::Color::black());
+	
+	int index = 0;
+	for (SpectralSurfaceRef& surface : mSurfacePool)
+	{
+		ci::Rectf draw_rect(0, index * mFramesPerSurface, mFftSize, (index + 1) * mFramesPerSurface);
+		if (draw_rect.getY1() > mViewableFrames)
+			break;
 
-	// draw here
+		if (mTexturePool[index])
+		{
+			// draw texture
+			ci::gl::draw(mTexturePool[index], draw_rect);
+		}
+		else if (surface)
+		{
+			// draw surface
+			ci::gl::draw(*surface, draw_rect);
+		}
+		index++;
+	}
 
 	mFramebuffer.unbindFramebuffer();
 }
@@ -53,7 +80,7 @@ SpectralSurface& ThreadRenderer::getSurface(int index)
 		std::lock_guard<std::mutex> _lock(mSurfaceLock);
 		if (!mSurfacePool[index]) //double check
 		{
-			mSurfacePool[index] = std::make_unique<SpectralSurface>(getFramesPerSurface(), getFftSize());
+			mSurfacePool[index] = std::make_unique<SpectralSurface>(getFftSize(), getFramesPerSurface());
 		}
 	}
 	return *(mSurfacePool[index]);
@@ -89,6 +116,11 @@ std::size_t ThreadRenderer::getSurfaceInIndexByPos(std::size_t pos) const
 {
 	const auto pop_index = mAudioNodes.getBufferRecorderNode()->getQueryIndexByPos(pos);
 	return pop_index % getFramesPerSurface();
+}
+
+ci::gl::Fbo& ThreadRenderer::getFbo()
+{
+	return mFramebuffer;
 }
 
 } //!cieq
