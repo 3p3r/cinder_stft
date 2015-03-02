@@ -1,6 +1,7 @@
 #ifndef CIEQ_INCLUDE_THREAD_RENDERER_H_
 #define CIEQ_INCLUDE_THREAD_RENDERER_H_
 
+#include <queue>
 #include <vector>
 #include <mutex>
 
@@ -20,13 +21,16 @@ public:
 	void								draw();
 	SpectralSurface&					getSurface(int index);
 	std::size_t							getFramesPerSurface() const;
-	std::size_t							getSurfaceIndexByPos(std::size_t pos) const;
-	std::size_t							getSurfaceInIndexByPos(std::size_t pos) const;
+	std::size_t							getCurrentViewableSurfaces() const;
+	std::size_t							getSurfaceIndexByQueryPos(std::size_t pos) const;
+	std::size_t							getIndexInSurfaceByQueryPos(std::size_t pos) const;
 
 private:
-	std::vector<SpectralSurfaceRef>		mSurfacePool;
-	std::vector<ci::gl::TextureRef>		mTexturePool;
-	std::mutex							mSurfaceLock;
+	using container_pair	= std::pair<SpectralSurfaceRef, ci::gl::TextureRef>;
+	using container			= std::vector < container_pair >;
+	container							mSurfaceTexturePool;
+	std::mutex							mPoolLock;
+	std::mutex							mRecycleLock;
 	std::size_t							mFramesPerSurface;
 	std::size_t							mFftSize;
 	std::size_t							mNumSurfaces;

@@ -53,7 +53,7 @@ public:
 	//! answers maximum possible number of processing operations
 	size_t							getMaxPossiblePops() const;
 	//! answers index of operation by write position
-	size_t							getQueryIndexByPos(size_t pos);
+	size_t getQueryIndexByQueryPos(size_t pos);
 
 protected:
 	size_t	mWindowSize;

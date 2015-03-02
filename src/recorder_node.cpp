@@ -141,7 +141,7 @@ size_t RecorderNode::getMaxPossiblePops() const
 	return mMaxPopsPossible;
 }
 
-size_t RecorderNode::getQueryIndexByPos(size_t pos)
+size_t RecorderNode::getQueryIndexByQueryPos(size_t pos)
 {
 	return pos / mHopSize;
 }

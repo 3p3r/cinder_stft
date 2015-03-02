@@ -17,7 +17,7 @@ public:
 
 	void				fillRow(int row, const std::vector<T>&);
 	virtual void		processRow(int row, const std::vector<T>&) = 0;
-	bool				allRowsTouched() const { return mTouchedRows == getWidth(); }
+	bool				allRowsTouched() const { return mTouchedRows == getHeight(); }
 
 private:
 	std::atomic<int>	mTouchedRows{ 0 };

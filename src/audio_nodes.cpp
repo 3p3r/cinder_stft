@@ -62,7 +62,7 @@ void AudioNodes::setup(bool auto_enable /*= true*/)
 	fmt.channels(mBufferRecorderNode->getNumChannels()).fftSize(2048).windowSize(1024);
 	mStftClient = work::make_client<stft::Client>(mGlobals.getWorkManager(), &mGlobals, fmt);
 
-	mThreadRenderer = std::make_unique<ThreadRenderer>(*this, 400, 2048 / 2);
+	mThreadRenderer = std::make_unique<ThreadRenderer>(*this, 50, 2048 / 2);
 	mGlobals.setThreadRenderer(mThreadRenderer.get());
 
 	mOriginalTitle = ci::app::getWindow()->getTitle();

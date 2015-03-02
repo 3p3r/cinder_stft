@@ -15,21 +15,18 @@ ThreadRenderer::ThreadRenderer(AudioNodes& nodes, std::size_t frames_per_surface
 	if (mAudioNodes.getBufferRecorderNode()->getMaxPossiblePops() % mFramesPerSurface != 0)
 		mNumSurfaces += 1;
 
-	mSurfacePool.resize(mNumSurfaces);
-	mTexturePool.resize(mNumSurfaces);
+	mSurfaceTexturePool.resize(mNumSurfaces);
 }
 
 void ThreadRenderer::update()
 {
-	int index = 0;
-	for (SpectralSurfaceRef& surface : mSurfacePool)
+	for (container_pair& pair : mSurfaceTexturePool)
 	{
-		if (surface && surface->allRowsTouched())
+		if (pair.first && pair.first->allRowsTouched())
 		{
-			mTexturePool[index] = ci::gl::Texture::create(*surface);
-			surface.reset(); //clear surface
+			pair.second = ci::gl::Texture::create(*pair.first);
+			pair.first.reset();
 		}
-		index++;
 	}
 }
 
@@ -37,24 +34,34 @@ void ThreadRenderer::draw()
 {
 	ci::gl::pushMatrices();
 	ci::gl::clear(ci::Color::black());
-	ci::gl::rotate(-90.0f); //rotate scene 90 degrees
-	ci::gl::translate(-ci::app::getWindowHeight(), 0.0f); //after rotation, moving x is like moving y
+	ci::gl::rotate(90.0f); //rotate scene 90 degrees
 
-	const int _viewable_surfaces = ci::app::getWindowWidth() / mFramesPerSurface;
+	auto _recorder_node = mAudioNodes.getBufferRecorderNode();
+	const int _viewable_surfaces = getCurrentViewableSurfaces();
+	int _current_write_pos = _recorder_node->getWritePosition();
+	if (!_recorder_node->canQuery()) _current_write_pos -= 1; //end of samples
+	const float _percentage_done = static_cast<float>(_current_write_pos) / _recorder_node->getNumFrames();
+	const float _percentage_full = static_cast<float>(_recorder_node->getNumFrames() - 1) / _recorder_node->getNumFrames();
+	const int _current_last_surface = static_cast<int>(_percentage_done * mNumSurfaces);
+	const float _static_offset = std::fmodf(_percentage_full * mNumSurfaces * mFramesPerSurface, mFramesPerSurface);
+	const float _current_index_in_surface = std::fmodf(_percentage_done * mNumSurfaces * mFramesPerSurface, mFramesPerSurface);
 
-	for (int index = 0; index < _viewable_surfaces + 1; ++index)
+	//ci::gl::translate(-ci::app::getWindowHeight(), _current_index_in_surface - mFramesPerSurface - _static_offset); //after rotation, moving x is like moving y
+	ci::gl::translate(0.0f, (_current_index_in_surface - mFramesPerSurface / 2 - _static_offset) - ci::app::getWindowWidth()); //after rotation, moving x is like moving y
+
+	for (int index = _current_last_surface, count = 0; count <= _viewable_surfaces && index >= 0; --index, ++count)
 	{
-		ci::Rectf draw_rect(0, index * mFramesPerSurface, mFftSize, (index + 1) * mFramesPerSurface);
+		ci::Rectf draw_rect(mFftSize, (count + 1) * mFramesPerSurface, 0, count * mFramesPerSurface);
 
-		if (mTexturePool[index])
+		if (mSurfaceTexturePool[index].second)
 		{
 			// draw texture
-			ci::gl::draw(mTexturePool[index], draw_rect);
+			ci::gl::draw(mSurfaceTexturePool[index].second, draw_rect);
 		}
-		else if (mSurfacePool[index])
+		else if (mSurfaceTexturePool[index].first)
 		{
 			// draw surface
-			ci::gl::draw(*mSurfacePool[index], draw_rect);
+			ci::gl::draw(*mSurfaceTexturePool[index].first, draw_rect);
 		}
 	}
 
@@ -63,15 +70,18 @@ void ThreadRenderer::draw()
 
 SpectralSurface& ThreadRenderer::getSurface(int index)
 {
-	if (!mSurfacePool[index])
+	// if surface does not exist
+	if (!mSurfaceTexturePool[index].first)
 	{
-		std::lock_guard<std::mutex> _lock(mSurfaceLock);
-		if (!mSurfacePool[index]) //double check
+		// lock and construct the surface
+		std::lock_guard<std::mutex> _lock(mPoolLock);
+		if (!mSurfaceTexturePool[index].first) //double check
 		{
-			mSurfacePool[index] = std::make_unique<SpectralSurface>(mFftSize, getFramesPerSurface());
+			mSurfaceTexturePool[index].first = std::make_unique<SpectralSurface>(mFftSize, getFramesPerSurface());
 		}
 	}
-	return *(mSurfacePool[index]);
+
+	return *(mSurfaceTexturePool[index].first);
 }
 
 std::size_t ThreadRenderer::getFramesPerSurface() const
@@ -79,16 +89,21 @@ std::size_t ThreadRenderer::getFramesPerSurface() const
 	return mFramesPerSurface;
 }
 
-std::size_t ThreadRenderer::getSurfaceIndexByPos(std::size_t pos) const
+std::size_t ThreadRenderer::getSurfaceIndexByQueryPos(std::size_t pos) const
 {
-	const auto pop_index = mAudioNodes.getBufferRecorderNode()->getQueryIndexByPos(pos);
+	const auto pop_index = mAudioNodes.getBufferRecorderNode()->getQueryIndexByQueryPos(pos);
 	return pop_index / getFramesPerSurface();
 }
 
-std::size_t ThreadRenderer::getSurfaceInIndexByPos(std::size_t pos) const
+std::size_t ThreadRenderer::getIndexInSurfaceByQueryPos(std::size_t pos) const
 {
-	const auto pop_index = mAudioNodes.getBufferRecorderNode()->getQueryIndexByPos(pos);
+	const auto pop_index = mAudioNodes.getBufferRecorderNode()->getQueryIndexByQueryPos(pos);
 	return pop_index % getFramesPerSurface();
+}
+
+std::size_t ThreadRenderer::getCurrentViewableSurfaces() const
+{
+	return (ci::app::getWindowWidth() / mFramesPerSurface) + ((ci::app::getWindowWidth() % mFramesPerSurface == 0) ? 0 : 1);
 }
 
 } //!cieq

@@ -114,8 +114,8 @@ void Client::handle(work::RequestRef req)
 	}
 
 	const auto pos = request_ptr->getQueryPos();
-	const auto surface_index = renderer_ptr->getSurfaceIndexByPos(pos);
-	const auto index_in_surface = renderer_ptr->getSurfaceInIndexByPos(pos);
+	const auto surface_index = renderer_ptr->getSurfaceIndexByQueryPos(pos);
+	const auto index_in_surface = renderer_ptr->getIndexInSurfaceByQueryPos(pos);
 
 	renderer_ptr->getSurface(surface_index).fillRow(index_in_surface, _resources.mPrivateStorage->mMagSpectrum);
 }
