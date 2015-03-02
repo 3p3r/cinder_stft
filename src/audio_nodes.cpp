@@ -7,7 +7,6 @@
 #include "smart_surface.h"
 
 #include <cinder/audio/Context.h>
-#include <cinder/audio/MonitorNode.h>
 #include <cinder/app/App.h>
 
 namespace cieq
@@ -50,20 +49,12 @@ void AudioNodes::setup(bool auto_enable /*= true*/)
 		ci::app::console() << "Unknown error occurred creating input node." << std::endl;
 		return;
 	}
-	
-	auto monitorFormat = ci::audio::MonitorNode::Format().windowSize(1024);
-	mMonitorNode = mGlobals.getAudioContext().makeNode(new ci::audio::MonitorNode(monitorFormat));
-	
-	auto monitorSpectralFormat = ci::audio::MonitorSpectralNode::Format().fftSize(2048).windowSize(1024);
-	mMonitorSpectralNode = mGlobals.getAudioContext().makeNode(new ci::audio::MonitorSpectralNode(monitorSpectralFormat));
 
 	const auto duration = 20.0f; //in seconds
 	auto recorderFormat = cieq::audio::RecorderNode::Format().hopSize(100);
 	mBufferRecorderNode = mGlobals.getAudioContext().makeNode(new cieq::audio::RecorderNode(duration, recorderFormat));
 
-	mInputDeviceNode >> mMonitorNode;
 	mInputDeviceNode >> mBufferRecorderNode;
-	mInputDeviceNode >> mMonitorSpectralNode;
 
 	mBufferRecorderNode->start();
 
@@ -71,7 +62,7 @@ void AudioNodes::setup(bool auto_enable /*= true*/)
 	fmt.channels(mBufferRecorderNode->getNumChannels()).fftSize(2048).windowSize(1024);
 	mStftClient = work::make_client<stft::Client>(mGlobals.getWorkManager(), &mGlobals, fmt);
 
-	mThreadRenderer = std::make_unique<ThreadRenderer>(*this, 50, 2048 / 2, 350);
+	mThreadRenderer = std::make_unique<ThreadRenderer>(*this, 400, 2048 / 2, 1600);
 	mGlobals.setThreadRenderer(mThreadRenderer.get());
 
 	mOriginalTitle = ci::app::getWindow()->getTitle();
@@ -118,16 +109,6 @@ void AudioNodes::update()
 cinder::audio::InputDeviceNode* const AudioNodes::getInputDeviceNode()
 {
 	return mInputDeviceNode.get();
-}
-
-cinder::audio::MonitorNode* const AudioNodes::getMonitorNode()
-{
-	return mMonitorNode.get();
-}
-
-cinder::audio::MonitorSpectralNode* const AudioNodes::getMonitorSpectralNode()
-{
-	return mMonitorSpectralNode.get();
 }
 
 cieq::audio::RecorderNode* const AudioNodes::getBufferRecorderNode()

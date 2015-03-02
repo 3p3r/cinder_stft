@@ -8,11 +8,6 @@ namespace cieq
 InputAnalyzer::InputAnalyzer()
 	: mGlobals(mEventProcessor, mWorkManager, mAudioNodes)
 	, mAudioNodes(mGlobals)
-	, mSpectrumPlot(mAudioNodes)
-	, mWaveformPlot(mAudioNodes)
-	, mSpectrogramPlot(mAudioNodes)
-	, mContiguousPlot(mAudioNodes)
-	, mCameras(mGlobals)
 {}
 
 void InputAnalyzer::prepareSettings(Settings *settings)
@@ -42,30 +37,15 @@ void InputAnalyzer::prepareSettings(Settings *settings)
 
 void InputAnalyzer::setup()
 {
-	// setup camera rig
-	mCameras.setup();
 	// setup the interface GL params
 	setupParamsGl();
 	// setup audio I/O
 	mAudioNodes.setup();
-	// position the plots
-	positionPlots();
-	if (mAudioNodes.ready())
-	{
-		// setup plots
-		mSpectrumPlot.setup();
-		mWaveformPlot.setup();
-		mContiguousPlot.setup();
-		mSpectrogramPlot.setup();
-	}
 }
 
 void InputAnalyzer::resize()
 {
-	// re position the plots
-	positionPlots();
-	// tell camera we've resized
-	mCameras.resize();
+	/*no op*/
 }
 
 void InputAnalyzer::update()
@@ -77,25 +57,16 @@ void InputAnalyzer::draw()
 {
 	// clear screen black
 	ci::gl::clear();
-	// enable alpha channel
 	ci::gl::enableAlphaBlending();
-	if (mAudioNodes.ready())
-	{
-		// draw plots
-		mSpectrumPlot.draw();
 
-		if (mGlobals.getDrawContiguous())
-			mContiguousPlot.draw();
-		else
-			mWaveformPlot.draw();
+	if (mGlobals.getThreadRenderer())
+		mGlobals.getThreadRenderer()->draw();
 
-		mSpectrogramPlot.draw();
-	}
 	// draw interface GL params
 	mParamsRef->draw();
 	// draw FPS
 	drawFps();
-	// disable alpha channel and exit
+
 	ci::gl::disableAlphaBlending();
 }
 
@@ -119,23 +90,6 @@ void InputAnalyzer::mouseDrag(ci::app::MouseEvent event)
 void InputAnalyzer::keyDown(ci::app::KeyEvent event)
 {
 	mEventProcessor.processKeybaordEvents(event.getChar());
-}
-
-void InputAnalyzer::positionPlots()
-{
-	const auto window_size = ci::app::getWindowSize();
-	const auto plot_size_width = 0.9f * window_size.x; // 90% of window width
-	const auto plot_size_width_mini = 0.425f * window_size.x; // 42.5% of window width
-	const auto plot_padding_horz = 0.05f * window_size.x; // 5% of window width
-	const auto plot_size_height = 0.8f * 0.5f * window_size.y; // half of 90% of window width
-
-	ci::Vec2f top_left(0.05f * window_size.x, 0.05f * window_size.y);
-	mSpectrumPlot.setBounds(ci::Rectf(top_left, top_left + ci::Vec2f(plot_size_width, plot_size_height)));
-	top_left.y += 0.5f * window_size.y;
-	mWaveformPlot.setBounds(ci::Rectf(top_left, top_left + ci::Vec2f(plot_size_width_mini, plot_size_height)));
-	mContiguousPlot.setBounds(ci::Rectf(top_left, top_left + ci::Vec2f(plot_size_width_mini, plot_size_height)));
-	top_left.x += plot_size_width_mini + plot_padding_horz;
-	mSpectrogramPlot.setBounds(ci::Rectf(top_left, top_left + ci::Vec2f(plot_size_width_mini, plot_size_height)));
 }
 
 void InputAnalyzer::drawFps()

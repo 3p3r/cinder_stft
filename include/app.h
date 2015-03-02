@@ -6,8 +6,6 @@
 #include "app_globals.h"
 #include "app_event.h"
 #include "audio_nodes.h"
-#include "audio_draw.h"
-#include "app_camera.h"
 #include "work_manager.h"
 
 namespace cieq
@@ -43,8 +41,6 @@ public:
 	void			keyDown(ci::app::KeyEvent event) override final;
 
 private:
-	//! repositions the plots after a resize is fired.
-	void			positionPlots();
 	//! sets up the ci::Gl::Params interface
 	void			setupParamsGl();
 
@@ -55,19 +51,8 @@ private:
 	work::Manager	mWorkManager;
 	//! the globals class instance, used to store common data
 	AppGlobals		mGlobals;
-	//! camera rig class instance
-	AppCamera		mCameras;
 	//! audio I/O class instance
 	AudioNodes		mAudioNodes;
-	//! spectrum of the current window plot
-	SpectrumPlot	mSpectrumPlot;
-	//! plot of the current window's raw input
-	WaveformPlot	mWaveformPlot;
-	//! plot of the entire samples recorded
-	ContiguousWaveformPlot
-					mContiguousPlot;
-	//! entire spectrogram plot instance
-	SpectrogramPlot	mSpectrogramPlot;
 	//! cinder's param ref, for tweaking variables at the runtime
 	std::shared_ptr<ci::params::InterfaceGl>
 					mParamsRef;

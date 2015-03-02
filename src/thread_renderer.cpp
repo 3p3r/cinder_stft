@@ -2,6 +2,8 @@
 #include "audio_nodes.h"
 #include "recorder_node.h"
 
+#include <cinder/app/App.h>
+
 namespace cieq {
 
 ThreadRenderer::ThreadRenderer(AudioNodes& nodes, std::size_t frames_per_surface, std::size_t fft_size, std::size_t viewable_frames)
@@ -9,6 +11,8 @@ ThreadRenderer::ThreadRenderer(AudioNodes& nodes, std::size_t frames_per_surface
 	, mFramesPerSurface(frames_per_surface)
 	, mFftSize(fft_size)
 	, mAudioNodes(nodes)
+	, mViewableSurfaces(viewable_frames / frames_per_surface)
+	, mLastActiveSurface(-1)
 {
 	mNumSurfaces = mAudioNodes.getBufferRecorderNode()->getMaxPossiblePops() / mFramesPerSurface;
 	if (mAudioNodes.getBufferRecorderNode()->getMaxPossiblePops() % mFramesPerSurface != 0)
@@ -43,34 +47,53 @@ void ThreadRenderer::update()
 
 void ThreadRenderer::draw()
 {
-	ci::gl::SaveFramebufferBinding _bindings;
+	// start protection
+	if (mLastActiveSurface < 0) return;
+
+	//ci::gl::SaveFramebufferBinding _bindings;
 	
 	//! draw everything to a frame buffer
-	mFramebuffer.bindFramebuffer();
+	//mFramebuffer.bindFramebuffer();
 	
+	ci::gl::pushMatrices();
 	ci::gl::clear(ci::Color::black());
-	
-	int index = 0;
-	for (SpectralSurfaceRef& surface : mSurfacePool)
+	ci::gl::rotate(-90.0f); //rotate scene 90 degrees
+	ci::gl::translate(-ci::app::getWindowHeight(), 0.0f); //after rotation, moving x is like moving y
+
+	/*for (auto index = mLastActiveSurface, count = 0; index >= 0 && count < mViewableSurfaces; --index, ++count)
+	{
+		ci::Rectf draw_rect(0, count * mFramesPerSurface, mFftSize, (count + 1) * mFramesPerSurface);
+		if (mTexturePool[index])
+		{
+			// draw texture
+			ci::gl::draw(mTexturePool[index], draw_rect);
+		}
+		else if (mSurfacePool[index])
+		{
+			// draw surface
+			ci::gl::draw(*mSurfacePool[index], draw_rect);
+		}
+	}*/
+
+	for (int index = 0; index < mViewableSurfaces; ++index)
 	{
 		ci::Rectf draw_rect(0, index * mFramesPerSurface, mFftSize, (index + 1) * mFramesPerSurface);
-		if (draw_rect.getY1() > mViewableFrames)
-			break;
 
 		if (mTexturePool[index])
 		{
 			// draw texture
 			ci::gl::draw(mTexturePool[index], draw_rect);
 		}
-		else if (surface)
+		else if (mSurfacePool[index])
 		{
 			// draw surface
-			ci::gl::draw(*surface, draw_rect);
+			ci::gl::draw(*mSurfacePool[index], draw_rect);
 		}
-		index++;
 	}
 
-	mFramebuffer.unbindFramebuffer();
+	ci::gl::popMatrices();
+
+	//mFramebuffer.unbindFramebuffer();
 }
 
 SpectralSurface& ThreadRenderer::getSurface(int index)
@@ -81,14 +104,10 @@ SpectralSurface& ThreadRenderer::getSurface(int index)
 		if (!mSurfacePool[index]) //double check
 		{
 			mSurfacePool[index] = std::make_unique<SpectralSurface>(getFftSize(), getFramesPerSurface());
+			mLastActiveSurface++;
 		}
 	}
 	return *(mSurfacePool[index]);
-}
-
-ci::gl::Texture& ThreadRenderer::getTexture(int index)
-{
-	return *mTexturePool[index].get();
 }
 
 std::size_t ThreadRenderer::getViewableFrames() const

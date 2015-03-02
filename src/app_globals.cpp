@@ -10,22 +10,7 @@ AppGlobals::AppGlobals(AppEvent& event_processor, work::Manager& work_manager, A
 	: mEventProcessor(event_processor)
 	, mWorkManager(work_manager)
 	, mAudioNodes(nodes)
-	, mDrawContiguous(false)
-{
-	getEventProcessor().addKeyboardEvent([this](int k) {
-		if (k == 'c' || k == 'C')
-		{
-			if (getDrawContiguous())
-			{
-				setDrawContiguous(false);
-			}
-			else
-			{
-				setDrawContiguous(true);
-			}
-		}
-	});
-}
+{}
 
 AppEvent& AppGlobals::getEventProcessor()
 {
@@ -45,16 +30,6 @@ void AppGlobals::setParamsPtr(ci::params::InterfaceGl* const params)
 ci::params::InterfaceGl* const AppGlobals::getParamsPtr()
 {
 	return mParamsPtr;
-}
-
-void AppGlobals::setDrawContiguous(bool on)
-{
-	mDrawContiguous = on;
-}
-
-bool AppGlobals::getDrawContiguous() const
-{
-	return mDrawContiguous;
 }
 
 work::Manager& AppGlobals::getWorkManager()

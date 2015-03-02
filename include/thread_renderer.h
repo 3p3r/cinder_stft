@@ -19,7 +19,6 @@ public:
 	void								update();
 	void								draw();
 	SpectralSurface&					getSurface(int index);
-	ci::gl::Texture&					getTexture(int index);
 	std::size_t							getViewableFrames() const;
 	std::size_t							getFramesPerSurface() const;
 	std::size_t							getFftSize() const;
@@ -33,10 +32,12 @@ private:
 	std::mutex							mSurfaceLock;
 	ci::gl::Fbo							mFramebuffer;
 	std::size_t							mViewableFrames;
+	std::size_t							mViewableSurfaces;
 	std::size_t							mFramesPerSurface;
 	std::size_t							mFftSize;
 	std::size_t							mNumSurfaces;
 	AudioNodes&							mAudioNodes;
+	int									mLastActiveSurface;
 };
 
 } // !namespace cieq
