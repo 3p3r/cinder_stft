@@ -35,6 +35,7 @@ void ThreadRenderer::draw()
 	ci::gl::pushMatrices();
 	ci::gl::clear(ci::Color::black());
 	ci::gl::rotate(90.0f); //rotate scene 90 degrees
+	ci::gl::scale(1.0f, 1.0f);
 
 	auto _recorder_node = mAudioNodes.getBufferRecorderNode();
 	const int _viewable_surfaces = getCurrentViewableSurfaces();
@@ -42,11 +43,11 @@ void ThreadRenderer::draw()
 	if (!_recorder_node->canQuery()) _current_write_pos -= 1; //end of samples
 	const float _percentage_done = static_cast<float>(_current_write_pos) / _recorder_node->getNumFrames();
 	const float _percentage_full = static_cast<float>(_recorder_node->getNumFrames() - 1) / _recorder_node->getNumFrames();
-	const int _current_last_surface = static_cast<int>(_percentage_done * mNumSurfaces);
+	int _current_last_surface = static_cast<int>(_percentage_done * mNumSurfaces);
+	if (_current_last_surface == mNumSurfaces) _current_last_surface -= 1; //fix me
 	const float _static_offset = std::fmodf(_percentage_full * mNumSurfaces * mFramesPerSurface, mFramesPerSurface);
 	const float _current_index_in_surface = std::fmodf(_percentage_done * mNumSurfaces * mFramesPerSurface, mFramesPerSurface);
 
-	//ci::gl::translate(-ci::app::getWindowHeight(), _current_index_in_surface - mFramesPerSurface - _static_offset); //after rotation, moving x is like moving y
 	ci::gl::translate(0.0f, (_current_index_in_surface - mFramesPerSurface / 2 - _static_offset) - ci::app::getWindowWidth()); //after rotation, moving x is like moving y
 
 	for (int index = _current_last_surface, count = 0; count <= _viewable_surfaces && index >= 0; --index, ++count)

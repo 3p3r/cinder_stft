@@ -51,7 +51,7 @@ void AudioNodes::setup(bool auto_enable /*= true*/)
 	}
 
 	const auto duration = 20.0f; //in seconds
-	auto recorderFormat = cieq::audio::RecorderNode::Format().hopSize(100);
+	auto recorderFormat = cieq::audio::RecorderNode::Format().hopSize(100).windowSize(1024);
 	mBufferRecorderNode = mGlobals.getAudioContext().makeNode(new cieq::audio::RecorderNode(duration, recorderFormat));
 
 	mInputDeviceNode >> mBufferRecorderNode;
@@ -59,10 +59,10 @@ void AudioNodes::setup(bool auto_enable /*= true*/)
 	mBufferRecorderNode->start();
 
 	auto fmt = stft::Client::Format();
-	fmt.channels(mBufferRecorderNode->getNumChannels()).fftSize(2048).windowSize(1024);
+	fmt.channels(mBufferRecorderNode->getNumChannels()).fftSize(2048).windowSize(recorderFormat.getWindowSize());
 	mStftClient = work::make_client<stft::Client>(mGlobals.getWorkManager(), &mGlobals, fmt);
 
-	mThreadRenderer = std::make_unique<ThreadRenderer>(*this, 50, 2048 / 2);
+	mThreadRenderer = std::make_unique<ThreadRenderer>(*this, 50, fmt.getFftSize() / 2);
 	mGlobals.setThreadRenderer(mThreadRenderer.get());
 
 	mOriginalTitle = ci::app::getWindow()->getTitle();
