@@ -34,6 +34,7 @@ private:
 	std::size_t							mFftSize;
 	std::size_t							mNumSurfaces;
 	AudioNodes&							mAudioNodes;
+	ci::gl::Fbo							mCompleteAudioFbo;
 };
 
 } // !namespace cieq

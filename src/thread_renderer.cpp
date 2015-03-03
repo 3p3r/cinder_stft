@@ -28,6 +28,13 @@ void ThreadRenderer::update()
 			pair.first.reset();
 		}
 	}
+
+	// loop recording endlessly
+	if (!mAudioNodes.getBufferRecorderNode()->isRecording())
+	{
+		mAudioNodes.getBufferRecorderNode()->start();
+		mAudioNodes.getBufferRecorderNode()->reset();
+	}
 }
 
 void ThreadRenderer::draw()
@@ -49,7 +56,7 @@ void ThreadRenderer::draw()
 	// get the index of last active surface for drawing
 	int _current_last_surface = static_cast<int>(_percentage_done * mNumSurfaces);
 	// if we are at the end of samples, subtract one from last active surface index
-	if (_percentage_done == 1.0f || !_recorder_node->canQuery())
+	if (_percentage_done == 1.0f || !_recorder_node->isRecording())
 	{
 		_current_last_surface -= 1;
 	}
@@ -66,15 +73,15 @@ void ThreadRenderer::draw()
 	{
 		ci::Rectf draw_rect(mFftSize, (count + 1) * mFramesPerSurface, 0, count * mFramesPerSurface);
 
-		if (mSurfaceTexturePool[index].second)
-		{
-			// draw texture
-			ci::gl::draw(mSurfaceTexturePool[index].second, draw_rect);
-		}
-		else if (mSurfaceTexturePool[index].first)
+		if (mSurfaceTexturePool[index].first)
 		{
 			// draw surface
 			ci::gl::draw(*mSurfaceTexturePool[index].first, draw_rect);
+		}
+		else if (mSurfaceTexturePool[index].second)
+		{
+			// draw texture
+			ci::gl::draw(mSurfaceTexturePool[index].second, draw_rect);
 		}
 	}
 
