@@ -50,6 +50,8 @@ public:
 	bool							popBufferWindow(size_t& query_pos);
 	//! answers if there's more pop operations left to do.
 	bool							isRecording() const;
+	//! resets the internal state
+	void							reset();
 	//! answers maximum possible number of processing operations
 	size_t							getMaxPossiblePops() const;
 	//! answers index of operation by write position

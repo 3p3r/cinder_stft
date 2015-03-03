@@ -134,4 +134,9 @@ size_t RecorderNode::getQueryIndexByQueryPos(size_t pos)
 	return pos / mHopSize;
 }
 
+void RecorderNode::reset()
+{
+	mLastQueried = 0;
+}
+
 }} //!cieq::node
