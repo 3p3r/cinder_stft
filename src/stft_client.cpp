@@ -104,8 +104,8 @@ void Client::handle(work::RequestRef req)
 	// TODO: break this into vector Cartesian -> polar and then vector lowpass. skip lowpass if smoothing factor is very small
 	const float magScale = 1.0f / _resources.mPrivateStorage->mFft->getSize();
 	for (size_t i = 0; i < _resources.mPrivateStorage->mMagSpectrum.size(); i++) {
-		float re = real[i];
-		float im = imag[i];
+		const float& re = real[i];
+		const float& im = imag[i];
 		_resources.mPrivateStorage->mMagSpectrum[i] =
 			_resources.mPrivateStorage->mMagSpectrum[i] *
 			_resources.mPrivateStorage->mSmoothingFactor +
