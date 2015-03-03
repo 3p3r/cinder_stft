@@ -5,37 +5,24 @@
 namespace cieq {
 namespace audio {
 
-RecorderNode::RecorderNode(const Format &format /*= Format()*/)
-	: inherited(format)
-	, mWindowSize(format.getWindowSize())
-	, mHopSize(format.getHopSize())
-	, mLastQueried(0)
-	, mCanQuery(true)
-{}
-
 RecorderNode::RecorderNode(size_t numFrames, const Format &format /*= Format()*/)
 	: inherited(numFrames, format)
 	, mWindowSize(format.getWindowSize())
 	, mHopSize(format.getHopSize())
 	, mLastQueried(0)
-	, mCanQuery(true)
 {
 	mMaxPopsPossible = (getNumFrames() - getWindowSize()) / getHopSize();
 	if ((getNumFrames() - getWindowSize()) % getHopSize() != 0)
 		mMaxPopsPossible += 1;
 }
 
+RecorderNode::RecorderNode(const Format &format /*= Format()*/)
+	: RecorderNode(0.0f, format)
+{}
+
 RecorderNode::RecorderNode(float numSeconds, const Format &format /*= Format()*/)
-	: inherited(static_cast<size_t>(ci::audio::Context::master()->getSampleRate() * numSeconds), format)
-	, mWindowSize(format.getWindowSize())
-	, mHopSize(format.getHopSize())
-	, mLastQueried(0)
-	, mCanQuery(true)
-{
-	mMaxPopsPossible = (getNumFrames() - getWindowSize()) / getHopSize();
-	if ((getNumFrames() - getWindowSize()) % getHopSize() != 0)
-		mMaxPopsPossible += 1;
-}
+	: RecorderNode(static_cast<size_t>(ci::audio::Context::master()->getSampleRate() * numSeconds), format)
+{}
 
 ci::audio::BufferDynamic& RecorderNode::getBufferRaw()
 {
@@ -54,7 +41,7 @@ void RecorderNode::getBufferChunk(size_t start, ci::audio::Buffer& other)
 
 bool RecorderNode::popBufferWindow(ci::audio::Buffer& other)
 {
-	if (!canQuery()) return false;
+	if (!isRecording()) return false;
 
 	if (mLastQueried + mWindowSize <= getWritePosition())
 	{
@@ -68,7 +55,6 @@ bool RecorderNode::popBufferWindow(ci::audio::Buffer& other)
 	{
 		getBufferChunk(mLastQueried, getNumFrames() - mLastQueried, other);
 		mLastQueried = getNumFrames();
-		mCanQuery = false;
 		return true;
 	}
 	else
@@ -79,7 +65,7 @@ bool RecorderNode::popBufferWindow(ci::audio::Buffer& other)
 
 bool RecorderNode::popBufferWindow(size_t& query_pos)
 {
-	if (!canQuery()) return false;
+	if (!isRecording()) return false;
 
 	if (mLastQueried + mWindowSize <= getWritePosition())
 	{
@@ -93,7 +79,6 @@ bool RecorderNode::popBufferWindow(size_t& query_pos)
 	{
 		query_pos = mLastQueried;
 		mLastQueried = getNumFrames();
-		mCanQuery = false;
 		return true;
 	}
 	else
@@ -116,7 +101,6 @@ bool RecorderNode::popBufferWindow(ci::audio::Buffer& other, size_t query_pos)
 	{
 		getBufferChunk(query_pos, getNumFrames() - query_pos, other);
 		query_pos = getNumFrames();
-		mCanQuery = false;
 		return true;
 	}
 	else
@@ -135,9 +119,9 @@ size_t RecorderNode::getHopSize() const
 	return mHopSize;
 }
 
-bool RecorderNode::canQuery() const
+bool RecorderNode::isRecording() const
 {
-	return mCanQuery;
+	return getWritePosition() != getNumFrames();
 }
 
 size_t RecorderNode::getMaxPossiblePops() const

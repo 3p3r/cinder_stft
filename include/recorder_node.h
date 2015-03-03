@@ -49,7 +49,7 @@ public:
 	bool							popBufferWindow(ci::audio::Buffer& other);
 	bool							popBufferWindow(size_t& query_pos);
 	//! answers if there's more pop operations left to do.
-	bool							canQuery() const;
+	bool							isRecording() const;
 	//! answers maximum possible number of processing operations
 	size_t							getMaxPossiblePops() const;
 	//! answers index of operation by write position
@@ -59,7 +59,6 @@ protected:
 	size_t	mWindowSize;
 	size_t	mHopSize;
 	size_t	mLastQueried;
-	bool	mCanQuery;
 	size_t	mMaxPopsPossible;
 
 private:
