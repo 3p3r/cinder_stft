@@ -35,20 +35,29 @@ void ThreadRenderer::draw()
 	ci::gl::pushMatrices();
 	ci::gl::clear(ci::Color::black());
 	ci::gl::rotate(90.0f); //rotate scene 90 degrees
-	ci::gl::scale(1.0f, 1.0f);
 
+	// just a convenience
 	auto _recorder_node = mAudioNodes.getBufferRecorderNode();
+	// copy how many frames are currently visible
 	const int _viewable_surfaces = getCurrentViewableSurfaces();
-	int _current_write_pos = _recorder_node->getWritePosition();
-	if (!_recorder_node->canQuery()) _current_write_pos -= 1; //end of samples
+	// get current record position
+	const int _current_write_pos = _recorder_node->getWritePosition();
+	// percentage of the entire audio done recording
 	const float _percentage_done = static_cast<float>(_current_write_pos) / _recorder_node->getNumFrames();
-	const float _percentage_full = static_cast<float>(_recorder_node->getNumFrames() - 1) / _recorder_node->getNumFrames();
+	// get the index of last active surface for drawing
 	int _current_last_surface = static_cast<int>(_percentage_done * mNumSurfaces);
-	if (_current_last_surface == mNumSurfaces) _current_last_surface -= 1; //fix me
-	const float _static_offset = std::fmodf(_percentage_full * mNumSurfaces * mFramesPerSurface, mFramesPerSurface);
-	const float _current_index_in_surface = std::fmodf(_percentage_done * mNumSurfaces * mFramesPerSurface, mFramesPerSurface);
-
-	ci::gl::translate(0.0f, (_current_index_in_surface - mFramesPerSurface / 2 - _static_offset) - ci::app::getWindowWidth()); //after rotation, moving x is like moving y
+	// if we are at the end of samples, subtract one from last active surface index
+	if (_percentage_done == 1.0f || !_recorder_node->canQuery())
+	{
+		_current_last_surface -= 1;
+	}
+	// number of samples that will be empty drawn (last surface)
+	const float _static_offset = static_cast<float>(_recorder_node->getNumFrames() % mFramesPerSurface);
+	// guest-imate where the work manager is at currently, do note that this is an estimate!
+	const float _current_index_in_surface = std::fmodf(_percentage_done * mNumSurfaces * mFramesPerSurface, static_cast<float>(mFramesPerSurface));
+	// shift to left for OpenGL (we're moving textures upside-down, therefore we shift one entire surface to right + estimate index in surface + static offset)
+	const float _shift_right = static_cast<float>(_current_index_in_surface - mFramesPerSurface - _static_offset);
+	ci::gl::translate(0.0f,  _shift_right - ci::app::getWindowWidth()); //after rotation, moving x is like moving y
 
 	for (int index = _current_last_surface, count = 0; count <= _viewable_surfaces && index >= 0; --index, ++count)
 	{

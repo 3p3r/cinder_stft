@@ -30,7 +30,6 @@ private:
 	using container			= std::vector < container_pair >;
 	container							mSurfaceTexturePool;
 	std::mutex							mPoolLock;
-	std::mutex							mRecycleLock;
 	std::size_t							mFramesPerSurface;
 	std::size_t							mFftSize;
 	std::size_t							mNumSurfaces;
