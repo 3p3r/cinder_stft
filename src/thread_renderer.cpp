@@ -36,6 +36,8 @@ void ThreadRenderer::draw()
 	ci::gl::clear(ci::Color::black());
 	ci::gl::rotate(90.0f); //rotate scene 90 degrees
 
+	const float _x_scale = 3.0f;
+	ci::gl::scale(_x_scale, 1.0f);
 	// just a convenience
 	auto _recorder_node = mAudioNodes.getBufferRecorderNode();
 	// copy how many frames are currently visible
@@ -57,7 +59,8 @@ void ThreadRenderer::draw()
 	const float _current_index_in_surface = std::fmodf(_percentage_done * mNumSurfaces * mFramesPerSurface, static_cast<float>(mFramesPerSurface));
 	// shift to left for OpenGL (we're moving textures upside-down, therefore we shift one entire surface to right + estimate index in surface + static offset)
 	const float _shift_right = static_cast<float>(_current_index_in_surface - mFramesPerSurface - _static_offset);
-	ci::gl::translate(0.0f,  _shift_right - ci::app::getWindowWidth()); //after rotation, moving x is like moving y
+	const float _shift_up = (_x_scale - 1.0f) * ci::app::getWindowHeight();
+	ci::gl::translate(-_shift_up / _x_scale, _shift_right - ci::app::getWindowWidth()); //after rotation, moving x is like moving y
 
 	for (int index = _current_last_surface, count = 0; count <= _viewable_surfaces && index >= 0; --index, ++count)
 	{
