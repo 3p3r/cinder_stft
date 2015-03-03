@@ -50,16 +50,26 @@ void AudioNodes::setup(bool auto_enable /*= true*/)
 		return;
 	}
 
-	const auto duration = 20.0f; //in seconds
-	auto recorderFormat = cieq::audio::RecorderNode::Format().hopSize(100).windowSize(1024);
-	mBufferRecorderNode = mGlobals.getAudioContext().makeNode(new cieq::audio::RecorderNode(duration, recorderFormat));
+	// configurable input
+	const auto record_duration = 20.0f; //in seconds
+	const auto window_duration = 0.02f; //in seconds (0.02s roughly is 1024 in 44.1KHz)
+	const auto hop_duration = 0.01f; //in seconds (0.01s roughly is 512 in 44.1KHz)
+	const auto fft_bins = 2048; //in samples
+
+	// calculated input
+	const auto sample_rate = mInputDeviceNode->getSampleRate();
+	const auto record_samples = static_cast<std::size_t>(record_duration * sample_rate);
+	const auto window_samples = static_cast<std::size_t>(window_duration * sample_rate);
+	const auto hop_samples = static_cast<std::size_t>(hop_duration * sample_rate);
+
+	auto recorderFormat = cieq::audio::RecorderNode::Format().hopSize(hop_samples).windowSize(window_samples);
+	mBufferRecorderNode = mGlobals.getAudioContext().makeNode(new cieq::audio::RecorderNode(record_samples, recorderFormat));
 
 	mInputDeviceNode >> mBufferRecorderNode;
-
 	mBufferRecorderNode->start();
 
 	auto fmt = stft::Client::Format();
-	fmt.channels(mBufferRecorderNode->getNumChannels()).fftSize(2048).windowSize(recorderFormat.getWindowSize());
+	fmt.channels(mBufferRecorderNode->getNumChannels()).fftSize(fft_bins).windowSize(window_samples);
 	mStftClient = work::make_client<stft::Client>(mGlobals.getWorkManager(), &mGlobals, fmt);
 
 	mThreadRenderer = std::make_unique<ThreadRenderer>(*this, 50, fmt.getFftSize() / 2);

@@ -19,7 +19,11 @@ RecorderNode::RecorderNode(size_t numFrames, const Format &format /*= Format()*/
 	, mHopSize(format.getHopSize())
 	, mLastQueried(0)
 	, mCanQuery(true)
-{}
+{
+	mMaxPopsPossible = (getNumFrames() - getWindowSize()) / getHopSize();
+	if ((getNumFrames() - getWindowSize()) % getHopSize() != 0)
+		mMaxPopsPossible += 1;
+}
 
 RecorderNode::RecorderNode(float numSeconds, const Format &format /*= Format()*/)
 	: inherited(static_cast<size_t>(ci::audio::Context::master()->getSampleRate() * numSeconds), format)
