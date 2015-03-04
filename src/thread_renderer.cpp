@@ -48,12 +48,12 @@ void ThreadRenderer::draw()
 	ci::gl::clear(ci::Color::black());
 	ci::gl::rotate(90.0f); //rotate scene 90 degrees
 
-	const float _x_scale = 3.0f;
-	ci::gl::scale(_x_scale, 1.0f);
 	// just a convenience
 	auto _recorder_node = mAudioNodes.getBufferRecorderNode();
-	// copy how many frames are currently visible
-	const int _viewable_surfaces = getCurrentViewableSurfaces();
+
+	const float _y_scale = 1.0f;
+	const float _x_scale = static_cast<float>(ci::app::getWindowWidth()) / _recorder_node->getMaxPossiblePops();
+
 	// get current record position
 	const int _current_write_pos = _recorder_node->getWritePosition();
 	// percentage of the entire audio done recording
@@ -70,11 +70,13 @@ void ThreadRenderer::draw()
 	// guest-imate where the work manager is at currently, do note that this is an estimate!
 	const float _current_index_in_surface = std::fmodf(_percentage_done * mNumSurfaces * mFramesPerSurface, static_cast<float>(mFramesPerSurface));
 	// shift to left for OpenGL (we're moving textures upside-down, therefore we shift one entire surface to right + estimate index in surface + static offset)
-	const float _shift_right = static_cast<float>(_current_index_in_surface - mFramesPerSurface - _static_offset);
-	const float _shift_up = (_x_scale - 1.0f) * ci::app::getWindowHeight();
-	ci::gl::translate(-_shift_up / _x_scale, _shift_right - ci::app::getWindowWidth()); //after rotation, moving x is like moving y
+	const float _shift_right = static_cast<float>(_current_index_in_surface - mFramesPerSurface - _static_offset) - (1.0f / _x_scale) * ci::app::getWindowWidth();
+	const float _shift_up = (1.0f / _y_scale - 1.0f) * ci::app::getWindowHeight();
 
-	for (int index = _current_last_surface, count = 0; count <= _viewable_surfaces && index >= 0; --index, ++count)
+	ci::gl::scale(_y_scale, _x_scale);
+	ci::gl::translate(_shift_up, _shift_right); //after rotation, moving x is like moving y
+
+	for (int index = _current_last_surface, count = 0;index >= 0; --index, ++count)
 	{
 		ci::Rectf draw_rect(mFftSize, (count + 1) * mFramesPerSurface, 0, count * mFramesPerSurface);
 
@@ -124,11 +126,6 @@ std::size_t ThreadRenderer::getIndexInSurfaceByQueryPos(std::size_t pos) const
 {
 	const auto pop_index = mAudioNodes.getBufferRecorderNode()->getQueryIndexByQueryPos(pos);
 	return pop_index % getFramesPerSurface();
-}
-
-std::size_t ThreadRenderer::getCurrentViewableSurfaces() const
-{
-	return (ci::app::getWindowWidth() / mFramesPerSurface) + ((ci::app::getWindowWidth() % mFramesPerSurface == 0) ? 0 : 1);
 }
 
 void ThreadRenderer::cleanSurfaces()

@@ -21,7 +21,6 @@ public:
 	void								draw();
 	SpectralSurface&					getSurface(int index);
 	std::size_t							getFramesPerSurface() const;
-	std::size_t							getCurrentViewableSurfaces() const;
 	std::size_t							getSurfaceIndexByQueryPos(std::size_t pos) const;
 	std::size_t							getIndexInSurfaceByQueryPos(std::size_t pos) const;
 
