@@ -69,7 +69,7 @@ void ThreadRenderer::draw()
 	// number of samples that will be empty drawn (last surface)
 	const float _static_offset = static_cast<float>(_recorder_node->getNumFrames() % mFramesPerSurface);
 	// get last thread-reported pop position and divide it over max pops possible
-	const float _current_index_in_surface = getIndexInSurfaceByQueryPos(mLastPopPos);
+	const float _current_index_in_surface = static_cast<float>(getIndexInSurfaceByQueryPos(mLastPopPos));
 	// shift to left for OpenGL (we're moving textures upside-down, therefore we shift one entire surface to right + estimate index in surface + static offset)
 	const float _shift_right = static_cast<float>(_current_index_in_surface - mFramesPerSurface - _static_offset) - (1.0f / _x_scale) * ci::app::getWindowWidth();
 	const float _shift_up = (1.0f / _y_scale - 1.0f) * ci::app::getWindowHeight();
@@ -79,7 +79,12 @@ void ThreadRenderer::draw()
 
 	for (int index = _current_last_surface, count = 0;index >= 0; --index, ++count)
 	{
-		ci::Rectf draw_rect(mFftSize, (count + 1) * mFramesPerSurface, 0, count * mFramesPerSurface);
+		const auto x1 = static_cast<float>(mFftSize);
+		const auto y1 = static_cast<float>(count + 1) * mFramesPerSurface;
+		const auto x2 = 0.0f;
+		const auto y2 = static_cast<float>(count) * mFramesPerSurface;
+
+		ci::Rectf draw_rect(x1, y1, x2, y2);
 
 		if (mSurfaceTexturePool[index].first)
 		{
