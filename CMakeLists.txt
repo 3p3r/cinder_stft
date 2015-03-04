@@ -13,6 +13,7 @@ SET (CMAKE_VERBOSE_MAKEFILE 1)
 
 # Cinder root
 SET (CINDER_ROOT "${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/cinder")
+SET (CIUI_ROOT "${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/ciUI")
 
 # we only support MSVC, so check for it.
 IF (NOT MSVC)
@@ -69,6 +70,7 @@ INCLUDE_DIRECTORIES(
 	"${CINDER_ROOT}/include"
 	"${CINDER_ROOT}/boost"
 	"${CMAKE_CURRENT_SOURCE_DIR}/include"
+	"${CIUI_ROOT}/include"
 )
 
 LINK_DIRECTORIES(
