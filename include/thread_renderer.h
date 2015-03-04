@@ -35,6 +35,9 @@ private:
 	std::size_t							mNumSurfaces;
 	AudioNodes&							mAudioNodes;
 	ci::gl::Fbo							mCompleteAudioFbo;
+
+private:
+	void								cleanSurfaces();
 };
 
 } // !namespace cieq

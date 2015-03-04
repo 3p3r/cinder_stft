@@ -24,7 +24,11 @@ void ThreadRenderer::update()
 	{
 		if (pair.first && pair.first->allRowsTouched())
 		{
-			pair.second = ci::gl::Texture::create(*pair.first);
+			if (pair.second)
+				pair.second->update(*pair.first);
+			else
+				pair.second = ci::gl::Texture::create(*pair.first);
+
 			pair.first.reset();
 		}
 	}
@@ -34,6 +38,7 @@ void ThreadRenderer::update()
 	{
 		mAudioNodes.getBufferRecorderNode()->start();
 		mAudioNodes.getBufferRecorderNode()->reset();
+		cleanSurfaces();
 	}
 }
 
@@ -124,6 +129,17 @@ std::size_t ThreadRenderer::getIndexInSurfaceByQueryPos(std::size_t pos) const
 std::size_t ThreadRenderer::getCurrentViewableSurfaces() const
 {
 	return (ci::app::getWindowWidth() / mFramesPerSurface) + ((ci::app::getWindowWidth() % mFramesPerSurface == 0) ? 0 : 1);
+}
+
+void ThreadRenderer::cleanSurfaces()
+{
+	for (container_pair& pair : mSurfaceTexturePool)
+	{
+		if (pair.first)
+		{
+			pair.first.reset();
+		}
+	}
 }
 
 } //!cieq
