@@ -33,11 +33,15 @@ private:
 	std::size_t							mFftSize;
 	std::size_t							mNumSurfaces;
 	AudioNodes&							mAudioNodes;
+	std::size_t							mTotalSurfacesLength;
+	std::size_t							mLastSurfaceLength;
 	std::atomic<int>					mLastPopPos;
 	ci::gl::Fbo							mCompleteAudioFbo;
 
 private:
 	void								cleanSurfaces();
+	std::size_t							calculateLastSurfaceLength() const;
+	std::size_t							calculateTotalSurfacesLength() const;
 };
 
 } // !namespace cieq

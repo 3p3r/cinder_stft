@@ -11,12 +11,17 @@ ThreadRenderer::ThreadRenderer(AudioNodes& nodes, std::size_t frames_per_surface
 	, mFftSize(fft_size)
 	, mAudioNodes(nodes)
 	, mLastPopPos(0)
+	, mLastSurfaceLength(0)
+	, mTotalSurfacesLength(0)
 {
 	mNumSurfaces = mAudioNodes.getBufferRecorderNode()->getMaxPossiblePops() / mFramesPerSurface;
 	if (mAudioNodes.getBufferRecorderNode()->getMaxPossiblePops() % mFramesPerSurface != 0)
 		mNumSurfaces += 1;
 
 	mSurfaceTexturePool.resize(mNumSurfaces);
+
+	mLastSurfaceLength = calculateLastSurfaceLength();
+	mTotalSurfacesLength = calculateTotalSurfacesLength();
 }
 
 void ThreadRenderer::update()
@@ -37,9 +42,9 @@ void ThreadRenderer::update()
 	// loop recording endlessly
 	if (!mAudioNodes.getBufferRecorderNode()->isRecording())
 	{
-		mAudioNodes.getBufferRecorderNode()->start();
+		/*mAudioNodes.getBufferRecorderNode()->start();
 		mAudioNodes.getBufferRecorderNode()->reset();
-		cleanSurfaces();
+		cleanSurfaces();*/
 	}
 }
 
@@ -52,8 +57,8 @@ void ThreadRenderer::draw()
 	// just a convenience
 	auto _recorder_node = mAudioNodes.getBufferRecorderNode();
 
-	const float _y_scale = 1.0f;
-	const float _x_scale = static_cast<float>(ci::app::getWindowWidth()) / _recorder_node->getMaxPossiblePops();
+	const float _y_scale = 2.0f;
+	const float _x_scale = static_cast<float>(ci::app::getWindowWidth()) / mTotalSurfacesLength;
 
 	// get current record position
 	const int _current_write_pos = mLastPopPos;
@@ -61,17 +66,11 @@ void ThreadRenderer::draw()
 	const float _percentage_done = static_cast<float>(_current_write_pos) / _recorder_node->getNumFrames();
 	// get the index of last active surface for drawing
 	int _current_last_surface = static_cast<int>(_percentage_done * mNumSurfaces);
-	// if we are at the end of samples, subtract one from last active surface index
-	if (_percentage_done == 1.0f || !_recorder_node->isRecording())
-	{
-		_current_last_surface -= 1;
-	}
 	// number of samples that will be empty drawn (last surface)
-	const float _static_offset = static_cast<float>(_recorder_node->getNumFrames() % mFramesPerSurface);
 	// get last thread-reported pop position and divide it over max pops possible
 	const float _current_index_in_surface = static_cast<float>(getIndexInSurfaceByQueryPos(mLastPopPos));
 	// shift to left for OpenGL (we're moving textures upside-down, therefore we shift one entire surface to right + estimate index in surface + static offset)
-	const float _shift_right = static_cast<float>(_current_index_in_surface - mFramesPerSurface - _static_offset) - (1.0f / _x_scale) * ci::app::getWindowWidth();
+	const float _shift_right = static_cast<float>(_current_index_in_surface - mLastSurfaceLength) - (1.0f / _x_scale) * ci::app::getWindowWidth();
 	const float _shift_up = (1.0f / _y_scale - 1.0f) * ci::app::getWindowHeight();
 
 	ci::gl::scale(_y_scale, _x_scale);
@@ -82,7 +81,7 @@ void ThreadRenderer::draw()
 		const auto x1 = static_cast<float>(mFftSize);
 		const auto y1 = static_cast<float>(count + 1) * mFramesPerSurface;
 		const auto x2 = 0.0f;
-		const auto y2 = static_cast<float>(count) * mFramesPerSurface;
+		const auto y2 = static_cast<float>(count)* mFramesPerSurface - index * ((float)(mFramesPerSurface - mLastSurfaceLength) / mNumSurfaces);
 
 		ci::Rectf draw_rect(x1, y1, x2, y2);
 
@@ -110,7 +109,14 @@ SpectralSurface& ThreadRenderer::getSurface(int index, int pop_pos)
 		std::lock_guard<std::mutex> _lock(mPoolLock);
 		if (!mSurfaceTexturePool[index].first) //double check
 		{
-			mSurfaceTexturePool[index].first = std::make_unique<SpectralSurface>(mFftSize, getFramesPerSurface());
+			if (index != mNumSurfaces - 1)
+			{
+				mSurfaceTexturePool[index].first = std::make_unique<SpectralSurface>(mFftSize, getFramesPerSurface());
+			}
+			else // last one
+			{
+				mSurfaceTexturePool[index].first = std::make_unique<SpectralSurface>(mFftSize, mLastSurfaceLength);
+			}
 		}
 	}
 	
@@ -144,6 +150,22 @@ void ThreadRenderer::cleanSurfaces()
 			pair.first.reset();
 		}
 	}
+}
+
+std::size_t ThreadRenderer::calculateLastSurfaceLength() const
+{
+	const auto _max_pops = mAudioNodes.getBufferRecorderNode()->getMaxPossiblePops();
+	const auto _max_num_pops_in_surfaces = mNumSurfaces * mFramesPerSurface;
+	const auto _actual_minus_real_diff = _max_num_pops_in_surfaces - _max_pops;
+	return getFramesPerSurface() - _actual_minus_real_diff;
+}
+
+std::size_t ThreadRenderer::calculateTotalSurfacesLength() const
+{
+	const auto _max_pops = mAudioNodes.getBufferRecorderNode()->getMaxPossiblePops();
+	const auto _max_num_pops_in_surfaces = mNumSurfaces * mFramesPerSurface;
+	const auto _actual_minus_real_diff = _max_num_pops_in_surfaces - _max_pops;
+	return (mNumSurfaces * mFramesPerSurface) - _actual_minus_real_diff;
 }
 
 } //!cieq
