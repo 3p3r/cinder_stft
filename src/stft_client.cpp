@@ -117,7 +117,7 @@ void Client::handle(work::RequestRef req)
 	const auto surface_index = renderer_ptr->getSurfaceIndexByQueryPos(pos);
 	const auto index_in_surface = renderer_ptr->getIndexInSurfaceByQueryPos(pos);
 
-	renderer_ptr->getSurface(surface_index).fillRow(index_in_surface, _resources.mPrivateStorage->mMagSpectrum);
+	renderer_ptr->getSurface(surface_index, pos).fillRow(index_in_surface, _resources.mPrivateStorage->mMagSpectrum);
 }
 
 Client::Format& Client::Format::windowSize(std::size_t size)

@@ -10,6 +10,7 @@ ThreadRenderer::ThreadRenderer(AudioNodes& nodes, std::size_t frames_per_surface
 	: mFramesPerSurface(frames_per_surface)
 	, mFftSize(fft_size)
 	, mAudioNodes(nodes)
+	, mLastPopPos(0)
 {
 	mNumSurfaces = mAudioNodes.getBufferRecorderNode()->getMaxPossiblePops() / mFramesPerSurface;
 	if (mAudioNodes.getBufferRecorderNode()->getMaxPossiblePops() % mFramesPerSurface != 0)
@@ -55,7 +56,7 @@ void ThreadRenderer::draw()
 	const float _x_scale = static_cast<float>(ci::app::getWindowWidth()) / _recorder_node->getMaxPossiblePops();
 
 	// get current record position
-	const int _current_write_pos = _recorder_node->getWritePosition();
+	const int _current_write_pos = mLastPopPos;
 	// percentage of the entire audio done recording
 	const float _percentage_done = static_cast<float>(_current_write_pos) / _recorder_node->getNumFrames();
 	// get the index of last active surface for drawing
@@ -67,8 +68,8 @@ void ThreadRenderer::draw()
 	}
 	// number of samples that will be empty drawn (last surface)
 	const float _static_offset = static_cast<float>(_recorder_node->getNumFrames() % mFramesPerSurface);
-	// guest-imate where the work manager is at currently, do note that this is an estimate!
-	const float _current_index_in_surface = std::fmodf(_percentage_done * mNumSurfaces * mFramesPerSurface, static_cast<float>(mFramesPerSurface));
+	// get last thread-reported pop position and divide it over max pops possible
+	const float _current_index_in_surface = getIndexInSurfaceByQueryPos(mLastPopPos);
 	// shift to left for OpenGL (we're moving textures upside-down, therefore we shift one entire surface to right + estimate index in surface + static offset)
 	const float _shift_right = static_cast<float>(_current_index_in_surface - mFramesPerSurface - _static_offset) - (1.0f / _x_scale) * ci::app::getWindowWidth();
 	const float _shift_up = (1.0f / _y_scale - 1.0f) * ci::app::getWindowHeight();
@@ -95,7 +96,7 @@ void ThreadRenderer::draw()
 	ci::gl::popMatrices();
 }
 
-SpectralSurface& ThreadRenderer::getSurface(int index)
+SpectralSurface& ThreadRenderer::getSurface(int index, int pop_pos)
 {
 	// if surface does not exist
 	if (!mSurfaceTexturePool[index].first)
@@ -107,7 +108,8 @@ SpectralSurface& ThreadRenderer::getSurface(int index)
 			mSurfaceTexturePool[index].first = std::make_unique<SpectralSurface>(mFftSize, getFramesPerSurface());
 		}
 	}
-
+	
+	mLastPopPos = pop_pos; //no lock needed, atomic
 	return *(mSurfaceTexturePool[index].first);
 }
 
@@ -124,7 +126,7 @@ std::size_t ThreadRenderer::getSurfaceIndexByQueryPos(std::size_t pos) const
 
 std::size_t ThreadRenderer::getIndexInSurfaceByQueryPos(std::size_t pos) const
 {
-	const auto pop_index = mAudioNodes.getBufferRecorderNode()->getQueryIndexByQueryPos(pos);
+	const std::size_t pop_index = mAudioNodes.getBufferRecorderNode()->getQueryIndexByQueryPos(pos);
 	return pop_index % getFramesPerSurface();
 }
 

@@ -19,7 +19,7 @@ public:
 
 	void								update();
 	void								draw();
-	SpectralSurface&					getSurface(int index);
+	SpectralSurface&					getSurface(int index, int pop_pos);
 	std::size_t							getFramesPerSurface() const;
 	std::size_t							getSurfaceIndexByQueryPos(std::size_t pos) const;
 	std::size_t							getIndexInSurfaceByQueryPos(std::size_t pos) const;
@@ -33,6 +33,7 @@ private:
 	std::size_t							mFftSize;
 	std::size_t							mNumSurfaces;
 	AudioNodes&							mAudioNodes;
+	std::atomic<int>					mLastPopPos;
 	ci::gl::Fbo							mCompleteAudioFbo;
 
 private:
