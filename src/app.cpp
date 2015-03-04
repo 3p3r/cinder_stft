@@ -8,6 +8,8 @@ namespace cieq
 InputAnalyzer::InputAnalyzer()
 	: mGlobals(mEventProcessor, mWorkManager, mAudioNodes)
 	, mAudioNodes(mGlobals)
+	, mGuiWidth(100.0f)
+	, mGuiHeight(150.0f)
 {}
 
 void InputAnalyzer::prepareSettings(Settings *settings)
@@ -37,8 +39,8 @@ void InputAnalyzer::prepareSettings(Settings *settings)
 
 void InputAnalyzer::setup()
 {
-	// setup the interface GL params
-	setupParamsGl();
+	// sets up ciUI
+	setupGUI();
 	// setup audio I/O
 	mAudioNodes.setup();
 }
@@ -50,6 +52,7 @@ void InputAnalyzer::resize()
 
 void InputAnalyzer::update()
 {
+	mCiuiCanvas->update();
 	mAudioNodes.update();
 }
 
@@ -59,13 +62,14 @@ void InputAnalyzer::draw()
 	ci::gl::clear();
 	ci::gl::enableAlphaBlending();
 
-	if (mGlobals.getThreadRenderer())
+	if (mGlobals.getThreadRenderer() && mAudioNodes.ready())
 		mGlobals.getThreadRenderer()->draw();
 
-	// draw interface GL params
-	mParamsRef->draw();
 	// draw FPS
 	drawFps();
+
+	// draw GUI
+	mCiuiCanvas->draw();
 
 	ci::gl::disableAlphaBlending();
 }
@@ -99,23 +103,22 @@ void InputAnalyzer::drawFps()
 	ci::gl::drawStringRight(buf.str(), ci::Vec2i(ci::app::getWindowWidth() - 25, 10));
 }
 
-void InputAnalyzer::setupParamsGl()
+void InputAnalyzer::guiEvent(ciUIEvent *event)
 {
-	// make sure this is called only once
-	// do note local statics gets instantiated once and only once.
-	static std::once_flag isParamsSetup;
-	// call it actually once
-	std::call_once(isParamsSetup, [this] {
-		mParamsRef = ci::params::InterfaceGl::create("Parameters", ci::Vec2i(50, 120));
-		mParamsRef->hide(); //let's hide by default
-		mEventProcessor.addKeyboardEvent([this](char c){ if (c == 'p' || c == 'P') {
-			if (mParamsRef->isVisible())
-				mParamsRef->hide();
-			else
-				mParamsRef->show();
-		}});
-		mGlobals.setParamsPtr(mParamsRef.get());
-	});
+	const std::string name = event->widget->getName();
+	// if (name) {...}
+}
+
+void InputAnalyzer::setupGUI()
+{
+	mCiuiCanvas = std::make_unique<ciUICanvas>(5.0f, 5.0f, mGuiWidth, mGuiHeight);
+	mCiuiCanvas->addWidgetDown(new ciUILabel("Cinder STFT", CI_UI_FONT_LARGE));
+	mCiuiCanvas->addWidgetDown(new ciUILabel("Sepehr Laal, Raghad Builos", CI_UI_FONT_SMALL));
+	mCiuiCanvas->addWidgetDown(new ciUILabel("Portland State University", CI_UI_FONT_MEDIUM));
+	mCiuiCanvas->addWidgetDown(new ciUILabel("ECE 312 Fourier Analysis", CI_UI_FONT_SMALL));
+	mCiuiCanvas->addWidgetDown(new ciUILabel("Instructor: Dr. James McNames", CI_UI_FONT_SMALL));
+
+	mCiuiCanvas->registerUIEvents(this, &cieq::InputAnalyzer::guiEvent);
 }
 
 } //!namespace cieq

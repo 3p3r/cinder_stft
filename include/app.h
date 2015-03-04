@@ -2,6 +2,7 @@
 #define CIEQ_INCLUDE_APP_H_
 
 #include <cinder/app/AppNative.h>
+#include <ciUI.h>
 
 #include "app_globals.h"
 #include "app_event.h"
@@ -39,10 +40,10 @@ public:
 	void			mouseDrag(ci::app::MouseEvent event) override final;
 	//! gets fired on keyboard click
 	void			keyDown(ci::app::KeyEvent event) override final;
-
-private:
-	//! sets up the ci::Gl::Params interface
-	void			setupParamsGl();
+	//! sets up the GUI
+	void			setupGUI();
+	//! gets fired on GUI event
+	void			guiEvent(ciUIEvent *event);
 
 private:
 	//! the event processor class instance
@@ -53,9 +54,13 @@ private:
 	AppGlobals		mGlobals;
 	//! audio I/O class instance
 	AudioNodes		mAudioNodes;
-	//! cinder's param ref, for tweaking variables at the runtime
-	std::shared_ptr<ci::params::InterfaceGl>
-					mParamsRef;
+	//! ciUI instance
+	std::unique_ptr<ciUICanvas>
+					mCiuiCanvas;
+
+private:
+	const float		mGuiWidth;
+	const float		mGuiHeight;
 };
 
 } //!cieq
