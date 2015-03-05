@@ -26,7 +26,7 @@ ThreadRenderer::ThreadRenderer(AudioNodes& nodes, std::size_t frames_per_surface
 
 void ThreadRenderer::update()
 {
-	/*for (container_pair& pair : mSurfaceTexturePool)
+	for (container_pair& pair : mSurfaceTexturePool)
 	{
 		if (pair.first && pair.first->allRowsTouched())
 		{
@@ -37,7 +37,7 @@ void ThreadRenderer::update()
 
 			pair.first.reset();
 		}
-	}*/
+	}
 
 	// loop recording endlessly
 	if (!mAudioNodes.getBufferRecorderNode()->isRecording())
