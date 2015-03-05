@@ -22,6 +22,14 @@ ThreadRenderer::ThreadRenderer(AudioNodes& nodes, std::size_t frames_per_surface
 
 	mLastSurfaceLength = calculateLastSurfaceLength();
 	mTotalSurfacesLength = calculateTotalSurfacesLength();
+
+	// I hate APIs with booleans in them :(
+	mCompleteAudioFbo = ci::gl::Fbo(
+		mTotalSurfacesLength, //width
+		mFftSize, //height
+		false, // alpha
+		true, // color
+		false); //depth
 }
 
 void ThreadRenderer::update()
@@ -31,73 +39,82 @@ void ThreadRenderer::update()
 		if (pair.first && pair.first->allRowsTouched())
 		{
 			if (pair.second)
+			{
 				pair.second->update(*pair.first);
+			}
 			else
+			{
 				pair.second = ci::gl::Texture::create(*pair.first);
+				pair.second->setMinFilter(GL_NEAREST); //disable GPU blur
+				pair.second->setMagFilter(GL_NEAREST); //disable GPU blur
+			}
 
 			pair.first.reset();
 		}
-	}
-
-	// loop recording endlessly
-	if (!mAudioNodes.getBufferRecorderNode()->isRecording())
-	{
-		/*mAudioNodes.getBufferRecorderNode()->start();
-		mAudioNodes.getBufferRecorderNode()->reset();
-		cleanSurfaces();*/
 	}
 }
 
 void ThreadRenderer::draw()
 {
-	ci::gl::pushMatrices();
-	ci::gl::clear(ci::Color::black());
-	ci::gl::rotate(90.0f); //rotate scene 90 degrees
+	{ //enter FBO scope
+		ci::gl::SaveFramebufferBinding _save_fb;
+		mCompleteAudioFbo.bindFramebuffer();
 
-	// just a convenience
-	auto _recorder_node = mAudioNodes.getBufferRecorderNode();
+		ci::gl::pushMatrices();
+		ci::gl::clear();
+		ci::gl::rotate(90.0f); //rotate scene 90 degrees
 
-	const float _y_scale = 2.0f;
-	const float _x_scale = static_cast<float>(ci::app::getWindowWidth()) / mTotalSurfacesLength;
+		// just a convenience
+		auto _recorder_node = mAudioNodes.getBufferRecorderNode();
 
-	// get current record position
-	const int _current_write_pos = mLastPopPos;
-	// percentage of the entire audio done recording
-	const float _percentage_done = static_cast<float>(_current_write_pos) / _recorder_node->getNumFrames();
-	// get the index of last active surface for drawing
-	int _current_last_surface = static_cast<int>(_percentage_done * mNumSurfaces);
-	// number of samples that will be empty drawn (last surface)
-	// get last thread-reported pop position and divide it over max pops possible
-	const float _current_index_in_surface = static_cast<float>(getIndexInSurfaceByQueryPos(mLastPopPos));
-	// shift to left for OpenGL (we're moving textures upside-down, therefore we shift one entire surface to right + estimate index in surface + static offset)
-	const float _shift_right = static_cast<float>(_current_index_in_surface - mLastSurfaceLength) - (1.0f / _x_scale) * ci::app::getWindowWidth();
-	const float _shift_up = (1.0f / _y_scale - 1.0f) * ci::app::getWindowHeight();
+		// get current record position
+		const int _current_write_pos = mLastPopPos;
+		// percentage of the entire audio done recording
+		const float _percentage_done = static_cast<float>(_current_write_pos) / _recorder_node->getNumFrames();
+		// get the index of last active surface for drawing
+		int _current_last_surface = static_cast<int>(_percentage_done * mNumSurfaces);
+		// number of samples that will be empty drawn (last surface)
+		// get last thread-reported pop position and divide it over max pops possible
+		const float _current_index_in_surface = static_cast<float>(getIndexInSurfaceByQueryPos(mLastPopPos));
+		// shift to left for OpenGL (we're moving textures upside-down, therefore we shift one entire surface to right + estimate index in surface + static offset)
+		const float _shift_right = static_cast<float>(_current_index_in_surface - mFramesPerSurface) - ci::app::getWindowWidth();
 
-	ci::gl::scale(_y_scale, _x_scale);
-	ci::gl::translate(_shift_up, _shift_right); //after rotation, moving x is like moving y
+		ci::gl::translate(0.0f, _shift_right); //after rotation, moving x is like moving y
 
-	for (int index = _current_last_surface, count = 0;index >= 0; --index, ++count)
-	{
-		const auto x1 = static_cast<float>(mFftSize);
-		const auto y1 = static_cast<float>(count + 1) * mFramesPerSurface;
-		const auto x2 = 0.0f;
-		const auto y2 = static_cast<float>(count)* mFramesPerSurface;
-
-		ci::Rectf draw_rect(x1, y1, x2, y2);
-
-		if (mSurfaceTexturePool[index].first)
+		for (int index = _current_last_surface, count = 0; index >= 0; --index, ++count)
 		{
-			// draw surface
-			ci::gl::draw(*mSurfaceTexturePool[index].first, draw_rect);
+			const auto x1 = static_cast<float>(mFftSize) * ci::app::getWindowHeight() / mCompleteAudioFbo.getHeight();
+			const auto y1 = static_cast<float>(count + 1) * mFramesPerSurface;
+			const auto x2 = 0.0f;
+			const auto y2 = static_cast<float>(count)* mFramesPerSurface;
+
+			ci::Rectf draw_rect(x1, y1, x2, y2);
+
+			if (mSurfaceTexturePool[index].first)
+			{
+				// draw surface
+				ci::gl::draw(*mSurfaceTexturePool[index].first, draw_rect);
+			}
+			else if (mSurfaceTexturePool[index].second)
+			{
+				// draw texture
+				ci::gl::draw(mSurfaceTexturePool[index].second, draw_rect);
+			}
 		}
-		else if (mSurfaceTexturePool[index].second)
-		{
-			// draw texture
-			ci::gl::draw(mSurfaceTexturePool[index].second, draw_rect);
-		}
+
+		ci::gl::popMatrices();
+
+		mCompleteAudioFbo.unbindFramebuffer();
 	}
 
-	ci::gl::popMatrices();
+	{// enter screen drawing scope
+		ci::gl::pushMatrices();
+		
+		ci::Rectf _target_rect(mCompleteAudioFbo.getBounds());
+		ci::gl::draw(mCompleteAudioFbo.getTexture(), _target_rect);
+		
+		ci::gl::popMatrices();
+	}
 }
 
 SpectralSurface& ThreadRenderer::getSurface(int index, int pop_pos)
@@ -109,7 +126,14 @@ SpectralSurface& ThreadRenderer::getSurface(int index, int pop_pos)
 		std::lock_guard<std::mutex> _lock(mPoolLock);
 		if (!mSurfaceTexturePool[index].first) //double check
 		{
-			mSurfaceTexturePool[index].first = std::make_unique<SpectralSurface>(mFftSize, getFramesPerSurface());
+			if (index != mNumSurfaces - 1)
+			{
+				mSurfaceTexturePool[index].first = std::make_unique<SpectralSurface>(mFftSize, mLastSurfaceLength);
+			}
+			else
+			{
+				mSurfaceTexturePool[index].first = std::make_unique<SpectralSurface>(mFftSize, getFramesPerSurface());
+			}
 		}
 	}
 	
@@ -125,7 +149,6 @@ std::size_t ThreadRenderer::getFramesPerSurface() const
 std::size_t ThreadRenderer::getSurfaceIndexByQueryPos(std::size_t pos) const
 {
 	const auto pop_index = mAudioNodes.getBufferRecorderNode()->getQueryIndexByQueryPos(pos);
-	std::cout << "pop: " << pop_index << " pos: " << pos << " sindex: " << pop_index / getFramesPerSurface() << std::endl;
 	return pop_index / getFramesPerSurface();
 }
 
