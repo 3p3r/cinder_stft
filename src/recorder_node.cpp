@@ -12,8 +12,6 @@ RecorderNode::RecorderNode(size_t numFrames, const Format &format /*= Format()*/
 	, mLastQueried(0)
 {
 	mMaxPopsPossible = getNumFrames() / getHopSize();
-	if (getNumFrames() % getHopSize() == 0)
-		mMaxPopsPossible -= 1; //special case where last chunk will be equal to one hop
 }
 
 RecorderNode::RecorderNode(const Format &format /*= Format()*/)
