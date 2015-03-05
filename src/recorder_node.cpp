@@ -39,35 +39,13 @@ void RecorderNode::getBufferChunk(size_t start, ci::audio::Buffer& other)
 	getBufferChunk(start, mWindowSize, other);
 }
 
-bool RecorderNode::popBufferWindow(ci::audio::Buffer& other)
-{
-	if (!isRecording()) return false;
-
-	if (mLastQueried + mWindowSize <= getWritePosition())
-	{
-		getBufferChunk(mLastQueried, other);
-		mLastQueried += mHopSize;
-		return true;
-	}
-	// This is the critical situation that can happen at the end of samples
-	// where there's not enough number of samples for the last buffer.
-	else if (getNumFrames() - mLastQueried < mWindowSize)
-	{
-		getBufferChunk(mLastQueried, getNumFrames() - mLastQueried, other);
-		mLastQueried = getNumFrames();
-		return true;
-	}
-	else
-	{
-		return false;
-	}
-}
-
 bool RecorderNode::popBufferWindow(size_t& query_pos)
 {
-	if (!isRecording()) return false;
-
-	if (mLastQueried + mWindowSize <= getWritePosition())
+	if (mLastQueried == getNumFrames())
+	{
+		return false;
+	}
+	else if (mLastQueried + mWindowSize <= getWritePosition())
 	{
 		query_pos = mLastQueried;
 		mLastQueried += mHopSize;
@@ -87,25 +65,17 @@ bool RecorderNode::popBufferWindow(size_t& query_pos)
 	}
 }
 
-bool RecorderNode::popBufferWindow(ci::audio::Buffer& other, size_t query_pos)
+void RecorderNode::queryBufferWindow(ci::audio::Buffer& other, size_t query_pos)
 {
 	if (query_pos + mWindowSize <= getWritePosition())
 	{
 		getBufferChunk(query_pos, other);
-		query_pos += mHopSize;
-		return true;
 	}
 	// This is the critical situation that can happen at the end of samples
 	// where there's not enough number of samples for the last buffer.
 	else if (getNumFrames() - query_pos < mWindowSize)
 	{
 		getBufferChunk(query_pos, getNumFrames() - query_pos, other);
-		query_pos = getNumFrames();
-		return true;
-	}
-	else
-	{
-		return false;
 	}
 }
 

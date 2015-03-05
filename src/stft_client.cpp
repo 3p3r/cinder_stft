@@ -70,7 +70,7 @@ void Client::handle(work::RequestRef req)
 	auto recorder_ptr	= mGlobals->getAudioNodes().getBufferRecorderNode();
 	auto renderer_ptr	= mGlobals->getThreadRenderer();
 
-	recorder_ptr->popBufferWindow(_resources.mPrivateStorage->mCopiedBuffer, request_ptr->getQueryPos());
+	recorder_ptr->queryBufferWindow(_resources.mPrivateStorage->mCopiedBuffer, request_ptr->getQueryPos());
 	
 	// window the copied buffer and compute forward FFT transform
 	if (_resources.mPrivateStorage->mChannelSize > 1) {

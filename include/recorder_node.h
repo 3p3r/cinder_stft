@@ -45,8 +45,7 @@ public:
 	//! copies a chunk (window size) of the recording buffer inside another buffer. Not thread safe.
 	void							getBufferChunk(size_t start, ci::audio::Buffer& other);
 	//! pops a window size chunk and moves the internal pointer, hop size to the forward. Not thread safe.
-	bool							popBufferWindow(ci::audio::Buffer& other, size_t query_pos);
-	bool							popBufferWindow(ci::audio::Buffer& other);
+	void							queryBufferWindow(ci::audio::Buffer& other, size_t query_pos);
 	bool							popBufferWindow(size_t& query_pos);
 	//! answers if there's more pop operations left to do.
 	bool							isRecording() const;
@@ -55,7 +54,7 @@ public:
 	//! answers maximum possible number of processing operations
 	size_t							getMaxPossiblePops() const;
 	//! answers index of operation by write position
-	size_t getQueryIndexByQueryPos(size_t pos);
+	size_t							getQueryIndexByQueryPos(size_t pos);
 
 protected:
 	size_t	mWindowSize;

@@ -26,7 +26,7 @@ ThreadRenderer::ThreadRenderer(AudioNodes& nodes, std::size_t frames_per_surface
 
 void ThreadRenderer::update()
 {
-	for (container_pair& pair : mSurfaceTexturePool)
+	/*for (container_pair& pair : mSurfaceTexturePool)
 	{
 		if (pair.first && pair.first->allRowsTouched())
 		{
@@ -37,7 +37,7 @@ void ThreadRenderer::update()
 
 			pair.first.reset();
 		}
-	}
+	}*/
 
 	// loop recording endlessly
 	if (!mAudioNodes.getBufferRecorderNode()->isRecording())
@@ -81,7 +81,7 @@ void ThreadRenderer::draw()
 		const auto x1 = static_cast<float>(mFftSize);
 		const auto y1 = static_cast<float>(count + 1) * mFramesPerSurface;
 		const auto x2 = 0.0f;
-		const auto y2 = static_cast<float>(count)* mFramesPerSurface - index * ((float)(mFramesPerSurface - mLastSurfaceLength) / mNumSurfaces);
+		const auto y2 = static_cast<float>(count)* mFramesPerSurface;
 
 		ci::Rectf draw_rect(x1, y1, x2, y2);
 
@@ -109,14 +109,7 @@ SpectralSurface& ThreadRenderer::getSurface(int index, int pop_pos)
 		std::lock_guard<std::mutex> _lock(mPoolLock);
 		if (!mSurfaceTexturePool[index].first) //double check
 		{
-			if (index != mNumSurfaces - 1)
-			{
-				mSurfaceTexturePool[index].first = std::make_unique<SpectralSurface>(mFftSize, getFramesPerSurface());
-			}
-			else // last one
-			{
-				mSurfaceTexturePool[index].first = std::make_unique<SpectralSurface>(mFftSize, mLastSurfaceLength);
-			}
+			mSurfaceTexturePool[index].first = std::make_unique<SpectralSurface>(mFftSize, getFramesPerSurface());
 		}
 	}
 	
@@ -132,12 +125,13 @@ std::size_t ThreadRenderer::getFramesPerSurface() const
 std::size_t ThreadRenderer::getSurfaceIndexByQueryPos(std::size_t pos) const
 {
 	const auto pop_index = mAudioNodes.getBufferRecorderNode()->getQueryIndexByQueryPos(pos);
+	std::cout << "pop: " << pop_index << " pos: " << pos << " sindex: " << pop_index / getFramesPerSurface() << std::endl;
 	return pop_index / getFramesPerSurface();
 }
 
 std::size_t ThreadRenderer::getIndexInSurfaceByQueryPos(std::size_t pos) const
 {
-	const std::size_t pop_index = mAudioNodes.getBufferRecorderNode()->getQueryIndexByQueryPos(pos);
+	const auto pop_index = mAudioNodes.getBufferRecorderNode()->getQueryIndexByQueryPos(pos);
 	return pop_index % getFramesPerSurface();
 }
 
