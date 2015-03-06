@@ -43,6 +43,9 @@ void InputAnalyzer::setup()
 	setupGUI();
 	// setup audio I/O
 	mAudioNodes.setup();
+	// setup STFT renderer
+	mStftRenderer = std::make_unique<ThreadRenderer>(mAudioNodes);
+	mGlobals.setThreadRenderer(mStftRenderer.get());
 }
 
 void InputAnalyzer::resize()
@@ -53,6 +56,7 @@ void InputAnalyzer::resize()
 void InputAnalyzer::update()
 {
 	mCiuiCanvas->update();
+	mStftRenderer->update();
 	mAudioNodes.update();
 }
 
@@ -62,8 +66,8 @@ void InputAnalyzer::draw()
 	ci::gl::clear();
 	ci::gl::enableAlphaBlending();
 
-	if (mGlobals.getThreadRenderer() && mAudioNodes.ready())
-		mGlobals.getThreadRenderer()->draw();
+	// draw STFT
+	mStftRenderer->draw();
 
 	// draw FPS
 	drawFps();
