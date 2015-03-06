@@ -4,6 +4,7 @@
 #include "recorder_node.h"
 #include "stft_request.h"
 #include "stft_client_storage.h"
+#include "thread_renderer.h"
 
 #include <cinder/audio/dsp/Fft.h>
 #include <cinder/audio/Buffer.h>
@@ -11,7 +12,6 @@
 
 #include <mutex>
 #include <thread>
-#include <tuple>
 
 namespace cieq {
 namespace stft {
