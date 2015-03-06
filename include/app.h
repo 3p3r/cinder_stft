@@ -55,8 +55,8 @@ private:
 	AppGlobals		mGlobals;
 	//! audio I/O class instance
 	AudioNodes		mAudioNodes;
-	std::unique_ptr<ThreadRenderer>
-					mStftRenderer;
+	//! STFT renderer
+	ThreadRenderer	mStftRenderer;
 	//! ciUI instance
 	std::unique_ptr<ciUICanvas>
 					mCiuiCanvas;

@@ -4,8 +4,9 @@ namespace cieq
 {
 
 InputAnalyzer::InputAnalyzer()
-	: mGlobals(mEventProcessor, mWorkManager, mAudioNodes)
+	: mGlobals(mEventProcessor, mWorkManager, mAudioNodes, mStftRenderer)
 	, mAudioNodes(mGlobals)
+	, mStftRenderer(mAudioNodes)
 	, mGuiWidth(100.0f)
 	, mGuiHeight(150.0f)
 {}
@@ -42,8 +43,7 @@ void InputAnalyzer::setup()
 	// setup audio I/O
 	mAudioNodes.setup();
 	// setup STFT renderer
-	mStftRenderer = std::make_unique<ThreadRenderer>(mAudioNodes);
-	mGlobals.setThreadRenderer(mStftRenderer.get());
+	mStftRenderer.setup();
 }
 
 void InputAnalyzer::resize()
@@ -54,7 +54,7 @@ void InputAnalyzer::resize()
 void InputAnalyzer::update()
 {
 	mCiuiCanvas->update();
-	mStftRenderer->update();
+	mStftRenderer.update();
 	mAudioNodes.update();
 }
 
@@ -65,7 +65,7 @@ void InputAnalyzer::draw()
 	ci::gl::enableAlphaBlending();
 
 	// draw STFT
-	mStftRenderer->draw();
+	mStftRenderer.draw();
 
 	// draw FPS
 	drawFps();

@@ -25,20 +25,22 @@ class AppEvent;
 class AppGlobals
 {
 public:
-	AppGlobals(AppEvent&, work::Manager&, AudioNodes&);
+	AppGlobals(	AppEvent&,
+				work::Manager&,
+				AudioNodes&,
+				ThreadRenderer&);
 
 	AppEvent&							getEventProcessor();
 	work::Manager&						getWorkManager();
 	AudioNodes&							getAudioNodes();
 	cinder::audio::Context&				getAudioContext();
-	void								setThreadRenderer(ThreadRenderer* const);
-	ThreadRenderer* const				getThreadRenderer();
+	ThreadRenderer&						getThreadRenderer();
 
 private:
 	AppEvent&							mEventProcessor;
 	work::Manager&						mWorkManager;
 	AudioNodes&							mAudioNodes;
-	ThreadRenderer*						mThreadRenderer;
+	ThreadRenderer&						mThreadRenderer;
 };
 
 } //!cieq

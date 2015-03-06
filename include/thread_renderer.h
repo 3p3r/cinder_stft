@@ -18,6 +18,7 @@ public:
 	ThreadRenderer(AudioNodes&);
 
 	void								update();
+	void								setup();
 	void								draw();
 	SpectralSurface&					getSurface(int index, int pop_pos);
 	std::size_t							getFramesPerSurface() const;

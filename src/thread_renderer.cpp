@@ -13,6 +13,9 @@ ThreadRenderer::ThreadRenderer(AudioNodes& nodes)
 	, mLastPopPos(0)
 	, mLastSurfaceLength(0)
 	, mTotalSurfacesLength(0)
+{}
+
+void ThreadRenderer::setup()
 {
 	if (!mAudioNodes.ready()) return;
 

@@ -68,7 +68,7 @@ void Client::handle(work::RequestRef req)
 
 	auto request_ptr	= static_cast<stft::Request*>(req.get());
 	auto recorder_ptr	= mGlobals->getAudioNodes().getBufferRecorderNode();
-	auto renderer_ptr	= mGlobals->getThreadRenderer();
+	auto& renderer_ref	= mGlobals->getThreadRenderer();
 
 	recorder_ptr->queryBufferWindow(_resources.mPrivateStorage->mCopiedBuffer, request_ptr->getQueryPos());
 	
@@ -114,10 +114,10 @@ void Client::handle(work::RequestRef req)
 	}
 
 	const auto pos = request_ptr->getQueryPos();
-	const auto surface_index = renderer_ptr->getSurfaceIndexByQueryPos(pos);
-	const auto index_in_surface = renderer_ptr->getIndexInSurfaceByQueryPos(pos);
+	const auto surface_index = renderer_ref.getSurfaceIndexByQueryPos(pos);
+	const auto index_in_surface = renderer_ref.getIndexInSurfaceByQueryPos(pos);
 
-	renderer_ptr->getSurface(surface_index, pos).fillRow(index_in_surface, _resources.mPrivateStorage->mMagSpectrum);
+	renderer_ref.getSurface(surface_index, pos).fillRow(index_in_surface, _resources.mPrivateStorage->mMagSpectrum);
 }
 
 Client::Format& Client::Format::windowSize(std::size_t size)

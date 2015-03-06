@@ -1,15 +1,15 @@
 #include "app_globals.h"
-#include "app_event.h"
 
 #include <cinder/audio/Context.h>
 
 namespace cieq
 {
 
-AppGlobals::AppGlobals(AppEvent& event_processor, work::Manager& work_manager, AudioNodes& nodes)
+AppGlobals::AppGlobals(AppEvent& event_processor, work::Manager& work_manager, AudioNodes& nodes, ThreadRenderer& renderer)
 	: mEventProcessor(event_processor)
 	, mWorkManager(work_manager)
 	, mAudioNodes(nodes)
+	, mThreadRenderer(renderer)
 {}
 
 AppEvent& AppGlobals::getEventProcessor()
@@ -32,12 +32,7 @@ AudioNodes& AppGlobals::getAudioNodes()
 	return mAudioNodes;
 }
 
-void AppGlobals::setThreadRenderer(ThreadRenderer* const ptr)
-{
-	mThreadRenderer = ptr;
-}
-
-ThreadRenderer* const AppGlobals::getThreadRenderer()
+ThreadRenderer& AppGlobals::getThreadRenderer()
 {
 	return mThreadRenderer;
 }
