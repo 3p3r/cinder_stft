@@ -6,10 +6,7 @@
 namespace cinder {
 namespace audio {
 class Context;
-} //!namespace audio
-namespace params {
-class InterfaceGl;
-}}//!namespace ci
+}} //!namespace ci::audio
 
 namespace cieq
 {
@@ -34,8 +31,6 @@ public:
 	work::Manager&						getWorkManager();
 	AudioNodes&							getAudioNodes();
 	cinder::audio::Context&				getAudioContext();
-	void								setParamsPtr(cinder::params::InterfaceGl* const params);
-	cinder::params::InterfaceGl* const	getParamsPtr();
 	void								setThreadRenderer(ThreadRenderer* const);
 	ThreadRenderer* const				getThreadRenderer();
 
@@ -44,7 +39,6 @@ private:
 	work::Manager&						mWorkManager;
 	AudioNodes&							mAudioNodes;
 	ThreadRenderer*						mThreadRenderer;
-	cinder::params::InterfaceGl*		mParamsPtr;
 };
 
 } //!cieq

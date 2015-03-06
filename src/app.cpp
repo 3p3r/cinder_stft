@@ -1,7 +1,5 @@
 #include "app.h"
 
-#include <cinder/params/Params.h>
-
 namespace cieq
 {
 
@@ -117,7 +115,7 @@ void InputAnalyzer::setupGUI()
 {
 	mCiuiCanvas = std::make_unique<ciUICanvas>(5.0f, 5.0f, mGuiWidth, mGuiHeight);
 	mCiuiCanvas->addWidgetDown(new ciUILabel("Cinder STFT", CI_UI_FONT_LARGE));
-	mCiuiCanvas->addWidgetDown(new ciUILabel("Sepehr Laal, Raghad Builos", CI_UI_FONT_SMALL));
+	mCiuiCanvas->addWidgetDown(new ciUILabel("Sepehr Laal, Raghad Boulos", CI_UI_FONT_SMALL));
 	mCiuiCanvas->addWidgetDown(new ciUILabel("Portland State University", CI_UI_FONT_MEDIUM));
 	mCiuiCanvas->addWidgetDown(new ciUILabel("ECE 312 Fourier Analysis", CI_UI_FONT_SMALL));
 	mCiuiCanvas->addWidgetDown(new ciUILabel("Instructor: Dr. James McNames", CI_UI_FONT_SMALL));

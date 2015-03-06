@@ -22,16 +22,6 @@ cinder::audio::Context& AppGlobals::getAudioContext()
 	return *ci::audio::Context::master();
 }
 
-void AppGlobals::setParamsPtr(ci::params::InterfaceGl* const params)
-{
-	mParamsPtr = params;
-}
-
-ci::params::InterfaceGl* const AppGlobals::getParamsPtr()
-{
-	return mParamsPtr;
-}
-
 work::Manager& AppGlobals::getWorkManager()
 {
 	return mWorkManager;
