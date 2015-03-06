@@ -121,9 +121,7 @@ void ThreadRenderer::draw()
 	{// enter screen drawing scope
 		ci::gl::pushMatrices();
 		
-		ci::Rectf _target_rect(mCompleteAudioFbo.getBounds());
-		std::swap(_target_rect.y1, _target_rect.y2); //swap UVs
-		ci::gl::draw(mCompleteAudioFbo.getTexture(), _target_rect);
+		mCompleteAudioFbo.blitToScreen(mCompleteAudioFbo.getBounds(), mCompleteAudioFbo.getBounds());
 		
 		ci::gl::popMatrices();
 	}
