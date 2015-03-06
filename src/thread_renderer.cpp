@@ -6,14 +6,16 @@
 
 namespace cieq {
 
-ThreadRenderer::ThreadRenderer(AudioNodes& nodes, std::size_t frames_per_surface, std::size_t fft_size)
-	: mFramesPerSurface(frames_per_surface)
-	, mFftSize(fft_size)
+ThreadRenderer::ThreadRenderer(AudioNodes& nodes)
+	: mFramesPerSurface(nodes.getFormat().getSamplesCacheSize())
+	, mFftSize(nodes.getFormat().getFftBins() / 2)
 	, mAudioNodes(nodes)
 	, mLastPopPos(0)
 	, mLastSurfaceLength(0)
 	, mTotalSurfacesLength(0)
 {
+	if (!mAudioNodes.ready()) return;
+
 	mNumSurfaces = mAudioNodes.getBufferRecorderNode()->getMaxPossiblePops() / mFramesPerSurface;
 	if (mAudioNodes.getBufferRecorderNode()->getMaxPossiblePops() % mFramesPerSurface != 0)
 		mNumSurfaces += 1;
@@ -34,6 +36,8 @@ ThreadRenderer::ThreadRenderer(AudioNodes& nodes, std::size_t frames_per_surface
 
 void ThreadRenderer::update()
 {
+	if (!mAudioNodes.ready()) return;
+
 	for (container_pair& pair : mSurfaceTexturePool)
 	{
 		if (pair.first && pair.first->allRowsTouched())
@@ -56,6 +60,8 @@ void ThreadRenderer::update()
 
 void ThreadRenderer::draw()
 {
+	if (!mAudioNodes.ready()) return;
+
 	{ //enter FBO scope
 		ci::gl::SaveFramebufferBinding _save_fb;
 		mCompleteAudioFbo.bindFramebuffer();
@@ -83,6 +89,7 @@ void ThreadRenderer::draw()
 
 		for (int index = _current_last_surface, count = 0; index >= 0; --index, ++count)
 		{
+			const auto t = ci::app::getWindowHeight() / mCompleteAudioFbo.getHeight();
 			const auto x1 = static_cast<float>(mFftSize) * ci::app::getWindowHeight() / mCompleteAudioFbo.getHeight();
 			const auto y1 = static_cast<float>(count + 1) * mFramesPerSurface;
 			const auto x2 = 0.0f;

@@ -15,7 +15,7 @@ class AudioNodes;
 class ThreadRenderer
 {
 public:
-	ThreadRenderer(AudioNodes&, std::size_t frames_per_surface, std::size_t fft_size);
+	ThreadRenderer(AudioNodes&);
 
 	void								update();
 	void								draw();
