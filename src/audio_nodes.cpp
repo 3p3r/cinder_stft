@@ -4,7 +4,6 @@
 #include "recorder_node.h"
 #include "stft_client.h"
 #include "stft_request.h"
-#include "smart_surface.h"
 
 #include <cinder/audio/Context.h>
 #include <cinder/app/App.h>
@@ -12,13 +11,15 @@
 namespace cieq
 {
 
-AudioNodes::AudioNodes(AppGlobals& globals)
+AudioNodes::AudioNodes(AppGlobals& globals, const Format& fmt /*= Format()*/)
 	: mGlobals(globals)
+	, mFormat(fmt)
 	, mIsEnabled(false)
 	, mIsReady(false)
+	, mQueryPosition(0)
 {}
 
-void AudioNodes::setup(bool auto_enable /*= true*/)
+void AudioNodes::setup()
 {
 	try
 	{
@@ -50,42 +51,26 @@ void AudioNodes::setup(bool auto_enable /*= true*/)
 		return;
 	}
 
-	// configurable input
-	const auto record_duration = 20.0f; //in seconds
-	const auto window_duration = 0.02f; //in seconds (0.02s roughly is 1024 in 44.1KHz)
-	const auto hop_duration = 0.01f; //in seconds (0.01s roughly is 512 in 44.1KHz)
-	const auto fft_bins = 2048; //in samples
+	auto recorderFormat = cieq::audio::RecorderNode::Format()
+		.hopSize(mFormat.getHopDurationInSamples())
+		.windowSize(mFormat.getWindowDurationInSamples());
 
-	// calculated input
-	const auto sample_rate = mInputDeviceNode->getSampleRate();
-	const auto record_samples = static_cast<std::size_t>(record_duration * sample_rate);
-	const auto window_samples = static_cast<std::size_t>(window_duration * sample_rate);
-	const auto hop_samples = static_cast<std::size_t>(hop_duration * sample_rate);
-
-	auto recorderFormat = cieq::audio::RecorderNode::Format().hopSize(hop_samples).windowSize(window_samples);
-	mBufferRecorderNode = mGlobals.getAudioContext().makeNode(new cieq::audio::RecorderNode(record_samples, recorderFormat));
-
+	// Fix me: this needs to be record duration and renderer should account for time span, this is for development now
+	mBufferRecorderNode = mGlobals.getAudioContext().makeNode(new cieq::audio::RecorderNode(mFormat.getTimeSpanInSamples(), recorderFormat));
 	mInputDeviceNode >> mBufferRecorderNode;
-	mBufferRecorderNode->start();
+	
+	auto stftClientFormat = stft::Client::Format()
+		.channels(mBufferRecorderNode->getNumChannels())
+		.fftSize(mFormat.getFftBins())
+		.windowSize(mFormat.getWindowDurationInSamples());
 
-	auto fmt = stft::Client::Format();
-	fmt.channels(mBufferRecorderNode->getNumChannels()).fftSize(fft_bins).windowSize(window_samples);
-	mStftClient = work::make_client<stft::Client>(mGlobals.getWorkManager(), &mGlobals, fmt);
+	mStftClient = work::make_client<stft::Client>(mGlobals.getWorkManager(), &mGlobals, stftClientFormat);
 
-	mThreadRenderer = std::make_unique<ThreadRenderer>(*this, 50, fmt.getFftSize() / 2);
-	mGlobals.setThreadRenderer(mThreadRenderer.get());
-
-	mOriginalTitle = ci::app::getWindow()->getTitle();
-	ci::app::getWindow()->setTitle(mOriginalTitle + " (" + mInputDeviceNode->getDevice()->getName() + ")");
-
-	if (auto_enable)
+	if (mFormat.getAutoStart())
 	{
 		enableInput();
+		mBufferRecorderNode->start();
 	}
-
-	mGlobals
-		.getEventProcessor()
-		.addKeyboardEvent([this](char c){ if (c == 's' || c == 'S') toggleInput(); });
 
 	mGlobals
 		.getEventProcessor()
@@ -98,21 +83,9 @@ void AudioNodes::update()
 {
 	if (!ready()) return;
 
-	mThreadRenderer->update();
-
-	std::size_t query_pos = 0;
-	while (mBufferRecorderNode->popBufferWindow(query_pos))
+	while (mBufferRecorderNode->popBufferWindow(mQueryPosition))
 	{
-		mStftClient->request(work::make_request<stft::Request>(query_pos));
-	}
-
-	if (mBufferRecorderNode->getWritePosition() != mBufferRecorderNode->getNumFrames())
-	{
-		ci::app::getWindow()->setTitle(mOriginalTitle + " ( Recording... )");
-	}
-	else
-	{
-		ci::app::getWindow()->setTitle(mOriginalTitle + " (" + mInputDeviceNode->getDevice()->getName() + ")");
+		mStftClient->request(work::make_request<stft::Request>(mQueryPosition));
 	}
 }
 
@@ -161,6 +134,121 @@ void AudioNodes::toggleInput()
 bool AudioNodes::ready() const
 {
 	return mIsReady;
+}
+
+const AudioNodes::Format& AudioNodes::getFormat() const
+{
+	return mFormat;
+}
+
+// ------------------------------
+// Audio nodes format
+// ------------------------------
+
+AudioNodes::Format::Format()
+	: mRecordDuration(20.0f * 60.0f) //20 minutes
+	, mTimeSpan(20.0f) //20 seconds
+	, mWindowDuration(0.02f) //in seconds (0.02s is roughly 1024 in 44.1KHz)
+	, mHopDuration(0.01f) //in seconds (0.01s roughly is 512 in 44.1KHz)
+	, mFftBins(2048)
+	, mSamplesCacheSize(50)
+	, mAutoStart(false)
+{}
+
+float AudioNodes::Format::getRecordDuration() const
+{
+	return mRecordDuration;
+}
+
+AudioNodes::Format& AudioNodes::Format::recordDuration(float val)
+{
+	mRecordDuration = val; return *this;
+}
+
+float AudioNodes::Format::getTimeSpan() const
+{
+	return mTimeSpan;
+}
+
+AudioNodes::Format& AudioNodes::Format::timeSpan(float val)
+{
+	mTimeSpan = val; return *this;
+}
+
+float AudioNodes::Format::getWindowDuration() const
+{
+	return mWindowDuration;
+}
+
+AudioNodes::Format& AudioNodes::Format::windowDuration(float val)
+{
+	mWindowDuration = val; return *this;
+}
+
+float AudioNodes::Format::getHopDuration() const
+{
+	return mHopDuration;
+}
+
+AudioNodes::Format& AudioNodes::Format::hopDuration(float val)
+{
+	mHopDuration = val; return *this;
+}
+
+size_t AudioNodes::Format::getFftBins() const
+{
+	return mFftBins;
+}
+
+AudioNodes::Format& AudioNodes::Format::fftBins(size_t val)
+{
+	mFftBins = val; return *this;
+}
+
+bool AudioNodes::Format::getAutoStart() const
+{
+	return mAutoStart;
+}
+
+AudioNodes::Format& AudioNodes::Format::autoStart(bool val)
+{
+	mAutoStart = val; return *this;
+}
+
+size_t AudioNodes::Format::getSamplesCacheSize() const
+{
+	return mSamplesCacheSize;
+}
+
+AudioNodes::Format& AudioNodes::Format::samplesCacheSize(size_t val)
+{
+	mSamplesCacheSize = val; return *this;
+}
+
+namespace {
+static size_t _get_sample_rate()
+{
+return ci::audio::Context::deviceManager()->getDefaultOutput()->getSampleRate();
+}} //!namespace
+
+size_t AudioNodes::Format::getRecordDurationInSamples() const
+{
+	return static_cast<std::size_t>(getRecordDuration() * _get_sample_rate());
+}
+
+size_t AudioNodes::Format::getTimeSpanInSamples() const
+{
+	return static_cast<std::size_t>(getTimeSpan() * _get_sample_rate());
+}
+
+size_t AudioNodes::Format::getHopDurationInSamples() const
+{
+	return static_cast<std::size_t>(getHopDuration() * _get_sample_rate());
+}
+
+size_t AudioNodes::Format::getWindowDurationInSamples() const
+{
+	return static_cast<std::size_t>(getWindowDuration() * _get_sample_rate());
 }
 
 } //!cieq

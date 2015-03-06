@@ -2,10 +2,8 @@
 #define CIEQ_INCLUDE_AUDIO_NODES_H_
 
 #include <memory>
-#include <string>
 
 #include "work_manager.h"
-#include "thread_renderer.h"
 
 namespace cinder {
 namespace audio {
@@ -31,10 +29,47 @@ class AppGlobals;
 class AudioNodes
 {
 public:
-	AudioNodes(AppGlobals&);
+	class Format
+	{
+	public:
+		Format();
+
+		Format& recordDuration(float val);
+		Format& timeSpan(float val);
+		Format& windowDuration(float val);
+		Format& hopDuration(float val);
+		Format& fftBins(size_t val);
+		Format& samplesCacheSize(size_t val);
+		Format& autoStart(bool val);
+
+		float	getRecordDuration() const;
+		float	getTimeSpan() const;
+		float	getWindowDuration() const;
+		float	getHopDuration() const;
+		size_t	getFftBins() const;
+		size_t	getSamplesCacheSize() const;
+		bool	getAutoStart() const;
+
+		size_t	getRecordDurationInSamples() const;
+		size_t	getTimeSpanInSamples() const;
+		size_t	getHopDurationInSamples() const;
+		size_t	getWindowDurationInSamples() const;
+
+	private:
+		float	mRecordDuration;
+		float	mTimeSpan;
+		float	mWindowDuration;
+		float	mHopDuration;
+		size_t	mFftBins;
+		size_t	mSamplesCacheSize;
+		bool	mAutoStart;
+	};
+
+public:
+	AudioNodes(AppGlobals&, const Format& = Format());
 
 	// \brief initializes all nodes and connect them together
-	void												setup(bool auto_enable = true);
+	void												setup();
 	// \brief enables reading from input
 	void												enableInput();
 	// \brief disables reading from input
@@ -45,6 +80,8 @@ public:
 	void												update();
 	// \brief returns true if everything is setup correctly for audio nodes
 	bool												ready() const;
+	// \brief answers currently used format
+	const Format&										getFormat() const;
 
 	// \brief returns a pointer to the node which is reading data from input
 	cinder::audio::InputDeviceNode* const				getInputDeviceNode();
@@ -57,11 +94,11 @@ private:
 
 private:
 	AppGlobals&											mGlobals;
+	Format												mFormat;
 	bool												mIsEnabled;
 	bool												mIsReady;
-	std::string											mOriginalTitle;
 	work::ClientRef										mStftClient;
-	std::unique_ptr<ThreadRenderer>						mThreadRenderer;
+	std::size_t											mQueryPosition;
 };
 
 } //!cieq
