@@ -6,7 +6,7 @@ namespace cieq
 InputAnalyzer::InputAnalyzer()
 	: mGlobals(mEventProcessor, mWorkManager, mAudioNodes, mStftRenderer)
 	, mAudioNodes(mGlobals)
-	, mStftRenderer(mAudioNodes)
+	, mStftRenderer(mGlobals)
 	, mGuiWidth(100.0f)
 	, mGuiHeight(150.0f)
 {}

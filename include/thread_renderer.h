@@ -1,7 +1,6 @@
 #ifndef CIEQ_INCLUDE_THREAD_RENDERER_H_
 #define CIEQ_INCLUDE_THREAD_RENDERER_H_
 
-#include <queue>
 #include <vector>
 #include <mutex>
 
@@ -11,11 +10,12 @@
 #include <cinder/gl/Fbo.h>
 
 namespace cieq {
-class AudioNodes;
+class AppGlobals;
+
 class ThreadRenderer
 {
 public:
-	ThreadRenderer(AudioNodes&);
+	ThreadRenderer(AppGlobals&);
 
 	void								update();
 	void								setup();
@@ -26,21 +26,22 @@ public:
 	std::size_t							getIndexInSurfaceByQueryPos(std::size_t pos) const;
 
 private:
-	using container_pair	= std::pair<SpectralSurfaceRef, ci::gl::TextureRef>;
-	using container			= std::vector < container_pair >;
+	using container_pair				= std::pair<SpectralSurfaceRef, ci::gl::TextureRef>;
+	using container						= std::vector < container_pair >;
+
+private:
+	AppGlobals&							mGlobals;
 	container							mSurfaceTexturePool;
 	std::mutex							mPoolLock;
 	std::size_t							mFramesPerSurface;
 	std::size_t							mFftSize;
 	std::size_t							mNumSurfaces;
-	AudioNodes&							mAudioNodes;
 	std::size_t							mTotalSurfacesLength;
 	std::size_t							mLastSurfaceLength;
 	std::atomic<int>					mLastPopPos;
 	ci::gl::Fbo							mCompleteAudioFbo;
 
 private:
-	void								cleanSurfaces();
 	std::size_t							calculateLastSurfaceLength() const;
 	std::size_t							calculateTotalSurfacesLength() const;
 };

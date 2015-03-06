@@ -1,4 +1,5 @@
 #include "thread_renderer.h"
+#include "app_globals.h"
 #include "audio_nodes.h"
 #include "recorder_node.h"
 
@@ -6,10 +7,10 @@
 
 namespace cieq {
 
-ThreadRenderer::ThreadRenderer(AudioNodes& nodes)
-	: mFramesPerSurface(nodes.getFormat().getSamplesCacheSize())
-	, mFftSize(nodes.getFormat().getFftBins() / 2)
-	, mAudioNodes(nodes)
+ThreadRenderer::ThreadRenderer(AppGlobals& globals)
+	: mGlobals(globals)
+	, mFramesPerSurface(mGlobals.getAudioNodes().getFormat().getSamplesCacheSize())
+	, mFftSize(mGlobals.getAudioNodes().getFormat().getFftBins() / 2)
 	, mLastPopPos(0)
 	, mLastSurfaceLength(0)
 	, mTotalSurfacesLength(0)
@@ -17,10 +18,10 @@ ThreadRenderer::ThreadRenderer(AudioNodes& nodes)
 
 void ThreadRenderer::setup()
 {
-	if (!mAudioNodes.ready()) return;
+	if (!mGlobals.getAudioNodes().ready()) return;
 
-	mNumSurfaces = mAudioNodes.getBufferRecorderNode()->getMaxPossiblePops() / mFramesPerSurface;
-	if (mAudioNodes.getBufferRecorderNode()->getMaxPossiblePops() % mFramesPerSurface != 0)
+	mNumSurfaces = mGlobals.getAudioNodes().getBufferRecorderNode()->getMaxPossiblePops() / mFramesPerSurface;
+	if (mGlobals.getAudioNodes().getBufferRecorderNode()->getMaxPossiblePops() % mFramesPerSurface != 0)
 		mNumSurfaces += 1;
 
 	mSurfaceTexturePool.resize(mNumSurfaces);
@@ -39,7 +40,7 @@ void ThreadRenderer::setup()
 
 void ThreadRenderer::update()
 {
-	if (!mAudioNodes.ready()) return;
+	if (!mGlobals.getAudioNodes().ready()) return;
 
 	for (container_pair& pair : mSurfaceTexturePool)
 	{
@@ -63,7 +64,7 @@ void ThreadRenderer::update()
 
 void ThreadRenderer::draw()
 {
-	if (!mAudioNodes.ready()) return;
+	if (!mGlobals.getAudioNodes().ready()) return;
 
 	{ //enter FBO scope
 		ci::gl::SaveFramebufferBinding _save_fb;
@@ -74,7 +75,7 @@ void ThreadRenderer::draw()
 		ci::gl::rotate(90.0f); //rotate scene 90 degrees
 
 		// just a convenience
-		auto _recorder_node = mAudioNodes.getBufferRecorderNode();
+		auto _recorder_node = mGlobals.getAudioNodes().getBufferRecorderNode();
 
 		// get current record position
 		const int _current_write_pos = mLastPopPos;
@@ -159,30 +160,19 @@ std::size_t ThreadRenderer::getFramesPerSurface() const
 
 std::size_t ThreadRenderer::getSurfaceIndexByQueryPos(std::size_t pos) const
 {
-	const auto pop_index = mAudioNodes.getBufferRecorderNode()->getQueryIndexByQueryPos(pos);
+	const auto pop_index = mGlobals.getAudioNodes().getBufferRecorderNode()->getQueryIndexByQueryPos(pos);
 	return pop_index / getFramesPerSurface();
 }
 
 std::size_t ThreadRenderer::getIndexInSurfaceByQueryPos(std::size_t pos) const
 {
-	const auto pop_index = mAudioNodes.getBufferRecorderNode()->getQueryIndexByQueryPos(pos);
+	const auto pop_index = mGlobals.getAudioNodes().getBufferRecorderNode()->getQueryIndexByQueryPos(pos);
 	return pop_index % getFramesPerSurface();
-}
-
-void ThreadRenderer::cleanSurfaces()
-{
-	for (container_pair& pair : mSurfaceTexturePool)
-	{
-		if (pair.first)
-		{
-			pair.first.reset();
-		}
-	}
 }
 
 std::size_t ThreadRenderer::calculateLastSurfaceLength() const
 {
-	const auto _max_pops = mAudioNodes.getBufferRecorderNode()->getMaxPossiblePops();
+	const auto _max_pops = mGlobals.getAudioNodes().getBufferRecorderNode()->getMaxPossiblePops();
 	const auto _max_num_pops_in_surfaces = mNumSurfaces * mFramesPerSurface;
 	const auto _actual_minus_real_diff = _max_num_pops_in_surfaces - _max_pops;
 	return getFramesPerSurface() - _actual_minus_real_diff;
@@ -190,7 +180,7 @@ std::size_t ThreadRenderer::calculateLastSurfaceLength() const
 
 std::size_t ThreadRenderer::calculateTotalSurfacesLength() const
 {
-	const auto _max_pops = mAudioNodes.getBufferRecorderNode()->getMaxPossiblePops();
+	const auto _max_pops = mGlobals.getAudioNodes().getBufferRecorderNode()->getMaxPossiblePops();
 	const auto _max_num_pops_in_surfaces = mNumSurfaces * mFramesPerSurface;
 	const auto _actual_minus_real_diff = _max_num_pops_in_surfaces - _max_pops;
 	return (mNumSurfaces * mFramesPerSurface) - _actual_minus_real_diff;
