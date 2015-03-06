@@ -118,6 +118,7 @@ void ThreadRenderer::draw()
 		ci::gl::pushMatrices();
 		
 		ci::Rectf _target_rect(mCompleteAudioFbo.getBounds());
+		std::swap(_target_rect.y1, _target_rect.y2); //swap UVs
 		ci::gl::draw(mCompleteAudioFbo.getTexture(), _target_rect);
 		
 		ci::gl::popMatrices();
