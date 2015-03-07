@@ -10,7 +10,7 @@ class Context;
 
 namespace cieq
 {
-class ThreadRenderer;
+class StftRenderer;
 namespace work {
 class Manager;
 }; //!cieq::work
@@ -28,19 +28,19 @@ public:
 	AppGlobals(	AppEvent&,
 				work::Manager&,
 				AudioNodes&,
-				ThreadRenderer&);
+				StftRenderer&);
 
 	AppEvent&							getEventProcessor();
 	work::Manager&						getWorkManager();
 	AudioNodes&							getAudioNodes();
 	cinder::audio::Context&				getAudioContext();
-	ThreadRenderer&						getThreadRenderer();
+	StftRenderer&						getThreadRenderer();
 
 private:
 	AppEvent&							mEventProcessor;
 	work::Manager&						mWorkManager;
 	AudioNodes&							mAudioNodes;
-	ThreadRenderer&						mThreadRenderer;
+	StftRenderer&						mThreadRenderer;
 };
 
 } //!cieq

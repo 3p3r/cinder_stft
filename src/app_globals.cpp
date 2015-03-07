@@ -5,7 +5,7 @@
 namespace cieq
 {
 
-AppGlobals::AppGlobals(AppEvent& event_processor, work::Manager& work_manager, AudioNodes& nodes, ThreadRenderer& renderer)
+AppGlobals::AppGlobals(AppEvent& event_processor, work::Manager& work_manager, AudioNodes& nodes, StftRenderer& renderer)
 	: mEventProcessor(event_processor)
 	, mWorkManager(work_manager)
 	, mAudioNodes(nodes)
@@ -32,7 +32,7 @@ AudioNodes& AppGlobals::getAudioNodes()
 	return mAudioNodes;
 }
 
-ThreadRenderer& AppGlobals::getThreadRenderer()
+StftRenderer& AppGlobals::getThreadRenderer()
 {
 	return mThreadRenderer;
 }

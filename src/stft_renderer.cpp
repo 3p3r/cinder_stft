@@ -1,4 +1,4 @@
-#include "thread_renderer.h"
+#include "stft_renderer.h"
 #include "app_globals.h"
 #include "audio_nodes.h"
 #include "recorder_node.h"
@@ -8,7 +8,7 @@
 
 namespace cieq {
 
-ThreadRenderer::ThreadRenderer(AppGlobals& globals)
+StftRenderer::StftRenderer(AppGlobals& globals)
 	: mGlobals(globals)
 	, mFramesPerSurface(mGlobals.getAudioNodes().getFormat().getSamplesCacheSize())
 	, mFftSize(mGlobals.getAudioNodes().getFormat().getFftBins() / 2)
@@ -17,7 +17,7 @@ ThreadRenderer::ThreadRenderer(AppGlobals& globals)
 	, mTotalSurfacesLength(0)
 {}
 
-void ThreadRenderer::setup()
+void StftRenderer::setup()
 {
 	if (!mGlobals.getAudioNodes().ready()) return;
 
@@ -48,7 +48,7 @@ void ThreadRenderer::setup()
 	}
 }
 
-void ThreadRenderer::update()
+void StftRenderer::update()
 {
 	if (!mGlobals.getAudioNodes().ready()) return;
 
@@ -72,7 +72,7 @@ void ThreadRenderer::update()
 	}
 }
 
-void ThreadRenderer::draw()
+void StftRenderer::draw()
 {
 	if (!mGlobals.getAudioNodes().ready()) return;
 
@@ -105,7 +105,7 @@ void ThreadRenderer::draw()
 	drawFramebuffers(calculateActiveFboOffset());
 }
 
-SpectralSurface& ThreadRenderer::getSurface(int index, int pop_pos)
+SpectralSurface& StftRenderer::getSurface(int index, int pop_pos)
 {
 	const auto _moded_index = index % (2 * mNumSurfaces);
 	// if surface does not exist
@@ -130,24 +130,24 @@ SpectralSurface& ThreadRenderer::getSurface(int index, int pop_pos)
 	return *(mSurfaceTexturePool[_moded_index].first);
 }
 
-std::size_t ThreadRenderer::getFramesPerSurface() const
+std::size_t StftRenderer::getFramesPerSurface() const
 {
 	return mFramesPerSurface;
 }
 
-std::size_t ThreadRenderer::getSurfaceIndexByQueryPos(std::size_t pos) const
+std::size_t StftRenderer::getSurfaceIndexByQueryPos(std::size_t pos) const
 {
 	const auto pop_index = mGlobals.getAudioNodes().getBufferRecorderNode()->getQueryIndexByQueryPos(pos);
 	return (pop_index / getFramesPerSurface()) % (2 * mNumSurfaces);
 }
 
-std::size_t ThreadRenderer::getIndexInSurfaceByQueryPos(std::size_t pos) const
+std::size_t StftRenderer::getIndexInSurfaceByQueryPos(std::size_t pos) const
 {
 	const auto pop_index = mGlobals.getAudioNodes().getBufferRecorderNode()->getQueryIndexByQueryPos(pos);
 	return pop_index % getFramesPerSurface();
 }
 
-std::size_t ThreadRenderer::calculateLastSurfaceLength() const
+std::size_t StftRenderer::calculateLastSurfaceLength() const
 {
 	const auto _time_span_percentage = mGlobals.getAudioNodes().getFormat().getTimeSpan() / mGlobals.getAudioNodes().getFormat().getRecordDuration();
 	const auto _max_pops = mGlobals.getAudioNodes().getBufferRecorderNode()->getMaxPossiblePops();
@@ -157,7 +157,7 @@ std::size_t ThreadRenderer::calculateLastSurfaceLength() const
 	return getFramesPerSurface() - _actual_minus_real_diff;
 }
 
-std::size_t ThreadRenderer::calculateTotalSurfacesLength() const
+std::size_t StftRenderer::calculateTotalSurfacesLength() const
 {
 	const auto _time_span_percentage = mGlobals.getAudioNodes().getFormat().getTimeSpan() / mGlobals.getAudioNodes().getFormat().getRecordDuration();
 	const auto _max_pops = mGlobals.getAudioNodes().getBufferRecorderNode()->getMaxPossiblePops();
@@ -167,7 +167,7 @@ std::size_t ThreadRenderer::calculateTotalSurfacesLength() const
 	return (mNumSurfaces * mFramesPerSurface) - _actual_minus_real_diff;
 }
 
-void ThreadRenderer::drawFramebuffer(ci::gl::Fbo& fbo, float shift_right /*= 0.0f*/, float shift_up /*= 0.0f*/)
+void StftRenderer::drawFramebuffer(ci::gl::Fbo& fbo, float shift_right /*= 0.0f*/, float shift_up /*= 0.0f*/)
 {
 	ci::gl::pushMatrices();
 
@@ -181,7 +181,7 @@ void ThreadRenderer::drawFramebuffer(ci::gl::Fbo& fbo, float shift_right /*= 0.0
 	ci::gl::popMatrices();
 }
 
-void ThreadRenderer::drawFramebuffers(float shift_right /*= 0.0f*/, float shift_up /*= 0.0f*/)
+void StftRenderer::drawFramebuffers(float shift_right /*= 0.0f*/, float shift_up /*= 0.0f*/)
 {	
 	const auto _active_fbo = getActiveFramebuffer();
 	const auto _inactive_fbo = (_active_fbo == 1 ? 0 : 1);
@@ -190,12 +190,12 @@ void ThreadRenderer::drawFramebuffers(float shift_right /*= 0.0f*/, float shift_
 	drawFramebuffer(mFrameBuffers[_inactive_fbo], shift_right - ci::app::getWindowWidth());
 }
 
-std::size_t ThreadRenderer::getActiveFramebuffer() const
+std::size_t StftRenderer::getActiveFramebuffer() const
 {
 	return (getSurfaceIndexByQueryPos(mLastPopPos) / mNumSurfaces);
 }
 
-float ThreadRenderer::calculateActiveFboOffset() const
+float StftRenderer::calculateActiveFboOffset() const
 {
 	// get current record position (copying the atomic to be safe)
 	const int _current_write_pos = mLastPopPos;

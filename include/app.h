@@ -9,7 +9,7 @@
 #include "audio_nodes.h"
 #include "work_manager.h"
 #include "app_config.h"
-#include "thread_renderer.h"
+#include "stft_renderer.h"
 
 namespace cieq
 {
@@ -55,7 +55,7 @@ private:
 	//! audio I/O class instance
 	AudioNodes		mAudioNodes;
 	//! STFT renderer
-	ThreadRenderer	mStftRenderer;
+	StftRenderer	mStftRenderer;
 	//! ciUI instance
 	ci::params::InterfaceGlRef
 					mGuiInstance;

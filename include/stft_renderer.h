@@ -13,10 +13,10 @@
 namespace cieq {
 class AppGlobals;
 
-class ThreadRenderer
+class StftRenderer
 {
 public:
-	ThreadRenderer(AppGlobals&);
+	StftRenderer(AppGlobals&);
 
 	void								update();
 	void								setup();
