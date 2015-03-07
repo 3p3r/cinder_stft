@@ -1,5 +1,5 @@
-#ifndef CIEQ_INCLUDE_THREAD_RENDERER_H_
-#define CIEQ_INCLUDE_THREAD_RENDERER_H_
+#ifndef CIEQ_INCLUDE_STFT_RENDERER_H_
+#define CIEQ_INCLUDE_STFT_RENDERER_H_
 
 #include <vector>
 #include <array>
@@ -53,4 +53,4 @@ private:
 
 } // !namespace cieq
 
-#endif // !CIEQ_INCLUDE_THREAD_RENDERER_H_
+#endif // !CIEQ_INCLUDE_STFT_RENDERER_H_
