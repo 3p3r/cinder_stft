@@ -39,7 +39,6 @@ private:
 	std::size_t							mNumSurfaces;
 	std::size_t							mTotalSurfacesLength;
 	std::size_t							mLastSurfaceLength;
-	std::size_t							mCacheTextureNum;
 	std::atomic<int>					mLastPopPos;
 	std::array<ci::gl::Fbo, 2>			mFrameBuffers;
 
@@ -47,6 +46,7 @@ private:
 	std::size_t							calculateLastSurfaceLength() const;
 	std::size_t							calculateTotalSurfacesLength() const;
 	std::size_t							getActiveFramebuffer() const;
+	float								calculateActiveFboOffset() const;
 	void								drawFramebuffers(float shift_right = 0.0f, float shift_up = 0.0f);
 	void								drawFramebuffer(ci::gl::Fbo& fbo, float shift_right = 0.0f, float shift_up = 0.0f);
 };

@@ -15,7 +15,6 @@ ThreadRenderer::ThreadRenderer(AppGlobals& globals)
 	, mLastPopPos(0)
 	, mLastSurfaceLength(0)
 	, mTotalSurfacesLength(0)
-	, mCacheTextureNum(0)
 {}
 
 void ThreadRenderer::setup()
@@ -35,7 +34,7 @@ void ThreadRenderer::setup()
 	mTotalSurfacesLength = calculateTotalSurfacesLength();
 
 	// I hate APIs with booleans in them :(
-	for (auto index = 0; index < mFrameBuffers.size(); ++index)
+	for (std::size_t index = 0; index < mFrameBuffers.size(); ++index)
 	{
 		mFrameBuffers[index] = ci::gl::Fbo(
 			mFftSize, //width
@@ -43,6 +42,9 @@ void ThreadRenderer::setup()
 			false, // alpha
 			true, // color
 			false); //depth
+
+		mFrameBuffers[index].getTexture().setMinFilter(GL_NEAREST); //disable GPU blur
+		mFrameBuffers[index].getTexture().setMagFilter(GL_NEAREST); //disable GPU blur
 	}
 }
 
@@ -65,7 +67,6 @@ void ThreadRenderer::update()
 				pair.second->setMagFilter(GL_NEAREST); //disable GPU blur
 			}
 
-			mCacheTextureNum++;
 			pair.first.reset();
 		}
 	}
@@ -76,15 +77,15 @@ void ThreadRenderer::draw()
 	if (!mGlobals.getAudioNodes().ready()) return;
 
 	{ //enter FBO scope
-		const auto a = getActiveFramebuffer();
-		ScopedFramebuffer _scope(mFrameBuffers[getActiveFramebuffer()]);
+		const auto _active_fbo = getActiveFramebuffer();
+		ScopedFramebuffer _scope(mFrameBuffers[_active_fbo]);
 
 		ci::gl::clear(ci::Color::white());
 
-		for (int index = getActiveFramebuffer(); index < (getActiveFramebuffer() + 1) * mNumSurfaces; ++index)
+		for (std::size_t index = _active_fbo * mNumSurfaces; index < (_active_fbo + 1) * mNumSurfaces; ++index)
 		{
 			ci::gl::pushMatrices();
-			ci::gl::translate(0.0f, index * static_cast<float>(getFramesPerSurface()));
+			ci::gl::translate(0.0f, (index % mNumSurfaces) * static_cast<float>(getFramesPerSurface()));
 
 			if (mSurfaceTexturePool[index].first)
 			{
@@ -101,7 +102,7 @@ void ThreadRenderer::draw()
 		}
 	}
 
-	drawFramebuffers();
+	drawFramebuffers(calculateActiveFboOffset());
 }
 
 SpectralSurface& ThreadRenderer::getSurface(int index, int pop_pos)
@@ -137,7 +138,7 @@ std::size_t ThreadRenderer::getFramesPerSurface() const
 std::size_t ThreadRenderer::getSurfaceIndexByQueryPos(std::size_t pos) const
 {
 	const auto pop_index = mGlobals.getAudioNodes().getBufferRecorderNode()->getQueryIndexByQueryPos(pos);
-	return pop_index / getFramesPerSurface();
+	return (pop_index / getFramesPerSurface()) % (2 * mNumSurfaces);
 }
 
 std::size_t ThreadRenderer::getIndexInSurfaceByQueryPos(std::size_t pos) const
@@ -181,14 +182,40 @@ void ThreadRenderer::drawFramebuffer(ci::gl::Fbo& fbo, float shift_right /*= 0.0
 }
 
 void ThreadRenderer::drawFramebuffers(float shift_right /*= 0.0f*/, float shift_up /*= 0.0f*/)
-{
-	drawFramebuffer(mFrameBuffers[0], shift_right);
-	drawFramebuffer(mFrameBuffers[1], shift_right + ci::app::getWindowWidth());
+{	
+	const auto _active_fbo = getActiveFramebuffer();
+	const auto _inactive_fbo = (_active_fbo == 1 ? 0 : 1);
+
+	drawFramebuffer(mFrameBuffers[_active_fbo], shift_right);
+	drawFramebuffer(mFrameBuffers[_inactive_fbo], shift_right - ci::app::getWindowWidth());
 }
 
 std::size_t ThreadRenderer::getActiveFramebuffer() const
 {
-	return 0; // mCacheTextureNum / mNumSurfaces;
+	return (getSurfaceIndexByQueryPos(mLastPopPos) / mNumSurfaces);
+}
+
+float ThreadRenderer::calculateActiveFboOffset() const
+{
+	// get current record position (copying the atomic to be safe)
+	const int _current_write_pos = mLastPopPos;
+	// get the index of last active surface for drawing
+	int _current_surface_index = getSurfaceIndexByQueryPos(_current_write_pos);
+	if (_current_surface_index >= static_cast<int>(mNumSurfaces))
+	{
+		_current_surface_index = _current_surface_index % mNumSurfaces;
+	}
+	// number of samples that will be empty drawn (last surface)
+	// get last thread-reported pop position and divide it over max pops possible
+	const int _current_index_in_surface = getIndexInSurfaceByQueryPos(_current_write_pos);
+	// How far thread manager has filled this surface approximately?
+	const int _filled_length = _current_surface_index * mFramesPerSurface + _current_index_in_surface;
+	// How much more is left?
+	const int _unfilled_length = mTotalSurfacesLength - _filled_length;
+	// Scale factor to window
+	const float _window_to_fbo_scale = static_cast<float>(ci::app::getWindowWidth()) / mTotalSurfacesLength;
+	
+	return _window_to_fbo_scale * _unfilled_length;
 }
 
 } //!cieq
