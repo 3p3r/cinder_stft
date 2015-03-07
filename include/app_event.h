@@ -13,7 +13,7 @@ namespace signal = boost::signals2;
 
 /*!
  * \class AppEvent
- * \brief The class that handles mouse and keyboard input,
+ * \brief The class that handles mouse / keyboard / GUI input,
  * and potentially other physical inputs (not audio tho!)
  */
 class AppEvent
@@ -21,51 +21,34 @@ class AppEvent
 public:
 	/*!
 	 * \brief adds a mouse event processor to events stack.
-	 * \note no matter how many events you may want to occur,
-	 * the all get fired in app::MouseDown method.
 	 */ 
-	void addMouseEvent(const std::function< void(float, float) >&);
-	/*!
-	 * \brief adds a mouse event processor to events stack.
-	 * \note no matter how many events you may want to occur,
-	 * the all get fired in app::MouseDrag method.
-	 */ 
-	void addMouseDragEvent(const std::function< void(float, float, bool, bool, bool) >&);
+	void addMouseCallback(const std::function< void(float, float) >&);
 
 	/*!
 	 * \brief adds a keyboard event processor to events stack.
-	 * \note no matter how many events you may want to occur,
-	 * the all get fired in app::KeyDown method.
 	 */ 
-	void addKeyboardEvent(const std::function< void(int) >&);
+	void addKeyboardCallback(const std::function< void(int) >&);
 
 public:
 	/*!
 	 * \brief fires all events in the stack for an incoming mouse
-	 * drag event. X, and Y coordinates will be passed inside.
-	 */
-	void processMouseDragEvents(float x, float y, bool, bool, bool);
-	/*!
-	 * \brief fires all events in the stack for an incoming mouse
 	 * event. X, and Y coordinates will be passed inside.
 	 */
-	void processMouseEvents(float x, float y);
+	void fireMouseCallbacks(float x, float y);
 
 	/*!
 	 * \brief fires all events in the stack for an incoming keyboard
 	 * event. character code will be passed inside.
 	 */
-	void processKeybaordEvents(char key);
+	void fireKeyboardCallbacks(char key);
 
 private:
-	using mouseDragEvent= signal::signal < void(float, float, bool, bool, bool) > ;
 	using mouseEvent	= signal::signal < void(float, float) > ;
 	using keyboardEvent = signal::signal < void(char) > ;
 
 private:
-	mouseDragEvent	mMouseDragEventsStack;
-	mouseEvent		mMouseEventsStack;
-	keyboardEvent	mKeyboardEventsStack;
+	mouseEvent			mMouseEventsStack;
+	keyboardEvent		mKeyboardEventsStack;
 };
 
 } //!cieq

@@ -73,7 +73,7 @@ void AudioNodes::setup()
 
 	mGlobals
 		.getEventProcessor()
-		.addMouseEvent([this](float, float){ toggleInput(); });
+		.addMouseCallback([this](float, float){ toggleInput(); });
 
 	mIsReady = true;
 }
@@ -146,7 +146,7 @@ const AudioNodes::Format& AudioNodes::getFormat() const
 
 AudioNodes::Format::Format()
 	: mRecordDuration(20.0f * 60.0f) //20 minutes
-	, mTimeSpan(2.0f) //20 seconds
+	, mTimeSpan(20.0f) //20 seconds
 	, mWindowDuration(0.02f) //in seconds (0.02s is roughly 1024 in 44.1KHz)
 	, mHopDuration(0.01f) //in seconds (0.01s roughly is 512 in 44.1KHz)
 	, mFftBins(2048)

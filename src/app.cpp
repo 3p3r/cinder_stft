@@ -7,21 +7,18 @@ InputAnalyzer::InputAnalyzer()
 	: mGlobals(mEventProcessor, mWorkManager, mAudioNodes, mStftRenderer)
 	, mAudioNodes(mGlobals)
 	, mStftRenderer(mGlobals)
-	, mGuiWidth(100.0f)
-	, mGuiHeight(150.0f)
 {}
 
 void InputAnalyzer::prepareSettings(Settings *settings)
 {
-	// Enables the console window to show up beside the graphical window
-	// We need the console for debugging and logging purposes
-	settings->enableConsoleWindow(true);
+	// We do not need console for this application
+	settings->enableConsoleWindow(false);
 
 	// It's ok if a user resizes the window, we'll respond accordingly
 	settings->setResizable(true);
 
 	// Title of the graphical window when it pops up
-	settings->setTitle("Cinder Audio Equalizer");
+	settings->setTitle("Cinder STFT");
 
 	// Get the current display (monitor) dimensions
 	const auto current_display_size = settings->getDisplay()->getSize();
@@ -53,7 +50,6 @@ void InputAnalyzer::resize()
 
 void InputAnalyzer::update()
 {
-	mCiuiCanvas->update();
 	mStftRenderer.update();
 	mAudioNodes.update();
 }
@@ -73,31 +69,21 @@ void InputAnalyzer::draw()
 	drawFps();
 
 	// draw GUI
-	mCiuiCanvas->draw();
+	mGuiInstance->draw();
 
 	ci::gl::disableAlphaBlending();
 }
 
 void InputAnalyzer::mouseDown(ci::app::MouseEvent event)
 {
-	mEventProcessor.processMouseEvents(
+	mEventProcessor.fireMouseCallbacks(
 		static_cast<float>(event.getX()),
 		static_cast<float>(event.getY()));
 }
 
-void InputAnalyzer::mouseDrag(ci::app::MouseEvent event)
-{
-	mEventProcessor.processMouseDragEvents(
-		static_cast<float>(event.getX()),
-		static_cast<float>(event.getY()),
-		event.isLeftDown(),
-		event.isMiddleDown(),
-		event.isRightDown());
-}
-
 void InputAnalyzer::keyDown(ci::app::KeyEvent event)
 {
-	mEventProcessor.processKeybaordEvents(event.getChar());
+	mEventProcessor.fireKeyboardCallbacks(event.getChar());
 }
 
 void InputAnalyzer::drawFps()
@@ -107,22 +93,13 @@ void InputAnalyzer::drawFps()
 	ci::gl::drawStringRight(buf.str(), ci::Vec2i(ci::app::getWindowWidth() - 25, 10));
 }
 
-void InputAnalyzer::guiEvent(ciUIEvent *event)
-{
-	const std::string name = event->widget->getName();
-	// if (name) {...}
-}
-
 void InputAnalyzer::setupGUI()
 {
-	mCiuiCanvas = std::make_unique<ciUICanvas>(5.0f, 5.0f, mGuiWidth, mGuiHeight);
-	mCiuiCanvas->addWidgetDown(new ciUILabel("Cinder STFT", CI_UI_FONT_LARGE));
-	mCiuiCanvas->addWidgetDown(new ciUILabel("Sepehr Laal, Raghad Boulos", CI_UI_FONT_SMALL));
-	mCiuiCanvas->addWidgetDown(new ciUILabel("Portland State University", CI_UI_FONT_MEDIUM));
-	mCiuiCanvas->addWidgetDown(new ciUILabel("ECE 312 Fourier Analysis", CI_UI_FONT_SMALL));
-	mCiuiCanvas->addWidgetDown(new ciUILabel("Instructor: Dr. James McNames", CI_UI_FONT_SMALL));
-
-	mCiuiCanvas->registerUIEvents(this, &cieq::InputAnalyzer::guiEvent);
+	static std::once_flag __setup_gui_flag;
+	std::call_once(__setup_gui_flag, [this]
+	{
+		mGuiInstance = ci::params::InterfaceGl::create("Cinder STFT parameters", ci::app::getWindowSize() / 5);
+	});
 }
 
 } //!namespace cieq

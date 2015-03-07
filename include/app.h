@@ -2,7 +2,7 @@
 #define CIEQ_INCLUDE_APP_H_
 
 #include <cinder/app/AppNative.h>
-#include <ciUI.h>
+#include <cinder/params/Params.h>
 
 #include "app_globals.h"
 #include "app_event.h"
@@ -37,14 +37,10 @@ public:
 	void			drawFps();
 	//! gets fired on mouse click
 	void			mouseDown(ci::app::MouseEvent event) override final;
-	//! gets fired on mouse drag
-	void			mouseDrag(ci::app::MouseEvent event) override final;
 	//! gets fired on keyboard click
 	void			keyDown(ci::app::KeyEvent event) override final;
 	//! sets up the GUI
 	void			setupGUI();
-	//! gets fired on GUI event
-	void			guiEvent(ciUIEvent *event);
 
 private:
 	//! the event processor class instance
@@ -58,12 +54,8 @@ private:
 	//! STFT renderer
 	ThreadRenderer	mStftRenderer;
 	//! ciUI instance
-	std::unique_ptr<ciUICanvas>
-					mCiuiCanvas;
-
-private:
-	const float		mGuiWidth;
-	const float		mGuiHeight;
+	ci::params::InterfaceGlRef
+					mGuiInstance;
 };
 
 } //!cieq
