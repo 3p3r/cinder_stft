@@ -99,6 +99,19 @@ void InputAnalyzer::setupGUI()
 	std::call_once(__setup_gui_flag, [this]
 	{
 		mGuiInstance = ci::params::InterfaceGl::create("Cinder STFT parameters", ci::app::getWindowSize() / 5);
+		mGuiInstance->addText("Portland State University, Winter 2015");
+		mGuiInstance->addSeparator();
+
+		mGuiInstance->addText("Developed by: Sepehr Laal, Raghad Boulos");
+		mGuiInstance->addText("Instructor: Dr. James McNames", "fontsize=2");
+		mGuiInstance->addSeparator();
+
+		mGuiInstance->addText("This project performs STFT analysis on real time audio signal.");
+		mGuiInstance->addSeparator();
+
+		mGuiInstance->addText("Configure the parameters below and hit START");
+		mGuiInstance->addText("Parameters below are launch-only configurable.");
+		//mGuiInstance->addParam("Window duration")
 	});
 }
 
