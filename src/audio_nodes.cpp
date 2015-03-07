@@ -55,8 +55,7 @@ void AudioNodes::setup()
 		.hopSize(mFormat.getHopDurationInSamples())
 		.windowSize(mFormat.getWindowDurationInSamples());
 
-	// Fix me: this needs to be record duration and renderer should account for time span, this is for development now
-	mBufferRecorderNode = mGlobals.getAudioContext().makeNode(new cieq::audio::RecorderNode(mFormat.getTimeSpanInSamples(), recorderFormat));
+	mBufferRecorderNode = mGlobals.getAudioContext().makeNode(new cieq::audio::RecorderNode(mFormat.getRecordDurationInSamples(), recorderFormat));
 	mInputDeviceNode >> mBufferRecorderNode;
 	
 	auto stftClientFormat = stft::Client::Format()
@@ -147,12 +146,12 @@ const AudioNodes::Format& AudioNodes::getFormat() const
 
 AudioNodes::Format::Format()
 	: mRecordDuration(20.0f * 60.0f) //20 minutes
-	, mTimeSpan(20.0f) //20 seconds
+	, mTimeSpan(2.0f) //20 seconds
 	, mWindowDuration(0.02f) //in seconds (0.02s is roughly 1024 in 44.1KHz)
 	, mHopDuration(0.01f) //in seconds (0.01s roughly is 512 in 44.1KHz)
 	, mFftBins(2048)
 	, mSamplesCacheSize(50)
-	, mAutoStart(false)
+	, mAutoStart(true)
 {}
 
 float AudioNodes::Format::getRecordDuration() const

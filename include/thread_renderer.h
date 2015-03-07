@@ -2,6 +2,7 @@
 #define CIEQ_INCLUDE_THREAD_RENDERER_H_
 
 #include <vector>
+#include <array>
 #include <mutex>
 
 #include "smart_surface.h"
@@ -38,12 +39,16 @@ private:
 	std::size_t							mNumSurfaces;
 	std::size_t							mTotalSurfacesLength;
 	std::size_t							mLastSurfaceLength;
+	std::size_t							mCacheTextureNum;
 	std::atomic<int>					mLastPopPos;
-	ci::gl::Fbo							mCompleteAudioFbo;
+	std::array<ci::gl::Fbo, 2>			mFrameBuffers;
 
 private:
 	std::size_t							calculateLastSurfaceLength() const;
 	std::size_t							calculateTotalSurfacesLength() const;
+	std::size_t							getActiveFramebuffer() const;
+	void								drawFramebuffers(float shift_right = 0.0f, float shift_up = 0.0f);
+	void								drawFramebuffer(ci::gl::Fbo& fbo, float shift_right = 0.0f, float shift_up = 0.0f);
 };
 
 } // !namespace cieq
