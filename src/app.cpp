@@ -62,6 +62,8 @@ void InputAnalyzer::draw()
 {
 	// clear screen black
 	ci::gl::clear();
+	ci::gl::disableDepthRead();
+	ci::gl::disableDepthWrite();
 	ci::gl::enableAlphaBlending();
 
 	// draw STFT
