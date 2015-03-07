@@ -52,6 +52,12 @@ void InputAnalyzer::update()
 {
 	mStftRenderer.update();
 	mAudioNodes.update();
+
+	if (mAppConfig.shouldRemoveLaunchParams())
+	{
+		mGuiInstance->removeParam("START");
+		mAppConfig.LaunchParamsRemoved();
+	}
 }
 
 void InputAnalyzer::draw()
@@ -98,7 +104,7 @@ void InputAnalyzer::setupGUI()
 	static std::once_flag __setup_gui_flag;
 	std::call_once(__setup_gui_flag, [this]
 	{
-		mGuiInstance = ci::params::InterfaceGl::create("Cinder STFT parameters", ci::app::getWindowSize() / 5);
+		mGuiInstance = ci::params::InterfaceGl::create("Cinder STFT parameters", ci::Vec2i(200, 350));
 		mGuiInstance->addText("Portland State University, Winter 2015");
 		mGuiInstance->addSeparator();
 
@@ -110,8 +116,18 @@ void InputAnalyzer::setupGUI()
 		mGuiInstance->addSeparator();
 
 		mGuiInstance->addText("Configure the parameters below and hit START");
-		mGuiInstance->addText("Parameters below are launch-only configurable.");
-		//mGuiInstance->addParam("Window duration")
+		mGuiInstance->addParam("Record duration (s)", &mAppConfig.mRecordDuration, "min=300 max=6000");
+		mGuiInstance->addParam("Viewable Time range (s)", &mAppConfig.mTimeRange, "min=2 max=20");
+		mGuiInstance->addParam("Window duration (s)", &mAppConfig.mWindowDuration, "min=0.01 max=0.5");
+		mGuiInstance->addParam("Hop duration (s)", &mAppConfig.mHopDuration, "min=0.01 max=0.5");
+		mGuiInstance->addParam("Low frequency (Hz)", &mAppConfig.mFrequencyLow, "min=0 max=25000");
+		mGuiInstance->addParam("High frequency (Hz)", &mAppConfig.mFrequencyHigh, "min=0 max=25000");
+		mGuiInstance->addSeparator();
+
+		mGuiInstance->addButton("START", [this] {
+			mGuiInstance->minimize();
+			mAppConfig.setRemoveLaunchParams();
+		});
 	});
 }
 

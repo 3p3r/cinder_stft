@@ -8,6 +8,7 @@
 #include "app_event.h"
 #include "audio_nodes.h"
 #include "work_manager.h"
+#include "app_config.h"
 #include "thread_renderer.h"
 
 namespace cieq
@@ -43,6 +44,8 @@ public:
 	void			setupGUI();
 
 private:
+	//! all user configurable parameters
+	AppConfig		mAppConfig;
 	//! the event processor class instance
 	AppEvent		mEventProcessor;
 	//! the work manager that accepts background works from main thread
