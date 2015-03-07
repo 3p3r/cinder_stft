@@ -5,7 +5,7 @@
 #include <array>
 #include <mutex>
 
-#include "smart_surface.h"
+#include "stft_surface.h"
 
 #include <cinder/gl/Texture.h>
 #include <cinder/gl/Fbo.h>
@@ -21,13 +21,13 @@ public:
 	void								update();
 	void								setup();
 	void								draw();
-	SpectralSurface&					getSurface(int index, int pop_pos);
+	StftSurface&						getSurface(int index, int pop_pos);
 	std::size_t							getFramesPerSurface() const;
 	std::size_t							getSurfaceIndexByQueryPos(std::size_t pos) const;
 	std::size_t							getIndexInSurfaceByQueryPos(std::size_t pos) const;
 
 private:
-	using container_pair				= std::pair<SpectralSurfaceRef, ci::gl::TextureRef>;
+	using container_pair				= std::pair<StftSurfaceRef, ci::gl::TextureRef>;
 	using container						= std::vector < container_pair >;
 
 private:

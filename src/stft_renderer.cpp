@@ -105,7 +105,7 @@ void StftRenderer::draw()
 	drawFramebuffers(calculateActiveFboOffset());
 }
 
-SpectralSurface& StftRenderer::getSurface(int index, int pop_pos)
+StftSurface& StftRenderer::getSurface(int index, int pop_pos)
 {
 	const auto _moded_index = index % (2 * mNumSurfaces);
 	// if surface does not exist
@@ -117,11 +117,11 @@ SpectralSurface& StftRenderer::getSurface(int index, int pop_pos)
 		{
 			if (_moded_index != mNumSurfaces - 1 || _moded_index != 2 * (mNumSurfaces - 1))
 			{
-				mSurfaceTexturePool[_moded_index].first = std::make_unique<SpectralSurface>(mFftSize, mLastSurfaceLength);
+				mSurfaceTexturePool[_moded_index].first = std::make_unique<StftSurface>(mFftSize, mLastSurfaceLength);
 			}
 			else
 			{
-				mSurfaceTexturePool[_moded_index].first = std::make_unique<SpectralSurface>(mFftSize, getFramesPerSurface());
+				mSurfaceTexturePool[_moded_index].first = std::make_unique<StftSurface>(mFftSize, getFramesPerSurface());
 			}
 		}
 	}

@@ -1,4 +1,4 @@
-#include "smart_surface.h"
+#include "stft_surface.h"
 
 #include <cinder/audio/Utilities.h>
 
@@ -35,13 +35,21 @@ static inline ci::Color GetColour(float v, float vmin, float vmax)
 
    return c;
 }
+
 }
 
-SpectralSurface::SpectralSurface(int width, int height)
-	: SmartSurface32f(width, height)
+StftSurface::StftSurface(int width, int height)
+	: ci::Surface32f(width, height, false)
 {}
 
-void SpectralSurface::processRow(int row, const std::vector<float>& spectrum)
+void StftSurface::fillRow(int row, const std::vector<float>& data)
+{
+	std::lock_guard<std::mutex> _lock(mWriteLock);
+	processRow(row, data);
+	mTouchedRows++;
+}
+
+void StftSurface::processRow(int row, const std::vector<float>& spectrum)
 {
 	auto surface_iter = getIter();
 	while (surface_iter.mY != row) {
