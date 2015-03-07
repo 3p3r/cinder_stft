@@ -2,6 +2,7 @@
 #include "app_globals.h"
 #include "audio_nodes.h"
 #include "recorder_node.h"
+#include "scoped_fbo.h"
 
 #include <cinder/app/App.h>
 
@@ -31,8 +32,8 @@ void ThreadRenderer::setup()
 
 	// I hate APIs with booleans in them :(
 	mCompleteAudioFbo = ci::gl::Fbo(
-		mTotalSurfacesLength, //width
-		mFftSize, //height
+		mFftSize, //width
+		mTotalSurfacesLength, //height
 		false, // alpha
 		true, // color
 		false); //depth
@@ -67,61 +68,39 @@ void ThreadRenderer::draw()
 	if (!mGlobals.getAudioNodes().ready()) return;
 
 	{ //enter FBO scope
-		ci::gl::SaveFramebufferBinding _save_fb;
-		mCompleteAudioFbo.bindFramebuffer();
+		ScopedFramebuffer _scope(mCompleteAudioFbo);
 
-		ci::gl::pushMatrices();
-		ci::gl::clear();
-		ci::gl::rotate(90.0f); //rotate scene 90 degrees
+		ci::gl::clear(ci::Color::white());
 
-		// just a convenience
-		auto _recorder_node = mGlobals.getAudioNodes().getBufferRecorderNode();
-
-		// get current record position
-		const int _current_write_pos = mLastPopPos;
-		// percentage of the entire audio done recording
-		const float _percentage_done = static_cast<float>(_current_write_pos) / _recorder_node->getNumFrames();
-		// get the index of last active surface for drawing
-		int _current_last_surface = static_cast<int>(_percentage_done * mNumSurfaces);
-		// number of samples that will be empty drawn (last surface)
-		// get last thread-reported pop position and divide it over max pops possible
-		const float _current_index_in_surface = static_cast<float>(getIndexInSurfaceByQueryPos(mLastPopPos));
-		// shift to left for OpenGL (we're moving textures upside-down, therefore we shift one entire surface to right + estimate index in surface + static offset)
-		const float _shift_right = static_cast<float>(_current_index_in_surface - mFramesPerSurface) - ci::app::getWindowWidth();
-
-		ci::gl::translate(0.0f, _shift_right); //after rotation, moving x is like moving y
-
-		for (int index = _current_last_surface, count = 0; index >= 0; --index, ++count)
+		for (int index = 0; index < mNumSurfaces; ++index)
 		{
-			const auto t = ci::app::getWindowHeight() / mCompleteAudioFbo.getHeight();
-			const auto x1 = static_cast<float>(mFftSize) * ci::app::getWindowHeight() / mCompleteAudioFbo.getHeight();
-			const auto y1 = static_cast<float>(count + 1) * mFramesPerSurface;
-			const auto x2 = 0.0f;
-			const auto y2 = static_cast<float>(count)* mFramesPerSurface;
-
-			ci::Rectf draw_rect(x1, y1, x2, y2);
+			ci::gl::pushMatrices();
+			ci::gl::translate(0.0f, index * static_cast<float>(getFramesPerSurface()));
 
 			if (mSurfaceTexturePool[index].first)
 			{
 				// draw surface
-				ci::gl::draw(*mSurfaceTexturePool[index].first, draw_rect);
+				ci::gl::draw(*mSurfaceTexturePool[index].first);
 			}
 			else if (mSurfaceTexturePool[index].second)
 			{
 				// draw texture
-				ci::gl::draw(mSurfaceTexturePool[index].second, draw_rect);
+				ci::gl::draw(mSurfaceTexturePool[index].second);
 			}
+
+			ci::gl::popMatrices();
 		}
-
-		ci::gl::popMatrices();
-
-		mCompleteAudioFbo.unbindFramebuffer();
 	}
 
 	{// enter screen drawing scope
 		ci::gl::pushMatrices();
-		
-		mCompleteAudioFbo.blitToScreen(mCompleteAudioFbo.getBounds(), mCompleteAudioFbo.getBounds());
+
+		ci::gl::translate(ci::app::getWindowWidth(), 0.0f);
+		ci::gl::rotate(90.0f);
+		ci::gl::scale(
+			(float)ci::app::getWindowHeight() / mCompleteAudioFbo.getWidth(),
+			(float)ci::app::getWindowWidth() / mCompleteAudioFbo.getHeight());
+		ci::gl::draw(mCompleteAudioFbo.getTexture());
 		
 		ci::gl::popMatrices();
 	}
