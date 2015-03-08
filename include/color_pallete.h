@@ -11,10 +11,10 @@ namespace palette {
 
 struct MatlabJet		{ static const std::array<const ci::Color, 64> palette; };
 struct MatlabHot		{ static const std::array<const ci::Color, 64> palette; };
-struct MPLCopper		{ static const std::array<const ci::Color, 128> palette; };
+struct MPLSummer		{ static const std::array<const ci::Color, 128> palette; };
 struct MPLPaired		{ static const std::array<const ci::Color, 128> palette; };
 struct MPLOcean			{ static const std::array<const ci::Color, 128> palette; };
-struct GMTJet			{ static const std::array<const ci::Color, 256> palette; };
+struct MPLWinter		{ static const std::array<const ci::Color, 128> palette; };
 
 template<typename T>
 inline static const ci::Color& getColor(float value, float vmin, float vmax)
@@ -32,19 +32,32 @@ class Manager
 {
 public:
 	static Manager&		instance();
+
 	void				setActivePalette(int palette_index);
-	void				setLinearCoefficient(int coeff);
-	void				setDbDivisor(int div);
+	int					getActivePalette() const { return mActivePalette; }
+
+	void				setLinearCoefficient(float coeff);
+	float				getLinearCoefficient() const { return mLinearCoefficient; }
+
+	void				setDbDivisor(float div);
+	float				getDbDivisor() const { return mDbDivisor; }
+
 	void				setMinThreshold(float val);
+	float				getMinThreshold() const { return mMinThreshold; }
+
 	void				setMaxThreshold(float val);
-	void				convertToDb(bool convert);
+	float				getMaxThreshold() const { return mMaxThreshold; }
+
+	void				setConvertToDb(bool convert);
+	bool				getConvertToDb() const { return mConvertToDb; }
+
 	const ci::Color&	getActivePaletteColor(float FFT_value);
 
 private:
 	Manager();
 	std::atomic<int>	mActivePalette;
-	std::atomic<int>	mLinearCoefficient;
-	std::atomic<int>	mDbDivisor;
+	std::atomic<float>	mLinearCoefficient;
+	std::atomic<float>	mDbDivisor;
 	std::atomic<float>	mMinThreshold;
 	std::atomic<float>	mMaxThreshold;
 	std::atomic<bool>	mConvertToDb;
