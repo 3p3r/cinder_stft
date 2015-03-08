@@ -1,25 +1,48 @@
 #include "app_config.h"
+#include "color_pallete.h"
 
 #include <sstream>
 #include <mutex>
 
 #include <cinder/Json.h>
 
+#include <boost/algorithm/string/replace.hpp>
+
 namespace cieq
 {
 
+namespace {
+const std::string TEMPLATE("{\n\
+	\"record_duration\":@RECORD_DURATION@,\n\
+	\"time_range\":@TIME_RANGE@,\n\
+	\"window_duration\":@WINDOW_DURATION@,\n\
+	\"hop_duration\":@HOP_DURATION@,\n\
+	\"frequency\":{\n\
+		\"low\":@FREQ_LOW@,\n\
+		\"high\":@FREQ_HIGH@\n\
+	},\n\
+	\"color_palette\":{\n\
+		\"index\":@CP_INDEX@,\n\
+		\"db_mode\":@CP_DB_MODE@,\n\
+		\"db_mode_divisor\":@CP_DB_MODE_DIV@,\n\
+		\"linear_mode_coeff\":@CP_LIN_MODE_COEFF@,\n\
+		\"saturation_level\":{\n\
+			\"low\":@SAT_LOW@,\n\
+			\"high\":@SAT_HIGH@\n\
+		}\n\
+	}\n\
+}");
+const std::string CONFIG_FILENAME("stft.conf");
+}
+
 AppConfig::AppConfig()
-	: mConfigFile("stft.json", std::ios::in)
+	: mConfigFile(CONFIG_FILENAME, std::ios::in)
 	, mRecordDuration(20.0f * 60.0f) // every half an hour, internals will reset
 	, mTimeRange(20.0f) // 20 seconds
 	, mWindowDuration(0.02f) // about 1024 samples in 20 seconds
 	, mHopDuration(0.01f) // about 512 samples in 20 seconds
 	, mFrequencyLow(100.0f) // 100Hz
 	, mFrequencyHigh(10000.0f) // 100Hz
-	, mSaturationLevelLow(0.0f)
-	, mSaturationLevelHigh(1.0f)
-	, mColorLow(ci::Color::white())
-	, mColorHigh(ci::Color::black())
 	, mRemoveStartButton(false)
 {
 	if (mConfigFile)
@@ -48,26 +71,31 @@ AppConfig::AppConfig()
 					mFrequencyHigh = _tree.getChild("frequency.high").getValue<float>();
 				}
 			}
-			if (_tree.hasChild("saturation_level")) {
-				if (_tree.hasChild("saturation_level.low")) {
-					mSaturationLevelLow = _tree.getChild("saturation_level.low").getValue<float>();
+			if (_tree.hasChild("color_palette"))
+			{
+				if (_tree.hasChild("color_palette.saturation_level")) {
+					if (_tree.hasChild("color_palette.saturation_level.low")) {
+						palette::Manager::instance().setMinThreshold(_tree.getChild("color_palette.saturation_level.low").getValue<float>());
+					}
+					if (_tree.hasChild("color_palette.saturation_level.high")) {
+						palette::Manager::instance().setMaxThreshold(_tree.getChild("color_palette.saturation_level.high").getValue<float>());
+					}
 				}
-				if (_tree.hasChild("saturation_level.high")) {
-					mSaturationLevelHigh = _tree.getChild("saturation_level.high").getValue<float>();
+
+				if (_tree.hasChild("color_palette.index")) {
+					palette::Manager::instance().setActivePalette(_tree.getChild("color_palette.index").getValue<int>());
 				}
-			}
-			if (_tree.hasChild("color")) {
-				if (_tree.hasChild("color.low")) {
-					const auto r = _tree.hasChild("color.low.r") ? _tree.getChild("color.low.r").getValue<float>() : 0.0f;
-					const auto g = _tree.hasChild("color.low.g") ? _tree.getChild("color.low.g").getValue<float>() : 0.0f;
-					const auto b = _tree.hasChild("color.low.b") ? _tree.getChild("color.low.b").getValue<float>() : 0.0f;
-					mColorLow = ci::Color(r, g, b);
+
+				if (_tree.hasChild("color_palette.db_mode")) {
+					palette::Manager::instance().setConvertToDb(_tree.getChild("color_palette.db_mode").getValue<bool>());
 				}
-				if (_tree.hasChild("color.high")) {
-					const auto r = _tree.hasChild("color.high.r") ? _tree.getChild("color.high.r").getValue<float>() : 0.0f;
-					const auto g = _tree.hasChild("color.high.g") ? _tree.getChild("color.high.g").getValue<float>() : 0.0f;
-					const auto b = _tree.hasChild("color.high.b") ? _tree.getChild("color.high.b").getValue<float>() : 0.0f;
-					mColorHigh = ci::Color(r, g, b);
+
+				if (_tree.hasChild("color_palette.db_mode_divisor")) {
+					palette::Manager::instance().setDbDivisor(_tree.getChild("color_palette.db_mode_divisor").getValue<float>());
+				}
+
+				if (_tree.hasChild("color_palette.linear_mode_coeff")) {
+					palette::Manager::instance().setLinearCoefficient(_tree.getChild("color_palette.linear_mode_coeff").getValue<float>());
 				}
 			}
 		}
@@ -80,7 +108,7 @@ AppConfig::AppConfig()
 AppConfig::~AppConfig()
 {
 	if (mConfigFile) mConfigFile.close();
-	mConfigFile.open("stft.json", std::ios::out);
+	mConfigFile.open(CONFIG_FILENAME, std::ios::out);
 	if (mConfigFile)
 	{
 		mConfigFile << generateConfig() << std::endl;
@@ -89,24 +117,22 @@ AppConfig::~AppConfig()
 
 std::string AppConfig::generateConfig() const
 {
-	std::stringstream buf;
+	std::string _template_copy(TEMPLATE);
 
-	buf << "{" << std::endl;
+	boost::algorithm::replace_first(_template_copy, "@RECORD_DURATION@", std::to_string(mRecordDuration));
+	boost::algorithm::replace_first(_template_copy, "@TIME_RANGE@", std::to_string(mTimeRange));
+	boost::algorithm::replace_first(_template_copy, "@WINDOW_DURATION@", std::to_string(mWindowDuration));
+	boost::algorithm::replace_first(_template_copy, "@HOP_DURATION@", std::to_string(mHopDuration));
+	boost::algorithm::replace_first(_template_copy, "@FREQ_LOW@", std::to_string(mFrequencyLow));
+	boost::algorithm::replace_first(_template_copy, "@FREQ_HIGH@", std::to_string(mFrequencyHigh));
+	boost::algorithm::replace_first(_template_copy, "@CP_INDEX@", std::to_string(palette::Manager::instance().getActivePalette()));
+	boost::algorithm::replace_first(_template_copy, "@CP_DB_MODE@", palette::Manager::instance().getConvertToDb() ? "true" : "false");
+	boost::algorithm::replace_first(_template_copy, "@CP_DB_MODE_DIV@", std::to_string(palette::Manager::instance().getDbDivisor()));
+	boost::algorithm::replace_first(_template_copy, "@CP_LIN_MODE_COEFF@", std::to_string(palette::Manager::instance().getLinearCoefficient()));
+	boost::algorithm::replace_first(_template_copy, "@SAT_LOW@", std::to_string(palette::Manager::instance().getMinThreshold()));
+	boost::algorithm::replace_first(_template_copy, "@SAT_HIGH@", std::to_string(palette::Manager::instance().getMaxThreshold()));
 
-	buf << "\t" << "\"record_duration\" : " << mRecordDuration << "," << std::endl;
-	buf << "\t" << "\"time_range\" : " << mTimeRange << "," << std::endl;
-	buf << "\t" << "\"window_duration\" : " << mWindowDuration << "," << std::endl;
-	buf << "\t" << "\"hop_duration\" : " << mHopDuration << "," << std::endl;
-	buf << "\t" << "\"frequency\" : { \"low\" : " << mFrequencyLow << ", \"high\" : " << mFrequencyHigh << " }" << "," << std::endl;
-	buf << "\t" << "\"saturation_level\" : { \"low\" : " << mSaturationLevelLow << ", \"high\" : " << mSaturationLevelHigh << " }" << "," << std::endl;
-	buf << "\t" << "\"color\" : {" << std::endl
-		<< "\t\t\"low\" : { \"r\" : " << mColorLow.r << ", \"g\" : " << mColorLow.g << ", \"b\" : " << mColorLow.b << " }," << std::endl
-		<< "\t\t\"high\" : { \"r\" : " << mColorHigh.r << ", \"g\" : " << mColorHigh.g << ", \"b\" : " << mColorHigh.b << " }"
-		<< std::endl << "\t}" << std::endl;
-
-	buf << "}";
-
-	return buf.str();
+	return _template_copy;
 }
 
 void AppConfig::checkSanity()

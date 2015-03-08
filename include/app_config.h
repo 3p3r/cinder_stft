@@ -22,10 +22,6 @@ public:
 	float			mHopDuration;
 	float			mFrequencyLow;
 	float			mFrequencyHigh;
-	float			mSaturationLevelLow;
-	float			mSaturationLevelHigh;
-	ci::Color		mColorLow;
-	ci::Color		mColorHigh;
 
 	void			setRemoveLaunchParams();
 	void			LaunchParamsRemoved();
