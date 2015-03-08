@@ -182,6 +182,11 @@ const AudioNodes::Format& AudioNodes::getFormat() const
 	return mFormat;
 }
 
+void AudioNodes::setFormat(const Format& fmt)
+{
+	mFormat = fmt;
+}
+
 // ------------------------------
 // Audio nodes format
 // ------------------------------

@@ -6,6 +6,8 @@
 
 #include <Cinder/Color.h>
 
+#include "audio_nodes.h"
+
 namespace cieq {
 
 struct AppConfig
@@ -28,6 +30,8 @@ public:
 	void			setRemoveLaunchParams();
 	void			LaunchParamsRemoved();
 	bool			shouldRemoveLaunchParams() const;
+	AudioNodes::Format
+					getAsNodeFromat();
 
 private:
 	std::string		generateConfig() const;

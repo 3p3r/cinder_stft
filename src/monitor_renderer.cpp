@@ -16,6 +16,8 @@ void MonitorRenderer::draw()
 {
 	if (!mGlobals.getAudioNodes().isMonitorReady()) return;
 
+	ci::gl::SaveColorState _save_color;
+
 	auto buffer = mGlobals.getAudioNodes().getMonitorNode()->getBuffer();
 
 	ci::gl::lineWidth(3.0f);

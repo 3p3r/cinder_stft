@@ -87,6 +87,7 @@ public:
 	bool												isMonitorReady() const;
 	// \brief answers currently used format
 	const Format&										getFormat() const;
+	void												setFormat(const Format& fmt);
 
 	// \brief returns a pointer to the node which is reading data from input
 	cinder::audio::InputDeviceNode* const				getInputDeviceNode();

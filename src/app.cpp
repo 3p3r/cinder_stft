@@ -52,13 +52,6 @@ void InputAnalyzer::setup()
 	// setup audio I/O
 	mAudioNodes.setupInput();
 	mAudioNodes.setupMonitor();
-	// setup STFT renderer
-	//mStftRenderer.setup();
-}
-
-void InputAnalyzer::resize()
-{
-	/*no op*/
 }
 
 void InputAnalyzer::update()
@@ -75,6 +68,10 @@ void InputAnalyzer::update()
 		mGuiInstance->setOptions(GUI_STATICS::HOP_TEXT, "readonly=true");
 		mGuiInstance->setOptions(GUI_STATICS::VIEWABLE_TEXT, "readonly=true");
 		mAppConfig.LaunchParamsRemoved();
+
+		mAudioNodes.setFormat(mAppConfig.getAsNodeFromat());
+		mAudioNodes.setupRecorder();
+		mStftRenderer.setup();
 	}
 }
 

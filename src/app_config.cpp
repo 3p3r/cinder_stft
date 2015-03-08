@@ -138,4 +138,22 @@ void AppConfig::LaunchParamsRemoved()
 	}
 }
 
+AudioNodes::Format AppConfig::getAsNodeFromat()
+{
+	checkSanity();
+
+	AudioNodes::Format fmt;
+	
+	fmt
+		.fftBins(2048) //fix me
+		.windowDuration(mWindowDuration)
+		.hopDuration(mHopDuration)
+		.autoStart(true)
+		.recordDuration(mRecordDuration)
+		.samplesCacheSize(50) //to do: can we smartly guess this?
+		.timeSpan(mTimeRange);
+
+	return fmt;
+}
+
 } //!cieq

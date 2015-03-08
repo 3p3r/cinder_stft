@@ -33,8 +33,6 @@ public:
 	void			update() override final;
 	//! called at the end of every render loop, used to draw the data.
 	void			draw() override final;
-	//! application window resize callback.
-	void			resize() override final;
 	//! draws the current refresh rate of the render loop.
 	void			drawFps();
 	//! gets fired on mouse click
