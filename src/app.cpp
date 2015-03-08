@@ -8,6 +8,7 @@ InputAnalyzer::InputAnalyzer()
 	: mGlobals(mEventProcessor, mWorkManager, mAudioNodes, mStftRenderer)
 	, mAudioNodes(mGlobals)
 	, mStftRenderer(mGlobals)
+	, mMonitorRenderer(mGlobals)
 {}
 
 void InputAnalyzer::prepareSettings(Settings *settings)
@@ -70,8 +71,10 @@ void InputAnalyzer::draw()
 	ci::gl::disableDepthWrite();
 	ci::gl::enableAlphaBlending();
 
-	// draw STFT
-	mStftRenderer.draw();
+	if (!mGlobals.getAudioNodes().isRecorderReady())
+		mMonitorRenderer.draw();
+	else
+		mStftRenderer.draw();
 
 	// draw FPS
 	drawFps();

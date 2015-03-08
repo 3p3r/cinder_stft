@@ -10,6 +10,7 @@
 #include "work_manager.h"
 #include "app_config.h"
 #include "stft_renderer.h"
+#include "monitor_renderer.h"
 
 namespace cieq
 {
@@ -56,6 +57,8 @@ private:
 	AudioNodes		mAudioNodes;
 	//! STFT renderer
 	StftRenderer	mStftRenderer;
+	//! simple audio monitor renderer
+	MonitorRenderer	mMonitorRenderer;
 	//! ciUI instance
 	ci::params::InterfaceGlRef
 					mGuiInstance;
