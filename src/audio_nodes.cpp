@@ -6,6 +6,7 @@
 #include "stft_request.h"
 
 #include <cinder/audio/Context.h>
+#include <cinder/audio/MonitorNode.h>
 #include <cinder/app/App.h>
 
 namespace cieq
@@ -67,7 +68,7 @@ void AudioNodes::setupInput()
 
 void AudioNodes::setupRecorder()
 {
-	if (!mIsInputReady) return;
+	if (!isInputReady()) return;
 
 	auto recorderFormat = cieq::audio::RecorderNode::Format()
 		.hopSize(mFormat.getHopDurationInSamples())
@@ -93,7 +94,14 @@ void AudioNodes::setupRecorder()
 
 void AudioNodes::setupMonitor()
 {
-	if (!isRecorderReady()) return;
+	if (!isInputReady()) return;
+
+	auto monitorFormat = ci::audio::MonitorNode::Format().windowSize(1024);
+	mMonitorNode = mGlobals.getAudioContext().makeNode(new ci::audio::MonitorNode(monitorFormat));
+
+	mInputDeviceNode >> mMonitorNode;
+
+	mIsMonitorReady = true;
 }
 
 void AudioNodes::update()
@@ -115,6 +123,11 @@ cinder::audio::InputDeviceNode* const AudioNodes::getInputDeviceNode()
 cieq::audio::RecorderNode* const AudioNodes::getBufferRecorderNode()
 {
 	return mBufferRecorderNode.get();
+}
+
+cinder::audio::MonitorNode* const AudioNodes::getMonitorNode()
+{
+	return mMonitorNode.get();
 }
 
 void AudioNodes::enableInput()

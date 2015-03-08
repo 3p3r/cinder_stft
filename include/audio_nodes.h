@@ -8,6 +8,7 @@
 namespace cinder {
 namespace audio {
 class InputDeviceNode;
+class MonitorNode;
 }} //!ci::audio
 
 namespace cieq {
@@ -91,10 +92,13 @@ public:
 	cinder::audio::InputDeviceNode* const				getInputDeviceNode();
 	// \brief returns a pointer to the node which is recording audio
 	cieq::audio::RecorderNode* const					getBufferRecorderNode();
+	// \brief returns a pointer to the node which is having raw data in it
+	cinder::audio::MonitorNode* const					getMonitorNode();
 
 private:
 	std::shared_ptr<cinder::audio::InputDeviceNode>		mInputDeviceNode;
 	std::shared_ptr<cieq::audio::RecorderNode>			mBufferRecorderNode;
+	std::shared_ptr<cinder::audio::MonitorNode>			mMonitorNode;
 
 private:
 	AppGlobals&											mGlobals;

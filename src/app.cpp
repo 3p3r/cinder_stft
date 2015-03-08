@@ -40,6 +40,7 @@ void InputAnalyzer::setup()
 	setupGUI();
 	// setup audio I/O
 	mAudioNodes.setupInput();
+	mAudioNodes.setupMonitor();
 	// setup STFT renderer
 	//mStftRenderer.setup();
 }
