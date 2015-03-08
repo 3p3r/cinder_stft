@@ -80,7 +80,7 @@ void StftRenderer::draw()
 		const auto _active_fbo = getActiveFramebuffer();
 		ScopedFramebuffer _scope(mFrameBuffers[_active_fbo]);
 
-		ci::gl::clear(ci::Color::white());
+		ci::gl::clear();
 
 		for (std::size_t index = _active_fbo * mNumSurfaces; index < (_active_fbo + 1) * mNumSurfaces; ++index)
 		{

@@ -746,4 +746,24 @@ void Manager::setMaxThreshold(float val)
 	mMaxThreshold = val;
 }
 
+const ci::Color& Manager::getActivePaletteMinColor()
+{
+	int _active_palette = mActivePalette; // copy in case it changed during execution
+
+	if (_active_palette == 0)
+		return MatlabJet::palette[0];
+	else if (_active_palette == 1)
+		return MatlabHot::palette[0];
+	else if (_active_palette == 2)
+		return MPLSummer::palette[0];
+	else if (_active_palette == 3)
+		return MPLPaired::palette[0];
+	else if (_active_palette == 4)
+		return MPLOcean::palette[0];
+	else if (_active_palette == 5)
+		return MPLWinter::palette[0];
+	else
+		return ci::Color::black();
+}
+
 }} //!cieq::pallete

@@ -78,7 +78,11 @@ void InputAnalyzer::update()
 void InputAnalyzer::draw()
 {
 	// clear screen black
-	ci::gl::clear();
+	if (mGlobals.getAudioNodes().isRecorderReady())
+		ci::gl::clear(palette::Manager::instance().getActivePaletteMinColor());
+	else
+		ci::gl::clear();
+	
 	ci::gl::disableDepthRead();
 	ci::gl::disableDepthWrite();
 	ci::gl::enableAlphaBlending();

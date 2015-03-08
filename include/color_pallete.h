@@ -52,6 +52,7 @@ public:
 	bool				getConvertToDb() const { return mConvertToDb; }
 
 	const ci::Color&	getActivePaletteColor(float FFT_value);
+	const ci::Color&	getActivePaletteMinColor();
 
 private:
 	Manager();
