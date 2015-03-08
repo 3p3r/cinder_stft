@@ -1,5 +1,7 @@
 #include "color_pallete.h"
 
+#include <cinder/audio/Utilities.h>
+
 namespace cieq {
 namespace palette {
 
@@ -796,5 +798,80 @@ const std::array<const ci::Color, 256> GMTJet::palette{{
 	ci::Color(0.521569f, 0.000000f, 0.000000f),
 	ci::Color(0.505882f, 0.000000f, 0.000000f)
 }};
+
+
+Manager::Manager()
+	: mActivePalette(0)
+	, mLinearCoefficient(1024)
+	, mDbDivisor(100)
+	, mConvertToDb(false)
+	, mMinThreshold(0.0f)
+	, mMaxThreshold(1.0f)
+{}
+
+Manager& Manager::instance()
+{
+	static Manager _inst;
+	return _inst;
+}
+
+void Manager::setActivePalette(int palette_index)
+{
+	if (palette_index < 0) return;
+	mActivePalette = palette_index % 6;
+}
+
+const ci::Color& Manager::getActivePaletteColor(float FFT_value)
+{
+	int _active_palette = mActivePalette; // copy in case it changed during execution
+	float min = mMinThreshold;
+	float max = mMaxThreshold;
+
+	const float value = mConvertToDb ? ci::audio::linearToDecibel(FFT_value) / mDbDivisor : mLinearCoefficient * FFT_value;
+
+	if (_active_palette == 0)
+		return getColor<MatlabJet>(value, min, max);
+	else if (_active_palette == 1)
+		return getColor<MatlabHot>(value, min, max);
+	else if (_active_palette == 2)
+		return getColor<MPLCopper>(value, min, max);
+	else if (_active_palette == 3)
+		return getColor<MPLPaired>(value, min, max);
+	else if (_active_palette == 4)
+		return getColor<MPLOcean>(value, min, max);
+	else if (_active_palette == 5)
+		return getColor<GMTJet>(value, min, max);
+	else
+		return getColor<MatlabJet>(value, min, max);
+}
+
+void Manager::setLinearCoefficient(int coeff)
+{
+	if (coeff < 0) return;
+	mLinearCoefficient = coeff;
+}
+
+void Manager::setDbDivisor(int div)
+{
+	if (div == 0) return;
+	mDbDivisor = div;
+}
+
+void Manager::convertToDb(bool convert)
+{
+	mConvertToDb = convert;
+}
+
+void Manager::setMinThreshold(float val)
+{
+	if (val < 0.0f || val > mMinThreshold) return;
+	mMinThreshold = val;
+}
+
+void Manager::setMaxThreshold(float val)
+{
+	if (val < 0.0f || val < mMinThreshold) return;
+	mMaxThreshold = val;
+}
 
 }} //!cieq::pallete

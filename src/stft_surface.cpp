@@ -1,10 +1,6 @@
 #include "stft_surface.h"
 #include "color_pallete.h"
 
-#include <array>
-
-#include <cinder/audio/Utilities.h>
-
 namespace cieq {
 
 StftSurface::StftSurface(int width, int height)
@@ -28,8 +24,7 @@ void StftSurface::processRow(int row, const std::vector<float>& spectrum)
 	//! color logic goes here
 	while (surface_iter.pixel())
 	{
-		auto m = 1024.0f * spectrum[surface_iter.mX];
-		auto c = palette::getColor<palette::MatlabJet>(m, 0.0f, 1.0f);
+		auto c = palette::Manager::instance().getActivePaletteColor(spectrum[surface_iter.mX]);
 		surface_iter.r() = c.r;
 		surface_iter.g() = c.g;
 		surface_iter.b() = c.b;

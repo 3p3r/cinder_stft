@@ -2,6 +2,8 @@
 #define CIEQ_INCLUDE_COLOR_PALETTE_H_
 
 #include <array>
+#include <atomic>
+
 #include <cinder/Color.h>
 
 namespace cieq {
@@ -25,6 +27,28 @@ inline static const ci::Color& getColor(float value, float vmin, float vmax)
 
 	return T::palette[static_cast<int>(((value - vmin) / vd) * (std::tuple_size<decltype(T::palette)>::value - 1))];
 }
+
+class Manager
+{
+public:
+	static Manager&		instance();
+	void				setActivePalette(int palette_index);
+	void				setLinearCoefficient(int coeff);
+	void				setDbDivisor(int div);
+	void				setMinThreshold(float val);
+	void				setMaxThreshold(float val);
+	void				convertToDb(bool convert);
+	const ci::Color&	getActivePaletteColor(float FFT_value);
+
+private:
+	Manager();
+	std::atomic<int>	mActivePalette;
+	std::atomic<int>	mLinearCoefficient;
+	std::atomic<int>	mDbDivisor;
+	std::atomic<float>	mMinThreshold;
+	std::atomic<float>	mMaxThreshold;
+	std::atomic<bool>	mConvertToDb;
+};
 
 }} // !namespace cieq::palette
 
