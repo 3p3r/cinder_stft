@@ -68,8 +68,10 @@ public:
 public:
 	AudioNodes(AppGlobals&, const Format& = Format());
 
-	// \brief initializes all nodes and connect them together
-	void												setup();
+	// \brief initializes nodes and connect them together
+	void												setupInput();
+	void												setupRecorder();
+	void												setupMonitor();
 	// \brief enables reading from input
 	void												enableInput();
 	// \brief disables reading from input
@@ -79,7 +81,9 @@ public:
 	// \brief updates audio nodes class for one tick.
 	void												update();
 	// \brief returns true if everything is setup correctly for audio nodes
-	bool												ready() const;
+	bool												isInputReady() const;
+	bool												isRecorderReady() const;
+	bool												isMonitorReady() const;
 	// \brief answers currently used format
 	const Format&										getFormat() const;
 
@@ -96,9 +100,13 @@ private:
 	AppGlobals&											mGlobals;
 	Format												mFormat;
 	bool												mIsEnabled;
-	bool												mIsReady;
 	work::ClientRef										mStftClient;
 	std::size_t											mQueryPosition;
+
+private: //state
+	bool												mIsInputReady;
+	bool												mIsRecorderReady;
+	bool												mIsMonitorReady;
 };
 
 } //!cieq

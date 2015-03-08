@@ -19,7 +19,7 @@ StftRenderer::StftRenderer(AppGlobals& globals)
 
 void StftRenderer::setup()
 {
-	if (!mGlobals.getAudioNodes().ready()) return;
+	if (!mGlobals.getAudioNodes().isRecorderReady()) return;
 
 	mNumSurfaces = mGlobals.getAudioNodes().getBufferRecorderNode()->getMaxPossiblePops() / mFramesPerSurface;
 	if (mGlobals.getAudioNodes().getBufferRecorderNode()->getMaxPossiblePops() % mFramesPerSurface != 0)
@@ -50,7 +50,7 @@ void StftRenderer::setup()
 
 void StftRenderer::update()
 {
-	if (!mGlobals.getAudioNodes().ready()) return;
+	if (!mGlobals.getAudioNodes().isRecorderReady()) return;
 
 	for (container_pair& pair : mSurfaceTexturePool)
 	{
@@ -74,7 +74,7 @@ void StftRenderer::update()
 
 void StftRenderer::draw()
 {
-	if (!mGlobals.getAudioNodes().ready()) return;
+	if (!mGlobals.getAudioNodes().isRecorderReady()) return;
 
 	{ //enter FBO scope
 		const auto _active_fbo = getActiveFramebuffer();

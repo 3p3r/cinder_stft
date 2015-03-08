@@ -39,9 +39,9 @@ void InputAnalyzer::setup()
 	// sets up ciUI
 	setupGUI();
 	// setup audio I/O
-	mAudioNodes.setup();
+	mAudioNodes.setupInput();
 	// setup STFT renderer
-	mStftRenderer.setup();
+	//mStftRenderer.setup();
 }
 
 void InputAnalyzer::resize()

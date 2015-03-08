@@ -15,11 +15,13 @@ AudioNodes::AudioNodes(AppGlobals& globals, const Format& fmt /*= Format()*/)
 	: mGlobals(globals)
 	, mFormat(fmt)
 	, mIsEnabled(false)
-	, mIsReady(false)
+	, mIsInputReady(false)
+	, mIsMonitorReady(false)
+	, mIsRecorderReady(false)
 	, mQueryPosition(0)
 {}
 
-void AudioNodes::setup()
+void AudioNodes::setupInput()
 {
 	try
 	{
@@ -51,13 +53,29 @@ void AudioNodes::setup()
 		return;
 	}
 
+	if (mFormat.getAutoStart())
+	{
+		enableInput();
+	}
+
+	mGlobals
+		.getEventProcessor()
+		.addMouseCallback([this](float, float){ toggleInput(); });
+
+	mIsInputReady = true;
+}
+
+void AudioNodes::setupRecorder()
+{
+	if (!mIsInputReady) return;
+
 	auto recorderFormat = cieq::audio::RecorderNode::Format()
 		.hopSize(mFormat.getHopDurationInSamples())
 		.windowSize(mFormat.getWindowDurationInSamples());
 
 	mBufferRecorderNode = mGlobals.getAudioContext().makeNode(new cieq::audio::RecorderNode(mFormat.getRecordDurationInSamples(), recorderFormat));
 	mInputDeviceNode >> mBufferRecorderNode;
-	
+
 	auto stftClientFormat = stft::Client::Format()
 		.channels(mBufferRecorderNode->getNumChannels())
 		.fftSize(mFormat.getFftBins())
@@ -67,24 +85,25 @@ void AudioNodes::setup()
 
 	if (mFormat.getAutoStart())
 	{
-		enableInput();
 		mBufferRecorderNode->start();
 	}
 
-	mGlobals
-		.getEventProcessor()
-		.addMouseCallback([this](float, float){ toggleInput(); });
+	mIsRecorderReady = true;
+}
 
-	mIsReady = true;
+void AudioNodes::setupMonitor()
+{
+	if (!isRecorderReady()) return;
 }
 
 void AudioNodes::update()
 {
-	if (!ready()) return;
-
-	while (mBufferRecorderNode->popBufferWindow(mQueryPosition))
+	if (isRecorderReady())
 	{
-		mStftClient->request(work::make_request<stft::Request>(mQueryPosition));
+		while (mBufferRecorderNode->popBufferWindow(mQueryPosition))
+		{
+			mStftClient->request(work::make_request<stft::Request>(mQueryPosition));
+		}
 	}
 }
 
@@ -130,9 +149,19 @@ void AudioNodes::toggleInput()
 	}
 }
 
-bool AudioNodes::ready() const
+bool AudioNodes::isInputReady() const
 {
-	return mIsReady;
+	return mIsInputReady;
+}
+
+bool AudioNodes::isRecorderReady() const
+{
+	return mIsRecorderReady;
+}
+
+bool AudioNodes::isMonitorReady() const
+{
+	return mIsMonitorReady;
 }
 
 const AudioNodes::Format& AudioNodes::getFormat() const
