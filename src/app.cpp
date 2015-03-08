@@ -4,6 +4,16 @@
 namespace cieq
 {
 
+namespace {
+namespace GUI_STATICS {
+const static std::string START_BUTTON("START");
+const static std::string CONFIGURE_TEXT("Configure the parameters below and hit START");
+const static std::string RECORD_TEXT("Record duration (s)");
+const static std::string VIEWABLE_TEXT("Viewable Time range (s)");
+const static std::string WINDOW_TEXT("Window duration (s)");
+const static std::string HOP_TEXT("Hop duration (s)");
+}}
+
 InputAnalyzer::InputAnalyzer()
 	: mGlobals(mEventProcessor, mWorkManager, mAudioNodes, mStftRenderer)
 	, mAudioNodes(mGlobals)
@@ -58,7 +68,12 @@ void InputAnalyzer::update()
 
 	if (mAppConfig.shouldRemoveLaunchParams())
 	{
-		mGuiInstance->removeParam("START");
+		mGuiInstance->removeParam(GUI_STATICS::START_BUTTON);
+		mGuiInstance->removeParam(GUI_STATICS::CONFIGURE_TEXT);
+		mGuiInstance->setOptions(GUI_STATICS::RECORD_TEXT, "readonly=true");
+		mGuiInstance->setOptions(GUI_STATICS::WINDOW_TEXT, "readonly=true");
+		mGuiInstance->setOptions(GUI_STATICS::HOP_TEXT, "readonly=true");
+		mGuiInstance->setOptions(GUI_STATICS::VIEWABLE_TEXT, "readonly=true");
 		mAppConfig.LaunchParamsRemoved();
 	}
 }
@@ -109,25 +124,29 @@ void InputAnalyzer::setupGUI()
 	static std::once_flag __setup_gui_flag;
 	std::call_once(__setup_gui_flag, [this]
 	{
-		mGuiInstance = ci::params::InterfaceGl::create("Cinder STFT parameters", ci::Vec2i(200, 350));
+		mGuiInstance = ci::params::InterfaceGl::create("Cinder STFT parameters", ci::Vec2i(425, 500));
 		mGuiInstance->addText("Portland State University, Winter 2015");
 		mGuiInstance->addSeparator();
+		// -----------------------------------------------
 
 		mGuiInstance->addText("Developed by: Sepehr Laal, Raghad Boulos");
-		mGuiInstance->addText("Instructor: Dr. James McNames", "fontsize=2");
+		mGuiInstance->addText("Instructor: Dr. James McNames");
 		mGuiInstance->addSeparator();
+		// -----------------------------------------------
 
 		mGuiInstance->addText("This project performs STFT analysis on real time audio signal.");
 		mGuiInstance->addSeparator();
+		// -----------------------------------------------
 
-		mGuiInstance->addText("Configure the parameters below and hit START");
-		mGuiInstance->addParam("Record duration (s)", &mAppConfig.mRecordDuration, "min=300 max=6000");
-		mGuiInstance->addParam("Viewable Time range (s)", &mAppConfig.mTimeRange, "min=2 max=20");
-		mGuiInstance->addParam("Window duration (s)", &mAppConfig.mWindowDuration, "min=0.01 max=0.5");
-		mGuiInstance->addParam("Hop duration (s)", &mAppConfig.mHopDuration, "min=0.01 max=0.5");
-		mGuiInstance->addParam("Low frequency (Hz)", &mAppConfig.mFrequencyLow, "min=0 max=25000");
-		mGuiInstance->addParam("High frequency (Hz)", &mAppConfig.mFrequencyHigh, "min=0 max=25000");
+		mGuiInstance->addText(GUI_STATICS::CONFIGURE_TEXT);
+		mGuiInstance->addParam(GUI_STATICS::RECORD_TEXT, &mAppConfig.mRecordDuration).min(300.0f).max(6000.0f).step(10.0f);
+		mGuiInstance->addParam(GUI_STATICS::VIEWABLE_TEXT, &mAppConfig.mTimeRange).min(2.0f).max(20.0f).step(0.5f);
+		mGuiInstance->addParam(GUI_STATICS::WINDOW_TEXT, &mAppConfig.mWindowDuration).min(0.01f).max(0.5f).step(0.01f);
+		mGuiInstance->addParam(GUI_STATICS::HOP_TEXT, &mAppConfig.mHopDuration).min(0.005f).max(0.5f).step(0.005f);
+		mGuiInstance->addParam("Low frequency (Hz)", &mAppConfig.mFrequencyLow).min(0.0f).max(25000.0f).step(100.0f);
+		mGuiInstance->addParam("High frequency (Hz)", &mAppConfig.mFrequencyHigh).min(0.0f).max(25000.0f).step(100.0f);
 		mGuiInstance->addSeparator();
+		// -----------------------------------------------
 
 		mGuiInstance->addText("Palette settings. Type:");
 		mGuiInstance->addText("0 --> Matlab JET");
@@ -160,8 +179,10 @@ void InputAnalyzer::setupGUI()
 		mGuiInstance->addParam<float>("Max color threshold [0, 1]",
 			[](float val){ palette::Manager::instance().setMaxThreshold(val); },
 			[]()->float{ return palette::Manager::instance().getMaxThreshold(); });
+		mGuiInstance->addSeparator();
+		// -----------------------------------------------
 
-		mGuiInstance->addButton("START", [this] {
+		mGuiInstance->addButton(GUI_STATICS::START_BUTTON, [this] {
 			mGuiInstance->minimize();
 			mAppConfig.setRemoveLaunchParams();
 		});
