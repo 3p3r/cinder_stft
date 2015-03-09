@@ -43,11 +43,14 @@ void InputAnalyzer::prepareSettings(Settings *settings)
 	settings->setWindowSize(window_size);
 	// set the window position (top left) to be at 10% of monitor size
 	settings->setWindowPos(window_position);
+
+	// cap at 300.0 fps! yeaaaah juju :)
+	settings->setFrameRate(300.0f);
 }
 
 void InputAnalyzer::setup()
 {
-	// sets up ciUI
+	// sets up GUI
 	setupGUI();
 	// setup audio I/O
 	mAudioNodes.setupInput();

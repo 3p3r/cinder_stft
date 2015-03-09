@@ -29,14 +29,15 @@ void AudioNodes::setupInput()
 		// Iterate through all devices on this machine and see if we can find any inputs.
 		std::size_t num_inputs = 0;
 		for (auto it = mGlobals.getAudioContext().deviceManager()->getDevices().cbegin()
-			, end = mGlobals.getAudioContext().deviceManager()->getDevices().end(); it != end; ++it)
+			, end = mGlobals.getAudioContext().deviceManager()->getDevices().cend(); it != end; ++it)
 		{
 			if ((*it)->getNumInputChannels() > 0) num_inputs++;
 		}
 
 		if (num_inputs == 0)
 		{
-			throw std::runtime_error("Could not find any input channels. Make sure your computer comes with a mic!");
+			ci::app::getWindow()->setTitle(ci::app::getWindow()->getTitle() + " ( Could not find any input channels. Make sure your computer comes with a mic! )");
+			return;
 		}
 
 		mInputDeviceNode = mGlobals.getAudioContext().createInputDeviceNode();
@@ -44,13 +45,11 @@ void AudioNodes::setupInput()
 	catch (const std::exception& ex)
 	{
 		ci::app::getWindow()->setTitle(ci::app::getWindow()->getTitle() + " ( No audio input found. )");
-		ci::app::console() << "no audio input found: " << ex.what() << std::endl;
 		return;
 	}
 	catch (...)
 	{
 		ci::app::getWindow()->setTitle(ci::app::getWindow()->getTitle() + " ( Error occurred creating input node. )");
-		ci::app::console() << "Unknown error occurred creating input node." << std::endl;
 		return;
 	}
 

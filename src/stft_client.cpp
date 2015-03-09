@@ -66,51 +66,70 @@ void Client::handle(work::RequestRef req)
 		_ready = true;
 	}
 
+	//! Receive the pointer from main thread that contains the audio data position to be processed
 	auto request_ptr	= static_cast<stft::Request*>(req.get());
+	//! Acquire the recorder pointer
 	auto recorder_ptr	= mGlobals->getAudioNodes().getBufferRecorderNode();
+	//! Acquire the renderer pointer
 	auto& renderer_ref	= mGlobals->getThreadRenderer();
 
+	//! Ask the recorder to return back number of samples with size of its window size
 	recorder_ptr->queryBufferWindow(_resources.mPrivateStorage->mCopiedBuffer, request_ptr->getQueryPos());
 	
-	// window the copied buffer and compute forward FFT transform
-	if (_resources.mPrivateStorage->mChannelSize > 1) {
-		// naive average of all channels
+	//! window the copied buffer and compute forward FFT transform
+	//! For each channel, if more than one channel...
+	if (_resources.mPrivateStorage->mChannelSize > 1)
+	{
+		// Naive average of all channels
 		_resources.mPrivateStorage->mFftBuffer.zero();
 		float scale = 1.0f / _resources.mPrivateStorage->mChannelSize;
-		for (size_t ch = 0; ch < _resources.mPrivateStorage->mChannelSize; ch++) {
+		for (size_t ch = 0; ch < _resources.mPrivateStorage->mChannelSize; ch++)
+		{
 			for (size_t i = 0; i < _resources.mPrivateStorage->mWindowSize; i++)
+			{
 				_resources.mPrivateStorage->mFftBuffer[i] += _resources.mPrivateStorage->mCopiedBuffer.getChannel(ch)[i] * scale;
+			}
 		}
+
 		ci::audio::dsp::mul(	_resources.mPrivateStorage->mFftBuffer.getData(),
 								_resources.mPrivateStorage->mWindowingTable.get(),
 								_resources.mPrivateStorage->mFftBuffer.getData(),
 								_resources.mPrivateStorage->mWindowSize);
 	}
-	else
+	else //! If one channel then...
+	{
 		ci::audio::dsp::mul(	_resources.mPrivateStorage->mCopiedBuffer.getData(),
 								_resources.mPrivateStorage->mWindowingTable.get(),
 								_resources.mPrivateStorage->mFftBuffer.getData(),
 								_resources.mPrivateStorage->mWindowSize);
+	}
 
 	_resources.mPrivateStorage->mFft->forward(&_resources.mPrivateStorage->mFftBuffer, &_resources.mPrivateStorage->mBufferSpectral);
 
 	float *real = _resources.mPrivateStorage->mBufferSpectral.getReal();
 	float *imag = _resources.mPrivateStorage->mBufferSpectral.getImag();
 
-	// remove Nyquist component
+	//! remove Nyquist component
+	//! We don't exactly know what this is but it makes sense because at 0Hz, we're technically a flat line
+	//! and therefore it does not make sense to have a phase shift. a non zero phase shift will produce wrong
+	//! results for sqrt(re^2 + im^2)
 	imag[0] = 0.0f;
 
 	// compute normalized magnitude spectrum
-	// TODO: break this into vector Cartesian -> polar and then vector lowpass. skip lowpass if smoothing factor is very small
 	const float magScale = 1.0f / _resources.mPrivateStorage->mFft->getSize();
 	for (size_t i = 0; i < _resources.mPrivateStorage->mMagSpectrum.size(); i++) {
 		const float& re = real[i];
 		const float& im = imag[i];
+
+		// apply a smooth transition from last value to new value
 		_resources.mPrivateStorage->mMagSpectrum[i] =
 			_resources.mPrivateStorage->mMagSpectrum[i] *
 			_resources.mPrivateStorage->mSmoothingFactor +
 			ci::math<float>::sqrt(re * re + im * im) *
 			magScale * (1 - _resources.mPrivateStorage->mSmoothingFactor);
+
+		// no smoothing
+		//_resources.mPrivateStorage->mMagSpectrum[i] = ci::math<float>::sqrt(re * re + im * im) * magScale;
 	}
 
 	const auto pos = request_ptr->getQueryPos();

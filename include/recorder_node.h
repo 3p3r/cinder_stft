@@ -6,6 +6,20 @@
 namespace cieq {
 namespace audio {
 
+/*!
+ * \class RecorderNode
+ * \namespace cieq::audio
+ * \brief This class is a direct subclass of Cinder's BufferRecorder.
+ * It keeps track of where the record position is, also it keeps the
+ * original window size and the original user specified hop size.
+ * 
+ * \note ONLY main thread uses this class to ask for samples to be
+ * sent to worker FFT threads.
+ *
+ * \note Two main tasks are performed within this class:
+ * 1 - Audio recording and keeping track of recorder position
+ * 2 - Keeping track of Where main thread last left off asking for samples
+ */
 class RecorderNode : public ci::audio::BufferRecorderNode
 {
 public:
