@@ -98,6 +98,7 @@ void Client::handle(work::RequestRef req)
 	}
 	else //! If one channel then...
 	{
+		_resources.mPrivateStorage->mFftBuffer.zero();
 		ci::audio::dsp::mul(	_resources.mPrivateStorage->mCopiedBuffer.getData(),
 								_resources.mPrivateStorage->mWindowingTable.get(),
 								_resources.mPrivateStorage->mFftBuffer.getData(),
