@@ -12,22 +12,29 @@ ClientStorage::ClientStorage(const Client::Format& fmt)
 	, mChannelSize(fmt.getChannelSize())
 	, mSmoothingFactor(0.5f)
 {
+	// There's no point of having FFT size of less than a window size!
 	if (mFftSize < mWindowSize)
 		mFftSize = mWindowSize;
-	if (!ci::isPowerOf2(mFftSize))
-		mFftSize = ci::nextPowerOf2(static_cast<uint32_t>(mFftSize));
 
+	// This makes sure that we are zero padding
+	mFftSize = ci::nextPowerOf2(static_cast<uint32_t>(mFftSize));
+
+	// The actual FFT processor instance
 	mFft = std::make_unique<ci::audio::dsp::Fft>(mFftSize);
+
+	// The FFT buffer, the one that will be filled AFTER FFT is performed on data
 	mFftBuffer = ci::audio::Buffer(mFftSize, mChannelSize);
+
+	// Copied buffer. the one that will be filled by raw audio chunks BEFORE FFT
 	mCopiedBuffer = ci::audio::Buffer(mFftSize, mChannelSize);
+
+	// Intermediate buffer passed to FFT processor
 	mBufferSpectral = ci::audio::BufferSpectral(mFftSize);
+
+	// The floating point array that contains all the FFT data, will be passed to renderer
 	mMagSpectrum.resize(mFftSize / 2);
 
-	if (!mWindowSize)
-		mWindowSize = mFftSize;
-	else if (!ci::isPowerOf2(mWindowSize))
-		mWindowSize = ci::nextPowerOf2(static_cast<uint32_t>(mWindowSize));
-
+	// Window table.
 	mWindowingTable = ci::audio::makeAlignedArray<float>(mWindowSize);
 	generateWindow(mWindowType, mWindowingTable.get(), mWindowSize);
 }
