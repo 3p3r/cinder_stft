@@ -15,7 +15,7 @@ ScopedFramebuffer::ScopedFramebuffer(cinder::gl::Fbo& fbo)
 	ci::gl::setViewport(mFbo.getBounds());
 	
 	ci::CameraOrtho _camera;
-	_camera.setOrtho(0, mFbo.getWidth(), mFbo.getHeight(), 0, 0.03f, 100.0f);
+	_camera.setOrtho(0, static_cast<float>(mFbo.getWidth()), static_cast<float>(mFbo.getHeight()), 0, 0.03f, 100.0f);
 	ci::gl::setMatrices(_camera);
 }
 
