@@ -5,13 +5,14 @@
 namespace cieq
 {
 
-AppGlobals::AppGlobals(AppEvent& event_processor, work::Manager& work_manager, AudioNodes& nodes, StftRenderer& renderer, GridRenderer& grid_renderer, AppConfig& app_config)
+AppGlobals::AppGlobals(AppEvent& event_processor, work::Manager& work_manager, AudioNodes& nodes, StftRenderer& renderer, GridRenderer& grid_renderer, AppConfig& app_config, StftFilter& filter)
 	: mEventProcessor(event_processor)
 	, mWorkManager(work_manager)
 	, mAudioNodes(nodes)
 	, mThreadRenderer(renderer)
 	, mGridRenderer(grid_renderer)
 	, mAppConfig(app_config)
+	, mFilter(filter)
 {}
 
 AppEvent& AppGlobals::getEventProcessor()
@@ -47,6 +48,11 @@ GridRenderer& AppGlobals::getGridRenderer()
 AppConfig& AppGlobals::getAppConfig()
 {
 	return mAppConfig;
+}
+
+StftFilter& AppGlobals::getFilter()
+{
+	return mFilter;
 }
 
 } // !namespace cieq

@@ -17,7 +17,7 @@ const static std::string BINS_TEXT("Guaranteed FFT bins");
 }}
 
 InputAnalyzer::InputAnalyzer()
-	: mGlobals(mEventProcessor, mWorkManager, mAudioNodes, mStftRenderer, mGridRenderer, mAppConfig)
+	: mGlobals(mEventProcessor, mWorkManager, mAudioNodes, mStftRenderer, mGridRenderer, mAppConfig, mFilter)
 	, mFilter(mGlobals)
 	, mAudioNodes(mGlobals)
 	, mStftRenderer(mGlobals)

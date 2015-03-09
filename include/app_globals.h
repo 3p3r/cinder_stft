@@ -18,6 +18,7 @@ class AudioNodes;
 class GridRenderer;
 struct AppConfig;
 class AppEvent;
+class StftFilter;
 
 /*!
  * \class AppGlobals
@@ -32,7 +33,8 @@ public:
 				AudioNodes&,
 				StftRenderer&,
 				GridRenderer&,
-				AppConfig&);
+				AppConfig&,
+				StftFilter&);
 
 	AppEvent&							getEventProcessor();
 	work::Manager&						getWorkManager();
@@ -41,6 +43,7 @@ public:
 	StftRenderer&						getThreadRenderer();
 	GridRenderer&						getGridRenderer();
 	AppConfig&							getAppConfig();
+	StftFilter&							getFilter();
 
 private:
 	AppEvent&							mEventProcessor;
@@ -49,6 +52,7 @@ private:
 	StftRenderer&						mThreadRenderer;
 	GridRenderer&						mGridRenderer;
 	AppConfig&							mAppConfig;
+	StftFilter&							mFilter;
 };
 
 } //!cieq
