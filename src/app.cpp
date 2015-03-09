@@ -12,6 +12,8 @@ const static std::string RECORD_TEXT("Record duration (s)");
 const static std::string VIEWABLE_TEXT("Viewable Time range (s)");
 const static std::string WINDOW_TEXT("Window duration (s)");
 const static std::string HOP_TEXT("Hop duration (s)");
+const static std::string CUTOFF_TEXT("Cutoff frequency (Hz)");
+const static std::string BINS_TEXT("Guaranteed FFT bins");
 }}
 
 InputAnalyzer::InputAnalyzer()
@@ -71,6 +73,8 @@ void InputAnalyzer::update()
 		mGuiInstance->setOptions(GUI_STATICS::WINDOW_TEXT, "readonly=true");
 		mGuiInstance->setOptions(GUI_STATICS::HOP_TEXT, "readonly=true");
 		mGuiInstance->setOptions(GUI_STATICS::VIEWABLE_TEXT, "readonly=true");
+		mGuiInstance->setOptions(GUI_STATICS::BINS_TEXT, "readonly=true");
+		mGuiInstance->setOptions(GUI_STATICS::CUTOFF_TEXT, "readonly=true");
 
 		mGuiInstance->addSeparator();
 		mGuiInstance->addText("Grid options:");
@@ -162,8 +166,9 @@ void InputAnalyzer::setupGUI()
 		mGuiInstance->addParam(GUI_STATICS::VIEWABLE_TEXT, &mAppConfig.mTimeRange).min(2.0f).max(20.0f).step(0.5f);
 		mGuiInstance->addParam(GUI_STATICS::WINDOW_TEXT, &mAppConfig.mWindowDuration).min(0.01f).max(0.5f).step(0.01f);
 		mGuiInstance->addParam(GUI_STATICS::HOP_TEXT, &mAppConfig.mHopDuration).min(0.005f).max(0.5f).step(0.005f);
-		mGuiInstance->addParam("Low frequency (Hz)", &mAppConfig.mFrequencyLow).min(0.0f).max(25000.0f).step(100.0f);
-		mGuiInstance->addParam("High frequency (Hz)", &mAppConfig.mFrequencyHigh).min(0.0f).max(25000.0f).step(100.0f);
+		mGuiInstance->addParam(GUI_STATICS::CUTOFF_TEXT, &mAppConfig.mCutoffFrequency).min(0.0f).max(22500.0f).step(100.0f);
+		mGuiInstance->addParam(GUI_STATICS::BINS_TEXT, &mAppConfig.mGuaranteedBins).min(0.0f).max(25000.0f).step(100.0f);
+		mGuiInstance->addParam("Calculated FFT size", &mAppConfig.mFftSize, "readonly=true");
 		mGuiInstance->addSeparator();
 		// -----------------------------------------------
 

@@ -20,8 +20,9 @@ public:
 	float			mTimeRange;
 	float			mWindowDuration;
 	float			mHopDuration;
-	float			mFrequencyLow;
-	float			mFrequencyHigh;
+	float			mCutoffFrequency;
+	int				mGuaranteedBins;
+	int				mFftSize;
 
 	void			setRemoveLaunchParams();
 	void			LaunchParamsRemoved();

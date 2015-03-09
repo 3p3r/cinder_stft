@@ -18,8 +18,8 @@ const std::string TEMPLATE("{\n\
 	\"window_duration\":@WINDOW_DURATION@,\n\
 	\"hop_duration\":@HOP_DURATION@,\n\
 	\"frequency\":{\n\
-		\"low\":@FREQ_LOW@,\n\
-		\"high\":@FREQ_HIGH@\n\
+		\"cutoff\":@FREQ_CUTOFF@,\n\
+		\"bins\":@FREQ_BINS@\n\
 	},\n\
 	\"color_palette\":{\n\
 		\"index\":@CP_INDEX@,\n\
@@ -41,8 +41,9 @@ AppConfig::AppConfig()
 	, mTimeRange(20.0f) // 20 seconds
 	, mWindowDuration(0.02f) // about 1024 samples in 20 seconds
 	, mHopDuration(0.01f) // about 512 samples in 20 seconds
-	, mFrequencyLow(100.0f) // 100Hz
-	, mFrequencyHigh(10000.0f) // 100Hz
+	, mCutoffFrequency(22500) // 22.5KHz
+	, mGuaranteedBins(256)
+	, mFftSize(2048)
 	, mRemoveStartButton(false)
 {
 	if (mConfigFile)
@@ -65,10 +66,10 @@ AppConfig::AppConfig()
 			}
 			if (_tree.hasChild("frequency")) {
 				if (_tree.hasChild("frequency.low")) {
-					mFrequencyLow = _tree.getChild("frequency.low").getValue<float>();
+					mCutoffFrequency = _tree.getChild("frequency.cutoff").getValue<float>();
 				}
 				if (_tree.hasChild("frequency.high")) {
-					mFrequencyHigh = _tree.getChild("frequency.high").getValue<float>();
+					mGuaranteedBins = _tree.getChild("frequency.bins").getValue<int>();
 				}
 			}
 			if (_tree.hasChild("color_palette"))
@@ -123,8 +124,8 @@ std::string AppConfig::generateConfig() const
 	boost::algorithm::replace_first(_template_copy, "@TIME_RANGE@", std::to_string(mTimeRange));
 	boost::algorithm::replace_first(_template_copy, "@WINDOW_DURATION@", std::to_string(mWindowDuration));
 	boost::algorithm::replace_first(_template_copy, "@HOP_DURATION@", std::to_string(mHopDuration));
-	boost::algorithm::replace_first(_template_copy, "@FREQ_LOW@", std::to_string(mFrequencyLow));
-	boost::algorithm::replace_first(_template_copy, "@FREQ_HIGH@", std::to_string(mFrequencyHigh));
+	boost::algorithm::replace_first(_template_copy, "@FREQ_CUTOFF@", std::to_string(mCutoffFrequency));
+	boost::algorithm::replace_first(_template_copy, "@FREQ_BINS@", std::to_string(mGuaranteedBins));
 	boost::algorithm::replace_first(_template_copy, "@CP_INDEX@", std::to_string(palette::Manager::instance().getActivePalette()));
 	boost::algorithm::replace_first(_template_copy, "@CP_DB_MODE@", palette::Manager::instance().getConvertToDb() ? "true" : "false");
 	boost::algorithm::replace_first(_template_copy, "@CP_DB_MODE_DIV@", std::to_string(palette::Manager::instance().getDbDivisor()));
@@ -140,8 +141,8 @@ void AppConfig::checkSanity()
 	if (mTimeRange > mRecordDuration) mTimeRange = mRecordDuration;
 	if (mWindowDuration > mTimeRange) mWindowDuration = mTimeRange;
 	if (mHopDuration > mWindowDuration) mHopDuration = mWindowDuration;
-	if (mFrequencyLow < 0) mFrequencyLow = 0;
-	if (mFrequencyHigh > 25000.0f) mFrequencyHigh = 25000.0f;
+	if (mCutoffFrequency < 0) mCutoffFrequency = 0;
+	if (mGuaranteedBins < 0) mGuaranteedBins = 0;
 }
 
 void AppConfig::setRemoveLaunchParams()
