@@ -15,7 +15,7 @@ const static std::string HOP_TEXT("Hop duration (s)");
 }}
 
 InputAnalyzer::InputAnalyzer()
-	: mGlobals(mEventProcessor, mWorkManager, mAudioNodes, mStftRenderer, mGridRenderer)
+	: mGlobals(mEventProcessor, mWorkManager, mAudioNodes, mStftRenderer, mGridRenderer, mAppConfig)
 	, mAudioNodes(mGlobals)
 	, mStftRenderer(mGlobals)
 	, mMonitorRenderer(mGlobals)

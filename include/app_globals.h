@@ -16,6 +16,7 @@ class Manager;
 }; //!cieq::work
 class AudioNodes;
 class GridRenderer;
+class AppConfig;
 class AppEvent;
 
 /*!
@@ -30,7 +31,8 @@ public:
 				work::Manager&,
 				AudioNodes&,
 				StftRenderer&,
-				GridRenderer&);
+				GridRenderer&,
+				AppConfig&);
 
 	AppEvent&							getEventProcessor();
 	work::Manager&						getWorkManager();
@@ -38,6 +40,7 @@ public:
 	cinder::audio::Context&				getAudioContext();
 	StftRenderer&						getThreadRenderer();
 	GridRenderer&						getGridRenderer();
+	AppConfig&							getAppConfig();
 
 private:
 	AppEvent&							mEventProcessor;
@@ -45,6 +48,7 @@ private:
 	AudioNodes&							mAudioNodes;
 	StftRenderer&						mThreadRenderer;
 	GridRenderer&						mGridRenderer;
+	AppConfig&							mAppConfig;
 };
 
 } //!cieq
