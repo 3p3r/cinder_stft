@@ -16,7 +16,7 @@ class Manager;
 }; //!cieq::work
 class AudioNodes;
 class GridRenderer;
-class AppConfig;
+struct AppConfig;
 class AppEvent;
 
 /*!
