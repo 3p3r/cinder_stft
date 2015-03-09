@@ -118,6 +118,13 @@ void AudioNodes::update()
 
 		mGlobals.getGridRenderer().mConfiguration.mMinX = 0.0f + _time_diff;
 		mGlobals.getGridRenderer().mConfiguration.mMaxX = mFormat.getTimeSpan() + _time_diff;
+
+		if (!getBufferRecorderNode()->isRecording())
+		{
+			// set to loop audio recording forever.
+			getBufferRecorderNode()->reset();
+			getBufferRecorderNode()->start();
+		}
 	}
 }
 
