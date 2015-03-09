@@ -15,6 +15,7 @@ namespace work {
 class Manager;
 }; //!cieq::work
 class AudioNodes;
+class GridRenderer;
 class AppEvent;
 
 /*!
@@ -28,19 +29,22 @@ public:
 	AppGlobals(	AppEvent&,
 				work::Manager&,
 				AudioNodes&,
-				StftRenderer&);
+				StftRenderer&,
+				GridRenderer&);
 
 	AppEvent&							getEventProcessor();
 	work::Manager&						getWorkManager();
 	AudioNodes&							getAudioNodes();
 	cinder::audio::Context&				getAudioContext();
 	StftRenderer&						getThreadRenderer();
+	GridRenderer&						getGridRenderer();
 
 private:
 	AppEvent&							mEventProcessor;
 	work::Manager&						mWorkManager;
 	AudioNodes&							mAudioNodes;
 	StftRenderer&						mThreadRenderer;
+	GridRenderer&						mGridRenderer;
 };
 
 } //!cieq

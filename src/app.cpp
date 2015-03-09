@@ -15,7 +15,7 @@ const static std::string HOP_TEXT("Hop duration (s)");
 }}
 
 InputAnalyzer::InputAnalyzer()
-	: mGlobals(mEventProcessor, mWorkManager, mAudioNodes, mStftRenderer)
+	: mGlobals(mEventProcessor, mWorkManager, mAudioNodes, mStftRenderer, mGridRenderer)
 	, mAudioNodes(mGlobals)
 	, mStftRenderer(mGlobals)
 	, mMonitorRenderer(mGlobals)
@@ -78,10 +78,6 @@ void InputAnalyzer::update()
 		mGuiInstance->addParam("Grid Color", &mGridRenderer.mConfiguration.mGridColor);
 		mGuiInstance->addParam("Step X", &mGridRenderer.mConfiguration.mStepX).min(10).max(100);
 		mGuiInstance->addParam("Step Y", &mGridRenderer.mConfiguration.mStepY).min(10).max(100);
-		mGuiInstance->addParam("Max X", &mGridRenderer.mConfiguration.mMaxX);
-		mGuiInstance->addParam("Min X", &mGridRenderer.mConfiguration.mMinX);
-		mGuiInstance->addParam("Max Y", &mGridRenderer.mConfiguration.mMaxY);
-		mGuiInstance->addParam("Min Y", &mGridRenderer.mConfiguration.mMinY);
 		mGuiInstance->addParam("Label Frequency", &mGridRenderer.mConfiguration.mLabelFrequency).min(1).max(10);
 		mGuiInstance->addParam("Label Margin", &mGridRenderer.mConfiguration.mLabelMargin);
 		mGuiInstance->addParam("Label Color", &mGridRenderer.mConfiguration.mLabelColor);
