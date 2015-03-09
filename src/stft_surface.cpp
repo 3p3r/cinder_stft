@@ -3,8 +3,9 @@
 
 namespace cieq {
 
-StftSurface::StftSurface(int width, int height)
+StftSurface::StftSurface(int width, int height, int fft_vector_index)
 	: ci::Surface32f(width, height, false)
+	, mFftVectorStartIndex(0)
 {}
 
 void StftSurface::fillRow(int row, const std::vector<float>& data)
@@ -24,7 +25,7 @@ void StftSurface::processRow(int row, const std::vector<float>& spectrum)
 	//! color logic goes here
 	while (surface_iter.pixel())
 	{
-		auto c = palette::Manager::instance().getActivePaletteColor(spectrum[surface_iter.mX]);
+		auto c = palette::Manager::instance().getActivePaletteColor(spectrum[surface_iter.mX + mFftVectorStartIndex]);
 		surface_iter.r() = c.r;
 		surface_iter.g() = c.g;
 		surface_iter.b() = c.b;

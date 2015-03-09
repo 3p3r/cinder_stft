@@ -8,11 +8,14 @@
 #include "stft_client.h"
 
 namespace cieq {
+
+class AppGlobals;
+
 namespace stft {
 
 struct ClientStorage
 {
-	ClientStorage(const Client::Format& fmt);
+	ClientStorage(const Client::Format& fmt, AppGlobals* const globals);
 
 	std::unique_ptr<ci::audio::dsp::Fft>	mFft;
 	ci::audio::Buffer						mCopiedBuffer;		// not windowed samples before transform

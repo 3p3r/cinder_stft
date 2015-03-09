@@ -35,7 +35,7 @@ private:
 	container							mSurfaceTexturePool;
 	std::mutex							mPoolLock;
 	std::size_t							mFramesPerSurface;
-	std::size_t							mFftSize;
+	std::size_t							mViewableBins;
 	std::size_t							mNumSurfaces;
 	std::size_t							mTotalSurfacesLength;
 	std::size_t							mLastSurfaceLength;

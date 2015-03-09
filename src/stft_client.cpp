@@ -32,10 +32,11 @@ static class ClientResourcesAllocator
 {
 public:
 	void allocate(	const Client::Format& fmt,
+					AppGlobals* globals,
 					ClientResources& local_rsc)
 	{
 		std::lock_guard<std::mutex> _lock(mResourceLock);
-		mPrivateMemory.push_back(std::make_unique<ClientStorage>(fmt));
+		mPrivateMemory.push_back(std::make_unique<ClientStorage>(fmt, globals));
 		local_rsc.mPrivateStorage = mPrivateMemory.back().get();
 	}
 
@@ -62,7 +63,7 @@ void Client::handle(work::RequestRef req)
 	if (!_ready)
 	{
 		// pass thread's local storage to the allocator function
-		_resources_allocator.allocate( mFormat, _resources );
+		_resources_allocator.allocate( mFormat, mGlobals, _resources );
 		_ready = true;
 	}
 

@@ -1,23 +1,21 @@
 #include "stft_client_storage.h"
+#include "app_globals.h"
+#include "stft_filter.h"
 
 #include <cinder/CinderMath.h>
 
 namespace cieq {
 namespace stft {
 
-ClientStorage::ClientStorage(const Client::Format& fmt)
+ClientStorage::ClientStorage(const Client::Format& fmt, AppGlobals* const globals)
 	: mFftSize(fmt.getFftSize())
 	, mWindowType(fmt.getWindowType())
 	, mWindowSize(fmt.getWindowSize())
 	, mChannelSize(fmt.getChannelSize())
 	, mSmoothingFactor(0.5f)
 {
-	// There's no point of having FFT size of less than a window size!
-	if (mFftSize < mWindowSize)
-		mFftSize = mWindowSize;
-
 	// This makes sure that we are zero padding
-	mFftSize = ci::nextPowerOf2(static_cast<uint32_t>(mFftSize));
+	mFftSize = globals->getFilter().getCalculatedFftSize();
 
 	// The actual FFT processor instance
 	mFft = std::make_unique<ci::audio::dsp::Fft>(mFftSize);

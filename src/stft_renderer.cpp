@@ -3,6 +3,7 @@
 #include "audio_nodes.h"
 #include "recorder_node.h"
 #include "scoped_fbo.h"
+#include "stft_filter.h"
 
 #include <cinder/app/App.h>
 
@@ -11,7 +12,7 @@ namespace cieq {
 StftRenderer::StftRenderer(AppGlobals& globals)
 	: mGlobals(globals)
 	, mFramesPerSurface(mGlobals.getAudioNodes().getFormat().getSamplesCacheSize())
-	, mFftSize(mGlobals.getAudioNodes().getFormat().getFftBins() / 2)
+	, mViewableBins(mGlobals.getFilter().getViewableBins())
 	, mLastPopPos(0)
 	, mLastSurfaceLength(0)
 	, mTotalSurfacesLength(0)
@@ -37,7 +38,7 @@ void StftRenderer::setup()
 	for (std::size_t index = 0; index < mFrameBuffers.size(); ++index)
 	{
 		mFrameBuffers[index] = ci::gl::Fbo(
-			mFftSize, //width
+			mViewableBins, //width
 			mTotalSurfacesLength, //height
 			false, // alpha
 			true, // color
@@ -117,11 +118,11 @@ StftSurface& StftRenderer::getSurface(int index, int pop_pos)
 		{
 			if (_moded_index != mNumSurfaces - 1 || _moded_index != 2 * (mNumSurfaces - 1))
 			{
-				mSurfaceTexturePool[_moded_index].first = std::make_unique<StftSurface>(mFftSize, mLastSurfaceLength);
+				mSurfaceTexturePool[_moded_index].first = std::make_unique<StftSurface>(mViewableBins, mLastSurfaceLength, mGlobals.getFilter().getMagnitudeIndexStart());
 			}
 			else
 			{
-				mSurfaceTexturePool[_moded_index].first = std::make_unique<StftSurface>(mFftSize, getFramesPerSurface());
+				mSurfaceTexturePool[_moded_index].first = std::make_unique<StftSurface>(mViewableBins, getFramesPerSurface(), mGlobals.getFilter().getMagnitudeIndexStart());
 			}
 		}
 	}

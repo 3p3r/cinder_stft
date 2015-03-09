@@ -11,7 +11,7 @@ namespace cieq {
 class StftSurface final : public ci::Surface32f
 {
 public:
-	StftSurface(int width, int height);
+	StftSurface(int width, int height, int fft_vector_index);
 	StftSurface() = delete;
 
 	void				fillRow(int row, const std::vector<float>& data);
@@ -21,6 +21,7 @@ public:
 private:
 	std::atomic<int>	mTouchedRows{ 0 };
 	std::mutex			mWriteLock;
+	int					mFftVectorStartIndex;
 };
 
 typedef std::unique_ptr<StftSurface> StftSurfaceRef;
