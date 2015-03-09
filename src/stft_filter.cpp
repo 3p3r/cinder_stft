@@ -5,6 +5,7 @@
 
 #include <cinder/audio/Context.h>
 #include <cinder/CinderMath.h>
+#include <cinder/params/Params.h>
 
 namespace cieq {
 
@@ -60,7 +61,7 @@ void StftFilter::calculate()
 	}
 
 	mMagnitudeIndexStart = index;
-	mMagnitudeIndexEnd = index + mViewableBins;
+	mMagnitudeIndexEnd = index + (mViewableBins - 1);
 
 	if (mMagnitudeIndexEnd >= mCalculatedFftSize / 2)
 	{
@@ -74,7 +75,9 @@ void StftFilter::calculate()
 
 StftFilter& StftFilter::viewableBins(int val)
 {
-	mViewableBins = val; return *this;
+	mViewableBins = val;
+	calculate();
+	return *this;
 }
 
 StftFilter& StftFilter::lowPassFrequency(float val)
@@ -84,14 +87,18 @@ StftFilter& StftFilter::lowPassFrequency(float val)
 		val = ci::audio::Context::master()->getSampleRate() / 2.0f;
 	}
 
-	mLowPassFrequency = val; return *this;
+	mLowPassFrequency = val;
+	calculate();
+	return *this;
 }
 
 StftFilter& StftFilter::highPassFrequency(float val)
 {
 	if (val < 0.0f) val = 0.0f;
 
-	mHighPassFrequency = val; return *this;
+	mHighPassFrequency = val;
+	calculate();
+	return *this;
 }
 
 int StftFilter::getViewableBins() const
@@ -132,6 +139,36 @@ int StftFilter::getMagnitudeIndexStart() const
 int StftFilter::getMagnitudeIndexEnd() const
 {
 	return mMagnitudeIndexEnd;
+}
+
+namespace {
+const static std::string VIEWABLE_BINS_KEY("Viewable FFT bins");
+const static std::string LOW_PASS_FREQ_KEY("Low pass frequency (Hz)");
+const static std::string HIGH_PASS_FREQ_KEY("High pass frequency (Hz)");
+const static std::string CALCULATED_FFT_KEY("Calculated FFT size");
+const static std::string ACTUAL_LP_FREQ_KEY("Calculated Low pass frequency (Hz)");
+const static std::string ACTUAL_HP_FREQ_KEY("Calculated High pass frequency (Hz)");
+}
+
+void StftFilter::addToGui(ci::params::InterfaceGl* const gui)
+{
+	gui->addText("Filter parameters");
+	gui->addParam<int>(VIEWABLE_BINS_KEY, [this](int val){ viewableBins(val); }, [this]()->int{ return getViewableBins(); });
+	gui->addParam<float>(LOW_PASS_FREQ_KEY, [this](float val){ lowPassFrequency(val); }, [this]()->float{ return getLowPassFrequency(); });
+	gui->addParam<float>(HIGH_PASS_FREQ_KEY, [this](float val){ highPassFrequency(val); }, [this]()->float{ return getHighPassFrequency(); });
+
+	gui->addParam(CALCULATED_FFT_KEY, &mCalculatedFftSize, "readonly=true");
+	gui->addParam(ACTUAL_LP_FREQ_KEY, &mLowPassFrequency, "readonly=true");
+	gui->addParam(ACTUAL_HP_FREQ_KEY, &mHighPassFrequency, "readonly=true");
+
+	gui->addSeparator();
+}
+
+void StftFilter::removeFromGui(ci::params::InterfaceGl* const gui)
+{
+	gui->setOptions(VIEWABLE_BINS_KEY, "readonly=true");
+	gui->setOptions(LOW_PASS_FREQ_KEY, "readonly=true");
+	gui->setOptions(HIGH_PASS_FREQ_KEY, "readonly=true");
 }
 
 }

@@ -18,6 +18,7 @@ const static std::string BINS_TEXT("Guaranteed FFT bins");
 
 InputAnalyzer::InputAnalyzer()
 	: mGlobals(mEventProcessor, mWorkManager, mAudioNodes, mStftRenderer, mGridRenderer, mAppConfig)
+	, mFilter(mGlobals)
 	, mAudioNodes(mGlobals)
 	, mStftRenderer(mGlobals)
 	, mMonitorRenderer(mGlobals)
@@ -85,6 +86,8 @@ void InputAnalyzer::update()
 		mGuiInstance->addParam("Label Frequency", &mGridRenderer.mConfiguration.mLabelFrequency).min(1).max(10);
 		mGuiInstance->addParam("Label Margin", &mGridRenderer.mConfiguration.mLabelMargin);
 		mGuiInstance->addParam("Label Color", &mGridRenderer.mConfiguration.mLabelColor);
+
+		mFilter.removeFromGui(mGuiInstance.get());
 
 		mAppConfig.LaunchParamsRemoved();
 
@@ -168,8 +171,10 @@ void InputAnalyzer::setupGUI()
 		mGuiInstance->addParam(GUI_STATICS::HOP_TEXT, &mAppConfig.mHopDuration).min(0.005f).max(0.5f).step(0.005f);
 		mGuiInstance->addParam(GUI_STATICS::CUTOFF_TEXT, &mAppConfig.mCutoffFrequency).min(0.0f).max(22500.0f).step(100.0f);
 		mGuiInstance->addParam(GUI_STATICS::BINS_TEXT, &mAppConfig.mGuaranteedBins).min(0.0f).max(25000.0f).step(100.0f);
-		mGuiInstance->addParam("Calculated FFT size", &mAppConfig.mFftSize, "readonly=true");
 		mGuiInstance->addSeparator();
+		// -----------------------------------------------
+
+		mFilter.addToGui(mGuiInstance.get());
 		// -----------------------------------------------
 
 		mGuiInstance->addText("Palette settings. Type:");

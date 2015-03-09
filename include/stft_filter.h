@@ -1,6 +1,11 @@
 #ifndef CIEQ_INCLUDE_STFT_FILTER_H_
 #define CIEQ_INCLUDE_STFT_FILTER_H_
 
+namespace cinder {
+namespace params {
+class InterfaceGl;
+}} //!ci::params
+
 namespace cieq {
 
 class AppGlobals;
@@ -10,7 +15,8 @@ class StftFilter
 public:
 	StftFilter(AppGlobals&);
 
-	void		calculate();
+	void		addToGui(cinder::params::InterfaceGl* const);
+	void		removeFromGui(cinder::params::InterfaceGl* const);
 
 	StftFilter& viewableBins(int val);
 	StftFilter& lowPassFrequency(float val);
@@ -35,6 +41,9 @@ private:
 	float		mActualHighPassFrequency;
 	int			mMagnitudeIndexStart;
 	int			mMagnitudeIndexEnd;
+
+private:
+	void		calculate();
 };
 
 }
