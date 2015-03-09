@@ -11,6 +11,7 @@
 #include "app_config.h"
 #include "stft_renderer.h"
 #include "monitor_renderer.h"
+#include "grid_renderer.h"
 
 namespace cieq
 {
@@ -57,6 +58,8 @@ private:
 	StftRenderer	mStftRenderer;
 	//! simple audio monitor renderer
 	MonitorRenderer	mMonitorRenderer;
+	//! simple grid renderer
+	GridRenderer	mGridRenderer;
 	//! ciUI instance
 	ci::params::InterfaceGlRef
 					mGuiInstance;

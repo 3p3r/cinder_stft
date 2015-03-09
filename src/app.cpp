@@ -19,6 +19,7 @@ InputAnalyzer::InputAnalyzer()
 	, mAudioNodes(mGlobals)
 	, mStftRenderer(mGlobals)
 	, mMonitorRenderer(mGlobals)
+	, mGridRenderer(mGlobals)
 {}
 
 void InputAnalyzer::prepareSettings(Settings *settings)
@@ -70,6 +71,21 @@ void InputAnalyzer::update()
 		mGuiInstance->setOptions(GUI_STATICS::WINDOW_TEXT, "readonly=true");
 		mGuiInstance->setOptions(GUI_STATICS::HOP_TEXT, "readonly=true");
 		mGuiInstance->setOptions(GUI_STATICS::VIEWABLE_TEXT, "readonly=true");
+
+		mGuiInstance->addSeparator();
+		mGuiInstance->addText("Grid options:");
+		mGuiInstance->addParam("Draw grids?", &mGridRenderer.mConfiguration.mVisible);
+		mGuiInstance->addParam("Grid Color", &mGridRenderer.mConfiguration.mGridColor);
+		mGuiInstance->addParam("Step X", &mGridRenderer.mConfiguration.mStepX).min(10).max(100);
+		mGuiInstance->addParam("Step Y", &mGridRenderer.mConfiguration.mStepY).min(10).max(100);
+		mGuiInstance->addParam("Max X", &mGridRenderer.mConfiguration.mMaxX);
+		mGuiInstance->addParam("Min X", &mGridRenderer.mConfiguration.mMinX);
+		mGuiInstance->addParam("Max Y", &mGridRenderer.mConfiguration.mMaxY);
+		mGuiInstance->addParam("Min Y", &mGridRenderer.mConfiguration.mMinY);
+		mGuiInstance->addParam("Label Frequency", &mGridRenderer.mConfiguration.mLabelFrequency).min(1).max(10);
+		mGuiInstance->addParam("Label Margin", &mGridRenderer.mConfiguration.mLabelMargin);
+		mGuiInstance->addParam("Label Color", &mGridRenderer.mConfiguration.mLabelColor);
+
 		mAppConfig.LaunchParamsRemoved();
 
 		mAudioNodes.setFormat(mAppConfig.getAsNodeFromat());
@@ -94,6 +110,9 @@ void InputAnalyzer::draw()
 		mMonitorRenderer.draw();
 	else
 		mStftRenderer.draw();
+
+	// draw grid
+	mGridRenderer.draw();
 
 	// draw FPS
 	drawFps();
