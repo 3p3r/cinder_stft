@@ -25,6 +25,8 @@ struct ClientStorage
 	std::size_t								mWindowSize;
 	ci::audio::dsp::WindowType				mWindowType;
 	float									mSmoothingFactor;
+	float									mChannelScale;		// one over channel size
+	float									mMagnitudeScale;	// one over FFT size
 };
 
 }} // !namespace cieq

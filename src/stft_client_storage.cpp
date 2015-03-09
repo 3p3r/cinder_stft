@@ -37,6 +37,10 @@ ClientStorage::ClientStorage(const Client::Format& fmt)
 	// Window table.
 	mWindowingTable = ci::audio::makeAlignedArray<float>(mWindowSize);
 	generateWindow(mWindowType, mWindowingTable.get(), mWindowSize);
+
+	// MISC.
+	mMagnitudeScale = 1.0f / mFft->getSize();
+	mChannelScale	= 1.0f / mChannelSize;
 }
 
 }} //!cieq::stft

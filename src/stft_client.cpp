@@ -80,14 +80,14 @@ void Client::handle(work::RequestRef req)
 	//! For each channel, if more than one channel...
 	if (_resources.mPrivateStorage->mChannelSize > 1)
 	{
-		// Naive average of all channels
+		// Make sure FFT buffer is all zeros
 		_resources.mPrivateStorage->mFftBuffer.zero();
-		float scale = 1.0f / _resources.mPrivateStorage->mChannelSize;
+		// Naive average of all channels
 		for (size_t ch = 0; ch < _resources.mPrivateStorage->mChannelSize; ch++)
 		{
 			for (size_t i = 0; i < _resources.mPrivateStorage->mWindowSize; i++)
 			{
-				_resources.mPrivateStorage->mFftBuffer[i] += _resources.mPrivateStorage->mCopiedBuffer.getChannel(ch)[i] * scale;
+				_resources.mPrivateStorage->mFftBuffer[i] += _resources.mPrivateStorage->mCopiedBuffer.getChannel(ch)[i] * _resources.mPrivateStorage->mChannelScale;
 			}
 		}
 
@@ -117,8 +117,8 @@ void Client::handle(work::RequestRef req)
 	imag[0] = 0.0f;
 
 	// compute normalized magnitude spectrum
-	const float magScale = 1.0f / _resources.mPrivateStorage->mFft->getSize();
-	for (size_t i = 0; i < _resources.mPrivateStorage->mMagSpectrum.size(); i++) {
+	for (size_t i = 0; i < _resources.mPrivateStorage->mMagSpectrum.size(); i++)
+	{
 		const float& re = real[i];
 		const float& im = imag[i];
 
@@ -127,7 +127,7 @@ void Client::handle(work::RequestRef req)
 			_resources.mPrivateStorage->mMagSpectrum[i] *
 			_resources.mPrivateStorage->mSmoothingFactor +
 			ci::math<float>::sqrt(re * re + im * im) *
-			magScale * (1 - _resources.mPrivateStorage->mSmoothingFactor);
+			_resources.mPrivateStorage->mMagnitudeScale * (1 - _resources.mPrivateStorage->mSmoothingFactor);
 
 		// no smoothing
 		//_resources.mPrivateStorage->mMagSpectrum[i] = ci::math<float>::sqrt(re * re + im * im) * magScale;
