@@ -4,6 +4,7 @@
 #include "recorder_node.h"
 #include "stft_client.h"
 #include "stft_request.h"
+#include "grid_renderer.h"
 
 #include <cinder/audio/Context.h>
 #include <cinder/audio/MonitorNode.h>
@@ -42,7 +43,7 @@ void AudioNodes::setupInput()
 
 		mInputDeviceNode = mGlobals.getAudioContext().createInputDeviceNode();
 	}
-	catch (const std::exception& ex)
+	catch (const std::exception&)
 	{
 		ci::app::getWindow()->setTitle(ci::app::getWindow()->getTitle() + " ( No audio input found. )");
 		return;
@@ -111,6 +112,12 @@ void AudioNodes::update()
 		{
 			mStftClient->request(work::make_request<stft::Request>(mQueryPosition));
 		}
+
+		auto _time_diff = getBufferRecorderNode()->getWritePosition() / static_cast<float>(getBufferRecorderNode()->getSampleRate()) - mFormat.getTimeSpan();
+		if (_time_diff < 0) _time_diff = 0.0f;
+
+		mGlobals.getGridRenderer().mConfiguration.mMinX = 0.0f + _time_diff;
+		mGlobals.getGridRenderer().mConfiguration.mMaxX = mFormat.getTimeSpan() + _time_diff;
 	}
 }
 
