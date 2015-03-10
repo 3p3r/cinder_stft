@@ -12,7 +12,7 @@ namespace cieq {
 StftRenderer::StftRenderer(AppGlobals& globals)
 	: mGlobals(globals)
 	, mFramesPerSurface(mGlobals.getAudioNodes().getFormat().getSamplesCacheSize())
-	, mViewableBins(mGlobals.getFilter().getViewableBins())
+	, mViewableBins(mGlobals.getFilter().getActualViewableBins())
 	, mLastPopPos(0)
 	, mLastSurfaceLength(0)
 	, mTotalSurfacesLength(0)
@@ -21,6 +21,8 @@ StftRenderer::StftRenderer(AppGlobals& globals)
 void StftRenderer::setup()
 {
 	if (!mGlobals.getAudioNodes().isRecorderReady()) return;
+
+	mViewableBins = mGlobals.getFilter().getActualViewableBins();
 
 	mNumSurfaces = mGlobals.getAudioNodes().getBufferRecorderNode()->getMaxPossiblePops() / mFramesPerSurface;
 	if (mGlobals.getAudioNodes().getBufferRecorderNode()->getMaxPossiblePops() % mFramesPerSurface != 0)

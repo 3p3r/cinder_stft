@@ -5,7 +5,7 @@ namespace cieq {
 
 StftSurface::StftSurface(int width, int height, int fft_vector_index)
 	: ci::Surface32f(width, height, false)
-	, mFftVectorStartIndex(0)
+	, mFftVectorStartIndex(fft_vector_index)
 {}
 
 void StftSurface::fillRow(int row, const std::vector<float>& data)

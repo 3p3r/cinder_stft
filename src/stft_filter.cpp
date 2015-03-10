@@ -10,14 +10,14 @@
 namespace cieq {
 
 StftFilter::StftFilter(AppGlobals& g)
-	: mViewableBins(256)
+	: mMinimumViewableBins(256)
 	, mLowPassFrequency(10000.0f) //10KHz
 	, mHighPassFrequency(100.0f) //100Hz
-	, mCalculatedFftSize(0)
+	, mActualViewableBins(0)
 	, mActualLowPassFrequency(0)
 	, mActualHighPassFrequency(0)
-	, mMagnitudeIndexEnd(0)
 	, mMagnitudeIndexStart(0)
+	, mCalculatedFftSize(0)
 	, mGlobals(g)
 {}
 
@@ -28,10 +28,12 @@ void StftFilter::calculate()
 		mLowPassFrequency = mHighPassFrequency + 5000.0f;
 
 	// just a sanity check
-	if (mViewableBins < 0)
-		mViewableBins = 256;
+	if (mMinimumViewableBins < 0)
+		mMinimumViewableBins = 256;
 
-	mCalculatedFftSize = static_cast<int>(((mViewableBins - 1) * ci::audio::Context::master()->getSampleRate()) / (mLowPassFrequency - mHighPassFrequency));
+	const auto _sample_rate = ci::audio::Context::master()->getSampleRate();
+
+	mCalculatedFftSize = static_cast<int>(((mMinimumViewableBins - 1) * _sample_rate) / (mLowPassFrequency - mHighPassFrequency));
 
 	if (!ci::isPowerOf2(mCalculatedFftSize))
 		mCalculatedFftSize = ci::nextPowerOf2(mCalculatedFftSize);
@@ -49,33 +51,40 @@ void StftFilter::calculate()
 
 	auto _temp_frequency = 0.0f;
 	int index = 0;
+	const auto _frequency_step = (1.0f / mCalculatedFftSize) * _sample_rate;
+
 	for (index = 0; index < mCalculatedFftSize / 2 && _temp_frequency < mHighPassFrequency; ++index)
 	{
-		_temp_frequency += index * (1.0f / mCalculatedFftSize);
+		_temp_frequency += _frequency_step;
 	}
 	
 	if (_temp_frequency > mHighPassFrequency)
 	{
-		_temp_frequency -= index * (1.0f / mCalculatedFftSize);
+		_temp_frequency -= _frequency_step;
 		index--;
 	}
 
+	mActualHighPassFrequency = _temp_frequency;
 	mMagnitudeIndexStart = index;
-	mMagnitudeIndexEnd = index + (mViewableBins - 1);
 
-	if (mMagnitudeIndexEnd >= mCalculatedFftSize / 2)
+	for (; index < mCalculatedFftSize / 2 && _temp_frequency < mLowPassFrequency; ++index)
 	{
-		// this should never happen but just in case.
-		mMagnitudeIndexEnd = (mCalculatedFftSize / 2) - 1;
+		_temp_frequency += _frequency_step;
 	}
 
-	mActualHighPassFrequency = _temp_frequency;
-	mActualLowPassFrequency = (mViewableBins * (1.0f / mCalculatedFftSize)) + _temp_frequency;
+	if (_temp_frequency > mLowPassFrequency)
+	{
+		_temp_frequency -= _frequency_step;
+		index--;
+	}
+
+	mActualViewableBins = (index - mMagnitudeIndexStart) + 1;
+	mActualLowPassFrequency = _temp_frequency;
 }
 
-StftFilter& StftFilter::viewableBins(int val)
+StftFilter& StftFilter::minimumViewableBins(int val)
 {
-	mViewableBins = val;
+	mMinimumViewableBins = val;
 	calculate();
 	return *this;
 }
@@ -101,9 +110,9 @@ StftFilter& StftFilter::highPassFrequency(float val)
 	return *this;
 }
 
-int StftFilter::getViewableBins() const
+int StftFilter::getMinimumViewableBins() const
 {
-	return mViewableBins;
+	return mMinimumViewableBins;
 }
 
 float StftFilter::getLowPassFrequency() const
@@ -116,9 +125,9 @@ float StftFilter::getHighPassFrequency() const
 	return mHighPassFrequency;
 }
 
-int StftFilter::getCalculatedFftSize() const
+int StftFilter::getActualViewableBins() const
 {
-	return mCalculatedFftSize;
+	return mActualViewableBins;
 }
 
 float StftFilter::getActualLowPassFrequency() const
@@ -136,9 +145,9 @@ int StftFilter::getMagnitudeIndexStart() const
 	return mMagnitudeIndexStart;
 }
 
-int StftFilter::getMagnitudeIndexEnd() const
+int StftFilter::getCalculatedFftSize() const
 {
-	return mMagnitudeIndexEnd;
+	return mCalculatedFftSize;
 }
 
 namespace {
@@ -153,11 +162,11 @@ const static std::string ACTUAL_HP_FREQ_KEY("Calculated High pass frequency (Hz)
 void StftFilter::addToGui(ci::params::InterfaceGl* const gui)
 {
 	gui->addText("Filter parameters");
-	gui->addParam<int>(VIEWABLE_BINS_KEY, [this](int val){ viewableBins(val); }, [this]()->int{ return getViewableBins(); });
+	gui->addParam<int>(VIEWABLE_BINS_KEY, [this](int val){ minimumViewableBins(val); }, [this]()->int{ return getMinimumViewableBins(); });
 	gui->addParam<float>(LOW_PASS_FREQ_KEY, [this](float val){ lowPassFrequency(val); }, [this]()->float{ return getLowPassFrequency(); });
 	gui->addParam<float>(HIGH_PASS_FREQ_KEY, [this](float val){ highPassFrequency(val); }, [this]()->float{ return getHighPassFrequency(); });
 
-	gui->addParam(CALCULATED_FFT_KEY, &mCalculatedFftSize, "readonly=true");
+	gui->addParam(CALCULATED_FFT_KEY, &mActualViewableBins, "readonly=true");
 	gui->addParam(ACTUAL_LP_FREQ_KEY, &mLowPassFrequency, "readonly=true");
 	gui->addParam(ACTUAL_HP_FREQ_KEY, &mHighPassFrequency, "readonly=true");
 

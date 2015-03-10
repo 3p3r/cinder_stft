@@ -18,29 +18,34 @@ public:
 	void		addToGui(cinder::params::InterfaceGl* const);
 	void		removeFromGui(cinder::params::InterfaceGl* const);
 
-	StftFilter& viewableBins(int val);
+	StftFilter& minimumViewableBins(int val);
 	StftFilter& lowPassFrequency(float val);
 	StftFilter& highPassFrequency(float val);
 
-	int			getViewableBins() const;
+	int			getMinimumViewableBins() const;
 	float		getLowPassFrequency() const;
 	float		getHighPassFrequency() const;
-	int			getCalculatedFftSize() const;
+	
+	int			getActualViewableBins() const;
 	float		getActualLowPassFrequency() const;
 	float		getActualHighPassFrequency() const;
+	
+	int			getCalculatedFftSize() const;
 	int			getMagnitudeIndexStart() const;
-	int			getMagnitudeIndexEnd() const;
 
 private:
 	AppGlobals&	mGlobals;
-	int			mViewableBins;
+	
+	int			mMinimumViewableBins;
 	float		mLowPassFrequency;
 	float		mHighPassFrequency;
-	int			mCalculatedFftSize;
+
+	int			mActualViewableBins;
 	float		mActualLowPassFrequency;
 	float		mActualHighPassFrequency;
+
+	int			mCalculatedFftSize;
 	int			mMagnitudeIndexStart;
-	int			mMagnitudeIndexEnd;
 
 private:
 	void		calculate();
