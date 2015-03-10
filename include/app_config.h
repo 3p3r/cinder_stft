@@ -8,6 +8,11 @@
 
 #include "audio_nodes.h"
 
+namespace cinder {
+namespace params {
+class InterfaceGl;
+}} //!ci::params
+
 namespace cieq {
 
 struct AppConfig
@@ -29,6 +34,9 @@ public:
 	bool			shouldRemoveLaunchParams() const;
 	AudioNodes::Format
 					getAsNodeFromat();
+
+	void			addToGui(cinder::params::InterfaceGl* const);
+	void			removeFromGui(cinder::params::InterfaceGl* const);
 
 private:
 	std::string		generateConfig() const;
