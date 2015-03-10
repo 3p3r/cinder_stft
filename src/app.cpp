@@ -184,11 +184,6 @@ void InputAnalyzer::setupGUI()
 			[]()->float{ return palette::Manager::instance().getMaxThreshold(); });
 		mGuiInstance->addSeparator();
 		// -----------------------------------------------
-
-		mGuiInstance->addButton(GUI_STATICS::START_BUTTON, [this] {
-			mGuiInstance->minimize();
-			mAppConfig.setRemoveLaunchParams();
-		});
 	});
 }
 

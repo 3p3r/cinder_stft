@@ -196,19 +196,23 @@ const static std::string CUTOFF_TEXT("Cutoff frequency (Hz)");
 const static std::string BINS_TEXT("Guaranteed FFT bins");
 }}
 
-void AppConfig::addToGui(cinder::params::InterfaceGl* gui const)
+void AppConfig::addToGui(cinder::params::InterfaceGl* const gui)
 {
 	gui->addText(GUI_STATICS::CONFIGURE_TEXT);
-	gui->addParam(GUI_STATICS::RECORD_TEXT, &mAppConfig.mRecordDuration).min(300.0f).max(6000.0f).step(10.0f);
-	gui->addParam(GUI_STATICS::VIEWABLE_TEXT, &mAppConfig.mTimeRange).min(2.0f).max(20.0f).step(0.5f);
-	gui->addParam(GUI_STATICS::WINDOW_TEXT, &mAppConfig.mWindowDuration).min(0.01f).max(0.5f).step(0.01f);
-	gui->addParam(GUI_STATICS::HOP_TEXT, &mAppConfig.mHopDuration).min(0.005f).max(0.5f).step(0.005f);
-	gui->addParam(GUI_STATICS::CUTOFF_TEXT, &mAppConfig.mCutoffFrequency).min(0.0f).max(22500.0f).step(100.0f);
-	gui->addParam(GUI_STATICS::BINS_TEXT, &mAppConfig.mGuaranteedBins).min(0.0f).max(25000.0f).step(100.0f);
+	gui->addParam(GUI_STATICS::RECORD_TEXT, &mRecordDuration).min(300.0f).max(6000.0f).step(10.0f);
+	gui->addParam(GUI_STATICS::VIEWABLE_TEXT, &mTimeRange).min(2.0f).max(20.0f).step(0.5f);
+	gui->addParam(GUI_STATICS::WINDOW_TEXT, &mWindowDuration).min(0.01f).max(0.5f).step(0.01f);
+	gui->addParam(GUI_STATICS::HOP_TEXT, &mHopDuration).min(0.005f).max(0.5f).step(0.005f);
+	gui->addParam(GUI_STATICS::CUTOFF_TEXT, &mCutoffFrequency).min(0.0f).max(22500.0f).step(100.0f);
+	gui->addParam(GUI_STATICS::BINS_TEXT, &mGuaranteedBins).min(0.0f).max(25000.0f).step(100.0f);
 	gui->addSeparator();
+	gui->addButton(GUI_STATICS::START_BUTTON, [this, gui] {
+		gui->minimize();
+		setRemoveLaunchParams();
+	});
 }
 
-void AppConfig::removeFromGui(cinder::params::InterfaceGl* const)
+void AppConfig::removeFromGui(cinder::params::InterfaceGl* const gui)
 {
 	gui->removeParam(GUI_STATICS::START_BUTTON);
 	gui->removeParam(GUI_STATICS::CONFIGURE_TEXT);
