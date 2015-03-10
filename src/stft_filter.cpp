@@ -31,7 +31,7 @@ void StftFilter::calculate()
 	if (mViewableBins < 0)
 		mViewableBins = 256;
 
-	mCalculatedFftSize = static_cast<int>(((mViewableBins + 1) * ci::audio::Context::master()->getSampleRate()) / (mLowPassFrequency - mHighPassFrequency));
+	mCalculatedFftSize = static_cast<int>(((mViewableBins - 1) * ci::audio::Context::master()->getSampleRate()) / (mLowPassFrequency - mHighPassFrequency));
 
 	if (!ci::isPowerOf2(mCalculatedFftSize))
 		mCalculatedFftSize = ci::nextPowerOf2(mCalculatedFftSize);
