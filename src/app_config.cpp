@@ -1,5 +1,5 @@
 #include "app_config.h"
-#include "color_pallete.h"
+#include "palette_manager.h"
 
 #include <sstream>
 #include <mutex>

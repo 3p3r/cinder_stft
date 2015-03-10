@@ -2,7 +2,6 @@
 #define CIEQ_INCLUDE_COLOR_PALETTE_H_
 
 #include <array>
-#include <atomic>
 
 #include <cinder/Color.h>
 
@@ -27,42 +26,6 @@ inline static const ci::Color& getColor(float value, float vmin, float vmax)
 
 	return T::palette[static_cast<int>(((value - vmin) / vd) * (std::tuple_size<decltype(T::palette)>::value - 1))];
 }
-
-class Manager
-{
-public:
-	static Manager&		instance();
-
-	void				setActivePalette(int palette_index);
-	int					getActivePalette() const { return mActivePalette; }
-
-	void				setLinearCoefficient(float coeff);
-	float				getLinearCoefficient() const { return mLinearCoefficient; }
-
-	void				setDbDivisor(float div);
-	float				getDbDivisor() const { return mDbDivisor; }
-
-	void				setMinThreshold(float val);
-	float				getMinThreshold() const { return mMinThreshold; }
-
-	void				setMaxThreshold(float val);
-	float				getMaxThreshold() const { return mMaxThreshold; }
-
-	void				setConvertToDb(bool convert);
-	bool				getConvertToDb() const { return mConvertToDb; }
-
-	const ci::Color&	getActivePaletteColor(float FFT_value);
-	const ci::Color&	getActivePaletteMinColor();
-
-private:
-	Manager();
-	std::atomic<int>	mActivePalette;
-	std::atomic<float>	mLinearCoefficient;
-	std::atomic<float>	mDbDivisor;
-	std::atomic<float>	mMinThreshold;
-	std::atomic<float>	mMaxThreshold;
-	std::atomic<bool>	mConvertToDb;
-};
 
 }} // !namespace cieq::palette
 

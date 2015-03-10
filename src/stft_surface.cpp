@@ -1,5 +1,5 @@
 #include "stft_surface.h"
-#include "color_pallete.h"
+#include "palette_manager.h"
 
 namespace cieq {
 
