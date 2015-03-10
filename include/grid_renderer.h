@@ -3,6 +3,11 @@
 
 #include <cinder/Color.h>
 
+namespace cinder {
+namespace params {
+class InterfaceGl;
+}} //!ci::params
+
 namespace cieq {
 
 class AppGlobals;
@@ -32,6 +37,9 @@ public:
 	} mConfiguration;
 
 	void			resetConfiguration();
+
+	void			addToGui(cinder::params::InterfaceGl* const);
+	void			removeFromGui(cinder::params::InterfaceGl* const);
 
 private:
 	AppGlobals&		mGlobals;

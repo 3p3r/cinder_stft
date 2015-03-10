@@ -57,17 +57,8 @@ void InputAnalyzer::update()
 	if (mAppConfig.shouldRemoveLaunchParams())
 	{
 		mAppConfig.removeFromGui(mGuiInstance.get());
-
-		mGuiInstance->addSeparator();
-		mGuiInstance->addText("Grid options:");
-		mGuiInstance->addParam("Draw grids?", &mGridRenderer.mConfiguration.mVisible);
-		mGuiInstance->addParam("Grid Color", &mGridRenderer.mConfiguration.mGridColor);
-		mGuiInstance->addParam("Step X", &mGridRenderer.mConfiguration.mStepX).min(10).max(100);
-		mGuiInstance->addParam("Step Y", &mGridRenderer.mConfiguration.mStepY).min(10).max(100);
-		mGuiInstance->addParam("Label Frequency", &mGridRenderer.mConfiguration.mLabelFrequency).min(1).max(10);
-		mGuiInstance->addParam("Label Margin", &mGridRenderer.mConfiguration.mLabelMargin);
-		mGuiInstance->addParam("Label Color", &mGridRenderer.mConfiguration.mLabelColor);
-
+		
+		mGridRenderer.removeFromGui(mGuiInstance.get());
 		mFilter.removeFromGui(mGuiInstance.get());
 		palette::Manager::instance().removeFromGui(mGuiInstance.get());
 

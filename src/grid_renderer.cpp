@@ -4,6 +4,7 @@
 
 #include <cinder/Color.h>
 #include <cinder/app/App.h>
+#include <cinder/params/Params.h>
 
 namespace cieq {
 
@@ -73,6 +74,24 @@ void GridRenderer::resetConfiguration()
 	mConfiguration.mStepX = 50;
 	mConfiguration.mStepY = 50;
 	mConfiguration.mVisible = false;
+}
+
+void GridRenderer::addToGui(cinder::params::InterfaceGl* const gui)
+{
+	/* no op */
+}
+
+void GridRenderer::removeFromGui(cinder::params::InterfaceGl* const gui)
+{
+	gui->addSeparator();
+	gui->addText("Grid options:");
+	gui->addParam("Draw grids?", &mConfiguration.mVisible);
+	gui->addParam("Grid Color", &mConfiguration.mGridColor);
+	gui->addParam("Step X", &mConfiguration.mStepX).min(10).max(100);
+	gui->addParam("Step Y", &mConfiguration.mStepY).min(10).max(100);
+	gui->addParam("Label Frequency", &mConfiguration.mLabelFrequency).min(1).max(10);
+	gui->addParam("Label Margin", &mConfiguration.mLabelMargin);
+	gui->addParam("Label Color", &mConfiguration.mLabelColor);
 }
 
 }
