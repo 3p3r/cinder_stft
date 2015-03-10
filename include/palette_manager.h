@@ -5,6 +5,11 @@
 
 #include <atomic>
 
+namespace cinder {
+namespace params {
+class InterfaceGl;
+}} //!ci::params
+
 namespace cieq {
 namespace palette {
 
@@ -33,6 +38,9 @@ public:
 
 	const ci::Color&	getActivePaletteColor(float FFT_value);
 	const ci::Color&	getActivePaletteMinColor();
+
+	void				addToGui(cinder::params::InterfaceGl* const);
+	void				removeFromGui(cinder::params::InterfaceGl* const);
 
 private:
 	Manager();

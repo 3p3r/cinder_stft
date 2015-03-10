@@ -1,6 +1,7 @@
 #include "palette_manager.h"
 
 #include <cinder/audio/Utilities.h>
+#include <cinder/params/Params.h>
 
 namespace cieq {
 namespace palette {
@@ -97,6 +98,48 @@ const ci::Color& Manager::getActivePaletteMinColor()
 		return MPLWinter::palette[0];
 	else
 		return ci::Color::black();
+}
+
+void Manager::addToGui(cinder::params::InterfaceGl* const gui)
+{
+	gui->addText("Palette settings. Type:");
+	gui->addText("0 --> Matlab JET");
+	gui->addText("1 --> Matlab HOT");
+	gui->addText("2 --> MPL Summer");
+	gui->addText("3 --> MPL Paired");
+	gui->addText("4 --> MPL Ocean");
+	gui->addText("5 --> MPL Winter");
+
+	gui->addParam<int>("Color palette",
+		[](int p){ palette::Manager::instance().setActivePalette(p); },
+		[]()->int{ return palette::Manager::instance().getActivePalette(); });
+
+	gui->addParam<bool>("Convert to dB mode",
+		[](bool c){ palette::Manager::instance().setConvertToDb(c); },
+		[]()->bool{ return palette::Manager::instance().getConvertToDb(); });
+
+	gui->addParam<float>("dB mode divisor",
+		[](float val){ palette::Manager::instance().setDbDivisor(val); },
+		[]()->float{ return palette::Manager::instance().getDbDivisor(); });
+
+	gui->addParam<float>("linear mode coefficient",
+		[](float val){ palette::Manager::instance().setLinearCoefficient(val); },
+		[]()->float{ return palette::Manager::instance().getLinearCoefficient(); });
+
+	gui->addParam<float>("Min color threshold [0, 1]",
+		[](float val){ palette::Manager::instance().setMinThreshold(val); },
+		[]()->float{ return palette::Manager::instance().getMinThreshold(); });
+
+	gui->addParam<float>("Max color threshold [0, 1]",
+		[](float val){ palette::Manager::instance().setMaxThreshold(val); },
+		[]()->float{ return palette::Manager::instance().getMaxThreshold(); });
+	gui->addSeparator();
+	// -----------------------------------------------
+}
+
+void Manager::removeFromGui(cinder::params::InterfaceGl* const gui)
+{
+	/* no op */
 }
 
 }} //!cieq::palette

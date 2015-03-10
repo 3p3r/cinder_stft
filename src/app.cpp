@@ -69,6 +69,7 @@ void InputAnalyzer::update()
 		mGuiInstance->addParam("Label Color", &mGridRenderer.mConfiguration.mLabelColor);
 
 		mFilter.removeFromGui(mGuiInstance.get());
+		palette::Manager::instance().removeFromGui(mGuiInstance.get());
 
 		mAppConfig.LaunchParamsRemoved();
 
@@ -146,44 +147,8 @@ void InputAnalyzer::setupGUI()
 		// -----------------------------------------------
 
 		mAppConfig.addToGui(mGuiInstance.get());
-		// -----------------------------------------------
-
 		mFilter.addToGui(mGuiInstance.get());
-		// -----------------------------------------------
-
-		mGuiInstance->addText("Palette settings. Type:");
-		mGuiInstance->addText("0 --> Matlab JET");
-		mGuiInstance->addText("1 --> Matlab HOT");
-		mGuiInstance->addText("2 --> MPL Summer");
-		mGuiInstance->addText("3 --> MPL Paired");
-		mGuiInstance->addText("4 --> MPL Ocean");
-		mGuiInstance->addText("5 --> MPL Winter");
-
-		mGuiInstance->addParam<int>("Color palette",
-			[](int p){ palette::Manager::instance().setActivePalette(p); },
-			[]()->int{ return palette::Manager::instance().getActivePalette(); });
-
-		mGuiInstance->addParam<bool>("Convert to dB mode",
-			[](bool c){ palette::Manager::instance().setConvertToDb(c); },
-			[]()->bool{ return palette::Manager::instance().getConvertToDb(); });
-		
-		mGuiInstance->addParam<float>("dB mode divisor",
-			[](float val){ palette::Manager::instance().setDbDivisor(val); },
-			[]()->float{ return palette::Manager::instance().getDbDivisor(); });
-		
-		mGuiInstance->addParam<float>("linear mode coefficient",
-			[](float val){ palette::Manager::instance().setLinearCoefficient(val); },
-			[]()->float{ return palette::Manager::instance().getLinearCoefficient(); });
-		
-		mGuiInstance->addParam<float>("Min color threshold [0, 1]",
-			[](float val){ palette::Manager::instance().setMinThreshold(val); },
-			[]()->float{ return palette::Manager::instance().getMinThreshold(); });
-		
-		mGuiInstance->addParam<float>("Max color threshold [0, 1]",
-			[](float val){ palette::Manager::instance().setMaxThreshold(val); },
-			[]()->float{ return palette::Manager::instance().getMaxThreshold(); });
-		mGuiInstance->addSeparator();
-		// -----------------------------------------------
+		palette::Manager::instance().addToGui(mGuiInstance.get());
 	});
 }
 
