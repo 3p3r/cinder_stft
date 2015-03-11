@@ -1,6 +1,6 @@
-# Cinder Equalizer
+# Cinder STFT
 
-An Audio Equalizer built with [Cinder](http://libcinder.org/).
+A real-time STFT analyzer built with [Cinder](http://libcinder.org/).
 
 --------------------
 ### To get Cinder cloned:
