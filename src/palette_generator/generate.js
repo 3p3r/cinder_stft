@@ -155,7 +155,7 @@ links.forEach(function (link) {
                     b = colors[2];
                 }
 
-                console.log("\tci::Color(" + r + ", " + g + ", " + b + ")" + ((_lineCount == _numColor) ? "" : ",")); //C++
+                console.log("\tci::Color(" + r + "f, " + g + "f, " + b + "f)" + ((_lineCount == _numColor) ? "" : ",")); //C++
 
                 // Done.
                 if (_lineCount == _numColor) {
