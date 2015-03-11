@@ -21,10 +21,16 @@ GridRenderer::GridRenderer(AppGlobals& g)
 	, mStepX(50)
 	, mStepY(50)
 	, mVisible(false)
+	, mHorizontalUnit("")
+	, mHorizontalUnitTextToDraw("")
+	, mVerticalUnit("")
+	, mVerticalUnitTextToDraw("")
 {}
 
 void GridRenderer::draw()
 {
+	static ci::Font _axis_font("Arial", 20);
+
 	if (!mVisible || !mGlobals.getAudioNodes().isRecorderReady()) return;
 
 	ci::gl::SaveColorState _save_color;
@@ -43,7 +49,7 @@ void GridRenderer::draw()
 		if (count % mLabelFrequency == 0) // every 4 steps, draw string of where we're standing
 		{
 			const auto _val = ((i / _h_float) * (mMaxY - mMinY)) + mMinY;
-			ci::gl::drawStringCentered(std::to_string(_val), ci::Vec2f(mLabelMargin * ci::app::getWindowAspectRatio(), _y), mLabelColor);
+			ci::gl::drawStringCentered(std::to_string(_val) + mHorizontalUnitTextToDraw, ci::Vec2f(mLabelMargin * ci::app::getWindowAspectRatio(), _y), mLabelColor, _axis_font);
 		}
 
 		count++;
@@ -61,7 +67,7 @@ void GridRenderer::draw()
 			ci::gl::pushMatrices();
 			ci::gl::rotate(-90.0f);
 			const auto _val = ((i / _w_float) * (mMaxX - mMinX)) + mMinX;
-			ci::gl::drawStringCentered(std::to_string(_val), ci::Vec2f((mLabelMargin - ci::app::getWindowHeight()), _x), mLabelColor);
+			ci::gl::drawStringCentered(std::to_string(_val) + mVerticalUnitTextToDraw, ci::Vec2f((mLabelMargin - ci::app::getWindowHeight()), _x), mLabelColor, _axis_font);
 			ci::gl::popMatrices();
 		}
 
@@ -108,6 +114,18 @@ void GridRenderer::setVerticalBoundary(float min /*= 0.0f*/, float max /*= 1.0f*
 	// vertical axis draws upside down!
 	mMinY = max;
 	mMaxY = min;
+}
+
+void GridRenderer::setHorizontalUnit(const std::string& str)
+{
+	mHorizontalUnit = str;
+	mHorizontalUnitTextToDraw = mHorizontalUnit.empty() ? "" : (" (" + mHorizontalUnit + ")");
+}
+
+void GridRenderer::setVerticalUnit(const std::string& str)
+{
+	mVerticalUnit = str;
+	mVerticalUnitTextToDraw = mVerticalUnit.empty() ? "" : (" (" + mVerticalUnit + ")");
 }
 
 }

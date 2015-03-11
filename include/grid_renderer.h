@@ -25,6 +25,9 @@ public:
 	void			setupPreLaunchGUI(cinder::params::InterfaceGl* const);
 	void			setupPostLaunchGUI(cinder::params::InterfaceGl* const);
 
+	void			setHorizontalUnit(const std::string& str);
+	void			setVerticalUnit(const std::string& str);
+
 private:
 	AppGlobals&		mGlobals;
 
@@ -40,6 +43,10 @@ private:
 	ci::Color		mLabelColor;
 	ci::Color		mGridColor;
 	bool			mVisible;
+	std::string		mVerticalUnit;
+	std::string		mVerticalUnitTextToDraw;
+	std::string		mHorizontalUnit;
+	std::string		mHorizontalUnitTextToDraw;
 };
 
 } // !namespace cistft
