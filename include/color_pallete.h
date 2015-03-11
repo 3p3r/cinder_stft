@@ -5,7 +5,7 @@
 
 #include <cinder/Color.h>
 
-namespace cieq {
+namespace cistft {
 namespace palette {
 
 struct MatlabJet		{ static const std::array<const ci::Color, 64> palette; };
@@ -27,6 +27,6 @@ inline static const ci::Color& getColor(float value, float vmin, float vmax)
 	return T::palette[static_cast<int>(((value - vmin) / vd) * (std::tuple_size<decltype(T::palette)>::value - 1))];
 }
 
-}} // !namespace cieq::palette
+}} // !namespace cistft::palette
 
 #endif // !CIEQ_INCLUDE_COLOR_PALETTE_H_

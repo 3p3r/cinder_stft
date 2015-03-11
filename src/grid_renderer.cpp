@@ -6,7 +6,7 @@
 #include <cinder/app/App.h>
 #include <cinder/params/Params.h>
 
-namespace cieq {
+namespace cistft {
 
 GridRenderer::GridRenderer(AppGlobals& g)
 	: mGlobals(g)

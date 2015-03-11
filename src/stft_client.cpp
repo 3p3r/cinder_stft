@@ -13,7 +13,7 @@
 #include <mutex>
 #include <thread>
 
-namespace cieq {
+namespace cistft {
 namespace stft {
 
 namespace {
@@ -183,4 +183,4 @@ ci::audio::dsp::WindowType Client::Format::getWindowType() const
 }
 
 }
-} //!cieq::stft
+} //!cistft::stft

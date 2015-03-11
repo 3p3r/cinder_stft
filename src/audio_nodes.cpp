@@ -10,7 +10,7 @@
 #include <cinder/audio/MonitorNode.h>
 #include <cinder/app/App.h>
 
-namespace cieq
+namespace cistft
 {
 
 AudioNodes::AudioNodes(AppGlobals& globals, const Format& fmt /*= Format()*/)
@@ -70,11 +70,11 @@ void AudioNodes::setupRecorder()
 {
 	if (!isInputReady()) return;
 
-	auto recorderFormat = cieq::audio::RecorderNode::Format()
+	auto recorderFormat = cistft::audio::RecorderNode::Format()
 		.hopSize(mFormat.getHopDurationInSamples())
 		.windowSize(mFormat.getWindowDurationInSamples());
 
-	mBufferRecorderNode = mGlobals.getAudioContext().makeNode(new cieq::audio::RecorderNode(mFormat.getRecordDurationInSamples(), recorderFormat));
+	mBufferRecorderNode = mGlobals.getAudioContext().makeNode(new cistft::audio::RecorderNode(mFormat.getRecordDurationInSamples(), recorderFormat));
 	mInputDeviceNode >> mBufferRecorderNode;
 
 	auto stftClientFormat = stft::Client::Format()
@@ -133,7 +133,7 @@ cinder::audio::InputDeviceNode* const AudioNodes::getInputDeviceNode()
 	return mInputDeviceNode.get();
 }
 
-cieq::audio::RecorderNode* const AudioNodes::getBufferRecorderNode()
+cistft::audio::RecorderNode* const AudioNodes::getBufferRecorderNode()
 {
 	return mBufferRecorderNode.get();
 }
@@ -310,4 +310,4 @@ size_t AudioNodes::Format::getWindowDurationInSamples() const
 	return static_cast<std::size_t>(getWindowDuration() * _get_sample_rate());
 }
 
-} //!cieq
+} //!cistft

@@ -1,7 +1,7 @@
 #include "stft_surface.h"
 #include "palette_manager.h"
 
-namespace cieq {
+namespace cistft {
 
 StftSurface::StftSurface(int width, int height, int fft_vector_index)
 	: ci::Surface32f(width, height, false)
@@ -32,4 +32,4 @@ void StftSurface::processRow(int row, const std::vector<float>& spectrum)
 	}
 }
 
-} //!cieq
+} //!cistft

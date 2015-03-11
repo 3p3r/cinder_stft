@@ -11,10 +11,10 @@ class InputDeviceNode;
 class MonitorNode;
 }} //!ci::audio
 
-namespace cieq {
+namespace cistft {
 namespace audio {
 class RecorderNode;
-} //!cieq::audio
+} //!cistft::audio
 class AppGlobals;
 
 /*!
@@ -92,13 +92,13 @@ public:
 	// \brief returns a pointer to the node which is reading data from input
 	cinder::audio::InputDeviceNode* const				getInputDeviceNode();
 	// \brief returns a pointer to the node which is recording audio
-	cieq::audio::RecorderNode* const					getBufferRecorderNode();
+	cistft::audio::RecorderNode* const					getBufferRecorderNode();
 	// \brief returns a pointer to the node which is having raw data in it
 	cinder::audio::MonitorNode* const					getMonitorNode();
 
 private:
 	std::shared_ptr<cinder::audio::InputDeviceNode>		mInputDeviceNode;
-	std::shared_ptr<cieq::audio::RecorderNode>			mBufferRecorderNode;
+	std::shared_ptr<cistft::audio::RecorderNode>			mBufferRecorderNode;
 	std::shared_ptr<cinder::audio::MonitorNode>			mMonitorNode;
 
 private:
@@ -114,6 +114,6 @@ private: //state
 	bool												mIsMonitorReady;
 };
 
-} //!cieq
+} //!cistft
 
 #endif //!CIEQ_INCLUDE_AUDIO_NODES_H_

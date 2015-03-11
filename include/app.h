@@ -14,18 +14,18 @@
 #include "grid_renderer.h"
 #include "stft_filter.h"
 
-namespace cieq
+namespace cistft
 {
 
 /*!
- * \class InputAnalyzer
+ * \class Application
  * \brief The main application class. Handles window initialization
  * window title, and other common juju.
  */
-class InputAnalyzer final : public ci::app::AppNative
+class Application final : public ci::app::AppNative
 {
 public:
-	InputAnalyzer();
+	Application();
 
 	//! tells Cinder how to prepare the window
 	void			prepareSettings(Settings *settings) override final;
@@ -41,8 +41,10 @@ public:
 	void			mouseDown(ci::app::MouseEvent event) override final;
 	//! gets fired on keyboard click
 	void			keyDown(ci::app::KeyEvent event) override final;
-	//! sets up the GUI
-	void			setupGUI();
+	//! sets up the GUI for the time before user hits Start
+	void			setupPreLaunchGUI();
+	//! sets up the GUI for the time after user hits Start
+	void			setupPostLaunchGUI();
 
 private:
 	//! all user configurable parameters
@@ -68,6 +70,6 @@ private:
 					mGuiInstance;
 };
 
-} //!cieq
+} //!cistft
 
 #endif //!CIEQ_INCLUDE_APP_H_

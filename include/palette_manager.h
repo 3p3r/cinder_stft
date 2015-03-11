@@ -10,7 +10,7 @@ namespace params {
 class InterfaceGl;
 }} //!ci::params
 
-namespace cieq {
+namespace cistft {
 namespace palette {
 
 class Manager
@@ -52,6 +52,6 @@ private:
 	std::atomic<bool>	mConvertToDb;
 };
 
-}} // !namespace cieq::palette
+}} // !namespace cistft::palette
 
 #endif // !CIEQ_INCLUDE_PALETTE_MANAGER_H_

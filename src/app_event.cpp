@@ -1,6 +1,6 @@
 #include "app_event.h"
 
-namespace cieq
+namespace cistft
 {
 
 void AppEvent::addMouseCallback(const std::function< void(float, float) >& fn)
@@ -27,4 +27,4 @@ void AppEvent::fireKeyboardCallbacks(char key)
 	mKeyboardEventsStack(key);
 }
 
-} // !namespace cieq
+} // !namespace cistft

@@ -10,7 +10,7 @@
 #include <cinder/gl/Texture.h>
 #include <cinder/gl/Fbo.h>
 
-namespace cieq {
+namespace cistft {
 class AppGlobals;
 
 class StftRenderer
@@ -51,6 +51,6 @@ private:
 	void								drawFramebuffer(ci::gl::Fbo& fbo, float shift_right = 0.0f, float shift_up = 0.0f);
 };
 
-} // !namespace cieq
+} // !namespace cistft
 
 #endif // !CIEQ_INCLUDE_STFT_RENDERER_H_

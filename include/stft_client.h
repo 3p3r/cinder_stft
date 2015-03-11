@@ -5,13 +5,13 @@
 
 #include <cinder/audio/dsp/Dsp.h>
 
-namespace cieq {
+namespace cistft {
 class AppGlobals;
 namespace stft {
 
 /*!
  * \class Client
- * \namespace cieq::stft
+ * \namespace cistft::stft
  * \brief a Client that will fork requests for performing STFT.
  * \note The forked request contains a Query position obtained by
  * the main thread. The Query position will be used by myself to
@@ -56,6 +56,6 @@ private:
 	AppGlobals*		mGlobals;
 };
 
-}} // !namespace cieq::stft
+}} // !namespace cistft::stft
 
 #endif // !CIEQ_INCLUDE_STFT_CLIENT_H_

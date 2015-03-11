@@ -4,7 +4,7 @@
 
 #include <cinder/CinderMath.h>
 
-namespace cieq {
+namespace cistft {
 namespace stft {
 
 ClientStorage::ClientStorage(const Client::Format& fmt, AppGlobals* const globals)
@@ -41,4 +41,4 @@ ClientStorage::ClientStorage(const Client::Format& fmt, AppGlobals* const global
 	mChannelScale	= 1.0f / mChannelSize;
 }
 
-}} //!cieq::stft
+}} //!cistft::stft

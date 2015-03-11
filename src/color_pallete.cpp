@@ -1,6 +1,6 @@
 #include "color_pallete.h"
 
-namespace cieq {
+namespace cistft {
 namespace palette {
 
 //! \note All palette generated from http://www.ncl.ucar.edu/Document/Graphics/color_table_gallery.shtml
@@ -669,4 +669,4 @@ const std::array<const ci::Color, 128> MPLWinter::palette{{
 	ci::Color(0.000000f, 1.000000f, 0.500000f)
 }};
 
-}} //!cieq::pallete
+}} //!cistft::pallete

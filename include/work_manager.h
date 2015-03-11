@@ -4,7 +4,7 @@
 #include <boost/asio/io_service.hpp>
 #include <boost/thread/thread.hpp>
 
-namespace cieq {
+namespace cistft {
 namespace work {
 
 //! \note a shallow type for Client shared_ptr's
@@ -14,7 +14,7 @@ typedef std::unique_ptr< class Request > RequestRef;
 
 /*!
  * \class Manager
- * \namespace cieq::work
+ * \namespace cistft::work
  *
  * \brief A work manager implemented with a dependency on Boost.Asio
  * handles work requests from the main thread and executes them in the

@@ -4,12 +4,12 @@
 #include "work_manager.h"
 #include "work_request.h"
 
-namespace cieq {
+namespace cistft {
 namespace work {
 
 /*!
  * \class Client
- * \namespace cieq::work
+ * \namespace cistft::work
  *
  * \brief the external interface of Work Manager. can be used
  * to submit works to the work manager.
@@ -42,10 +42,10 @@ static ClientRef make_client(Manager& manager, Args... args)
 {
 	// check if T is a subclass of Client.
 	static_assert(std::is_base_of<Client, T>::value,
-		"ClientRef factory method only accepts types derived from cieq::work::Client");
+		"ClientRef factory method only accepts types derived from cistft::work::Client");
 	// check if T properly overloaded the constructor
 	static_assert(std::is_constructible<T, Manager&>::value,
-		"ClientRef does not provide a constructor for cieq::work::Client");
+		"ClientRef does not provide a constructor for cistft::work::Client");
 	// copy elision will happen here by the compiler, no std::forward required.
 	return std::shared_ptr<T>(new T(manager, args...));
 }

@@ -3,12 +3,12 @@
 
 #include <cinder/audio/SampleRecorderNode.h>
 
-namespace cieq {
+namespace cistft {
 namespace audio {
 
 /*!
  * \class RecorderNode
- * \namespace cieq::audio
+ * \namespace cistft::audio
  * \brief This class is a direct subclass of Cinder's BufferRecorder.
  * It keeps track of where the record position is, also it keeps the
  * original window size and the original user specified hop size.
@@ -80,6 +80,6 @@ private:
 	using inherited = ci::audio::BufferRecorderNode;
 };
 
-}} // !namespace cieq
+}} // !namespace cistft
 
 #endif // !CIEQ_INCLUDE_RECORDER_NODE_H_

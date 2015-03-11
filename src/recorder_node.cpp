@@ -2,7 +2,7 @@
 
 #include <cinder/audio/Context.h>
 
-namespace cieq {
+namespace cistft {
 namespace audio {
 
 RecorderNode::RecorderNode(size_t numFrames, const Format &format /*= Format()*/)
@@ -107,4 +107,4 @@ void RecorderNode::reset()
 	mLastQueried = 0;
 }
 
-}} //!cieq::node
+}} //!cistft::node

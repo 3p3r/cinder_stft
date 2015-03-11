@@ -2,7 +2,7 @@
 
 #include <cinder/audio/Context.h>
 
-namespace cieq
+namespace cistft
 {
 
 AppGlobals::AppGlobals(AppEvent& event_processor, work::Manager& work_manager, AudioNodes& nodes, StftRenderer& renderer, GridRenderer& grid_renderer, AppConfig& app_config, StftFilter& filter)
@@ -55,4 +55,4 @@ StftFilter& AppGlobals::getFilter()
 	return mFilter;
 }
 
-} // !namespace cieq
+} // !namespace cistft

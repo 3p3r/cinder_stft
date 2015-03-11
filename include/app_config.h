@@ -13,7 +13,7 @@ namespace params {
 class InterfaceGl;
 }} //!ci::params
 
-namespace cieq {
+namespace cistft {
 
 struct AppConfig
 {
@@ -45,6 +45,6 @@ private:
 	bool			mRemoveStartButton;
 };
 
-} // !namespace cieq
+} // !namespace cistft
 
 #endif // !CIEQ_INCLUDE_APP_CONFIG_H_

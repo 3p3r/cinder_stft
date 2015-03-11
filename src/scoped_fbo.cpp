@@ -3,7 +3,7 @@
 #include <cinder/gl/Fbo.h>
 #include <cinder/Camera.h>
 
-namespace cieq {
+namespace cistft {
 
 ScopedFramebuffer::ScopedFramebuffer(cinder::gl::Fbo& fbo)
 	: mFbo(fbo)

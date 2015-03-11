@@ -8,12 +8,12 @@ namespace audio {
 class Context;
 }} //!namespace ci::audio
 
-namespace cieq
+namespace cistft
 {
 class StftRenderer;
 namespace work {
 class Manager;
-}; //!cieq::work
+}; //!cistft::work
 class AudioNodes;
 class GridRenderer;
 struct AppConfig;
@@ -55,6 +55,6 @@ private:
 	StftFilter&							mFilter;
 };
 
-} //!cieq
+} //!cistft
 
 #endif //!CIEQ_INCLUDE_APP_GLOBALS_H_

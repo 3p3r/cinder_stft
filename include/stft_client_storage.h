@@ -7,7 +7,7 @@
 
 #include "stft_client.h"
 
-namespace cieq {
+namespace cistft {
 
 class AppGlobals;
 
@@ -32,6 +32,6 @@ struct ClientStorage
 	float									mMagnitudeScale;	// one over FFT size
 };
 
-}} // !namespace cieq
+}} // !namespace cistft
 
 #endif // !CIEQ_INCLUDE_STFT_CLIENT_STORAGE_H_

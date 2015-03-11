@@ -7,7 +7,7 @@
 
 #include <cinder/app/App.h>
 
-namespace cieq {
+namespace cistft {
 
 StftRenderer::StftRenderer(AppGlobals& globals)
 	: mGlobals(globals)
@@ -221,4 +221,4 @@ float StftRenderer::calculateActiveFboOffset() const
 	return _window_to_fbo_scale * _unfilled_length;
 }
 
-} //!cieq
+} //!cistft

@@ -7,7 +7,7 @@
 #include <cinder/CinderMath.h>
 #include <cinder/params/Params.h>
 
-namespace cieq {
+namespace cistft {
 
 StftFilter::StftFilter(AppGlobals& g)
 	: mMinimumViewableBins(256)

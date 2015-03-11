@@ -3,7 +3,7 @@
 #include <cinder/audio/Utilities.h>
 #include <cinder/params/Params.h>
 
-namespace cieq {
+namespace cistft {
 namespace palette {
 
 Manager::Manager()
@@ -142,4 +142,4 @@ void Manager::removeFromGui(cinder::params::InterfaceGl* const gui)
 	/* no op */
 }
 
-}} //!cieq::palette
+}} //!cistft::palette

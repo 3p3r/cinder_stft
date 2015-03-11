@@ -3,7 +3,7 @@
 
 #include "work_request.h"
 
-namespace cieq {
+namespace cistft {
 namespace stft {
 
 class Request : public work::Request
@@ -16,6 +16,6 @@ private:
 	std::size_t mQueryPos;
 };
 
-}} // !namespace cieq::stft
+}} // !namespace cistft::stft
 
 #endif // !CIEQ_INCLUDE_STFT_REQUEST_H_

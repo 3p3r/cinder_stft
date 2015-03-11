@@ -5,12 +5,12 @@
 
 #include <memory>
 
-namespace cieq {
+namespace cistft {
 namespace work {
 
 /*!
  * \class Request
- * \namespace cieq::work
+ * \namespace cistft::work
  *
  * \brief One unit of work that will be passed to Work Manager.
  * it is supposed to run an expensive operation in background.
@@ -34,7 +34,7 @@ static RequestRef make_request(Args... args)
 {
 	// check if T is a subclass of Request.
 	static_assert(std::is_base_of<Request, T>::value,
-		"RequestRef factory method only accepts types derived from cieq::work::Request");
+		"RequestRef factory method only accepts types derived from cistft::work::Request");
 	// copy elision will happen here by the compiler, no std::move required.
 	return std::unique_ptr<T>(new T(args...));
 }

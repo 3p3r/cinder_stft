@@ -1,7 +1,7 @@
 #ifndef CIEQ_INCLUDE_MONITOR_RENDERER_H_
 #define CIEQ_INCLUDE_MONITOR_RENDERER_H_
 
-namespace cieq {
+namespace cistft {
 
 class AppGlobals;
 
@@ -15,6 +15,6 @@ private:
 	AppGlobals&		mGlobals;
 };
 
-} // !namespace cieq
+} // !namespace cistft
 
 #endif // !CIEQ_INCLUDE_MONITOR_RENDERER_H_

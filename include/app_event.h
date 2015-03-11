@@ -3,7 +3,7 @@
 
 #include <boost/signals2/signal.hpp>
 
-namespace cieq
+namespace cistft
 {
 
 // I make an alias of boost here because
@@ -51,6 +51,6 @@ private:
 	keyboardEvent		mKeyboardEventsStack;
 };
 
-} //!cieq
+} //!cistft
 
 #endif //!CIEQ_INCLUDE_APP_EVENT_H_

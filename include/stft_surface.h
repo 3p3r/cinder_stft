@@ -6,7 +6,7 @@
 
 #include <cinder/Surface.h>
 
-namespace cieq {
+namespace cistft {
 
 class StftSurface final : public ci::Surface32f
 {
@@ -26,6 +26,6 @@ private:
 
 typedef std::unique_ptr<StftSurface> StftSurfaceRef;
 
-} // !namespace cieq
+} // !namespace cistft
 
 #endif // !CIEQ_INCLUDE_STFT_SURFACE_H_

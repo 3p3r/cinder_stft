@@ -9,7 +9,7 @@ namespace gl {
 class Fbo;
 }} //!ci::gl
 
-namespace cieq {
+namespace cistft {
 
 class ScopedFramebuffer
 {
@@ -23,6 +23,6 @@ private:
 	ci::gl::SaveFramebufferBinding	mSaveFb;
 };
 
-} // !namespace cieq
+} // !namespace cistft
 
 #endif // !CIEQ_INCLUDE_SCOPED_FBO_H_

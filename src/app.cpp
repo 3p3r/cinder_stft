@@ -1,10 +1,10 @@
 #include "app.h"
 #include "palette_manager.h"
 
-namespace cieq
+namespace cistft
 {
 
-InputAnalyzer::InputAnalyzer()
+Application::Application()
 	: mGlobals(mEventProcessor, mWorkManager, mAudioNodes, mStftRenderer, mGridRenderer, mAppConfig, mFilter)
 	, mFilter(mGlobals)
 	, mAudioNodes(mGlobals)
@@ -13,7 +13,7 @@ InputAnalyzer::InputAnalyzer()
 	, mGridRenderer(mGlobals)
 {}
 
-void InputAnalyzer::prepareSettings(Settings *settings)
+void Application::prepareSettings(Settings *settings)
 {
 	// We do not need console for this application
 	settings->enableConsoleWindow(false);
@@ -36,56 +36,55 @@ void InputAnalyzer::prepareSettings(Settings *settings)
 	// set the window position (top left) to be at 10% of monitor size
 	settings->setWindowPos(window_position);
 
-	// cap at 300.0 fps! yeaaaah juju :)
+	// cap at 300.0 fps!
 	settings->setFrameRate(300.0f);
 }
 
-void InputAnalyzer::setup()
+void Application::setup()
 {
-	// sets up GUI
-	setupGUI();
-	// setup audio I/O
+	// sets up pre-launch GUI
+	setupPreLaunchGUI();
+	// setup audio input from microphone
 	mAudioNodes.setupInput();
+	// setup basic waveform monitor input, used to plot
+	// the real-time pre-launch audio waveform.
 	mAudioNodes.setupMonitor();
 }
 
-void InputAnalyzer::update()
+void Application::update()
 {
+	// Update STFT renderer (a no-op if it's not setup)
 	mStftRenderer.update();
+	// Update audio input and pull the latest data in
 	mAudioNodes.update();
-
+	// Check if we have to swap GUI with post-launch one
 	if (mAppConfig.shouldRemoveLaunchParams())
-	{
-		mAppConfig.removeFromGui(mGuiInstance.get());
-		
-		mGridRenderer.removeFromGui(mGuiInstance.get());
-		mFilter.removeFromGui(mGuiInstance.get());
-		palette::Manager::instance().removeFromGui(mGuiInstance.get());
-
-		mAppConfig.LaunchParamsRemoved();
-
-		mAudioNodes.setFormat(mAppConfig.getAsNodeFromat());
-		mAudioNodes.setupRecorder();
-		mStftRenderer.setup();
-	}
+		setupPostLaunchGUI();
 }
 
-void InputAnalyzer::draw()
+void Application::draw()
 {
 	// clear screen black
-	if (mGlobals.getAudioNodes().isRecorderReady())
-		ci::gl::clear(palette::Manager::instance().getActivePaletteMinColor());
-	else
-		ci::gl::clear();
+	ci::gl::clear();
 	
+	// we're not 3D rendering so turn it off
 	ci::gl::disableDepthRead();
 	ci::gl::disableDepthWrite();
+
+	// enable alpha blending
 	ci::gl::enableAlphaBlending();
 
+	// if recorder is not recording then...
 	if (!mGlobals.getAudioNodes().isRecorderReady())
+	{
+		// render pre-launch waveform
 		mMonitorRenderer.draw();
+	}
 	else
+	{
+		// render STFT data
 		mStftRenderer.draw();
+	}
 
 	// draw grid
 	mGridRenderer.draw();
@@ -96,29 +95,30 @@ void InputAnalyzer::draw()
 	// draw GUI
 	mGuiInstance->draw();
 
+	// Turn off Alpha blending
 	ci::gl::disableAlphaBlending();
 }
 
-void InputAnalyzer::mouseDown(ci::app::MouseEvent event)
+void Application::mouseDown(ci::app::MouseEvent event)
 {
 	mEventProcessor.fireMouseCallbacks(
 		static_cast<float>(event.getX()),
 		static_cast<float>(event.getY()));
 }
 
-void InputAnalyzer::keyDown(ci::app::KeyEvent event)
+void Application::keyDown(ci::app::KeyEvent event)
 {
 	mEventProcessor.fireKeyboardCallbacks(event.getChar());
 }
 
-void InputAnalyzer::drawFps()
+void Application::drawFps()
 {
 	std::stringstream buf;
 	buf << "FPS: " << ci::app::App::getAverageFps();
 	ci::gl::drawStringRight(buf.str(), ci::Vec2i(ci::app::getWindowWidth() - 25, 10));
 }
 
-void InputAnalyzer::setupGUI()
+void Application::setupPreLaunchGUI()
 {
 	static std::once_flag __setup_gui_flag;
 	std::call_once(__setup_gui_flag, [this]
@@ -143,6 +143,25 @@ void InputAnalyzer::setupGUI()
 	});
 }
 
-} //!namespace cieq
+void Application::setupPostLaunchGUI()
+{
+	static std::once_flag __setup_gui_flag;
+	std::call_once(__setup_gui_flag, [this]
+	{
+		mAppConfig.removeFromGui(mGuiInstance.get());
 
-CINDER_APP_NATIVE(cieq::InputAnalyzer, ci::app::RendererGl)
+		mGridRenderer.removeFromGui(mGuiInstance.get());
+		mFilter.removeFromGui(mGuiInstance.get());
+		palette::Manager::instance().removeFromGui(mGuiInstance.get());
+
+		mAppConfig.LaunchParamsRemoved();
+
+		mAudioNodes.setFormat(mAppConfig.getAsNodeFromat());
+		mAudioNodes.setupRecorder();
+		mStftRenderer.setup();
+	});
+}
+
+} //!namespace cistft
+
+CINDER_APP_NATIVE(cistft::Application, ci::app::RendererGl)

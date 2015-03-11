@@ -6,7 +6,7 @@ namespace params {
 class InterfaceGl;
 }} //!ci::params
 
-namespace cieq {
+namespace cistft {
 
 class AppGlobals;
 

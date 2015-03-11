@@ -6,7 +6,7 @@
 #include <cinder/gl/gl.h>
 #include <cinder/app/App.h>
 
-namespace cieq {
+namespace cistft {
 
 MonitorRenderer::MonitorRenderer(AppGlobals& g)
 	: mGlobals(g)

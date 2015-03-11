@@ -8,7 +8,7 @@ namespace params {
 class InterfaceGl;
 }} //!ci::params
 
-namespace cieq {
+namespace cistft {
 
 class AppGlobals;
 
@@ -45,6 +45,6 @@ private:
 	AppGlobals&		mGlobals;
 };
 
-} // !namespace cieq
+} // !namespace cistft
 
 #endif // !CIEQ_INCLUDE_GRID_RENDERER_H_

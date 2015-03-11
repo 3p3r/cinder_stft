@@ -9,7 +9,7 @@
 
 #include <boost/algorithm/string/replace.hpp>
 
-namespace cieq
+namespace cistft
 {
 
 namespace {
@@ -224,4 +224,4 @@ void AppConfig::removeFromGui(cinder::params::InterfaceGl* const gui)
 	gui->setOptions(GUI_STATICS::CUTOFF_TEXT, "readonly=true");
 }
 
-} //!cieq
+} //!cistft

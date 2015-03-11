@@ -2,7 +2,7 @@
 #include "work_client.h"
 #include "work_request.h"
 
-namespace cieq {
+namespace cistft {
 namespace work {
 
 Manager::Manager(std::size_t num_threads /*= 4*/)
@@ -35,4 +35,4 @@ void Manager::post(const std::shared_ptr< Client >& requester, std::unique_ptr< 
 		mIoService.post(std::bind([=](std::unique_ptr< Request >& w){ run(requester, std::move(w)); }, std::move(request)));
 }
 
-}} //!cieq::work
+}} //!cistft::work
