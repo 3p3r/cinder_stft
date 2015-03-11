@@ -132,19 +132,17 @@ void Application::setupPreLaunchGUI()
 	std::call_once(__setup_gui_flag, [this]
 	{
 		mGuiInstance = ci::params::InterfaceGl::create("Cinder STFT parameters", ci::Vec2i(425, 500));
+		// -----------------------------------------------
 		mGuiInstance->addText("Portland State University, Winter 2015");
 		mGuiInstance->addSeparator();
 		// -----------------------------------------------
-
-		mGuiInstance->addText("Developed by: Sepehr Laal, Raghad Boulos");
+		mGuiInstance->addText("Developed by: Sepehr Laal and Raghad Boulos");
 		mGuiInstance->addText("Instructor: Dr. James McNames");
 		mGuiInstance->addSeparator();
 		// -----------------------------------------------
-
 		mGuiInstance->addText("This project performs STFT analysis on real time audio signal.");
 		mGuiInstance->addSeparator();
 		// -----------------------------------------------
-
 		mAppConfig.setupPreLaunchGUI(mGuiInstance.get());
 	});
 }
@@ -155,7 +153,6 @@ void Application::setupPostLaunchGUI()
 	std::call_once(__setup_gui_flag, [this]
 	{
 		mAppConfig.setupPostLaunchGUI(mGuiInstance.get());
-		//mGridRenderer.removeFromGui(mGuiInstance.get());
 		mAppConfig.performLaunch();
 		mAudioNodes.setupRecorder();
 		mStftRenderer.setup();
