@@ -5,19 +5,13 @@
 namespace cistft
 {
 
-AppGlobals::AppGlobals(AppEvent& event_processor, work::Manager& work_manager, AudioNodes& nodes, StftRenderer& renderer, GridRenderer& grid_renderer, AppConfig& app_config)
-	: mEventProcessor(event_processor)
-	, mWorkManager(work_manager)
+AppGlobals::AppGlobals(work::Manager& work_manager, AudioNodes& nodes, StftRenderer& renderer, GridRenderer& grid_renderer, AppConfig& app_config)
+	: mWorkManager(work_manager)
 	, mAudioNodes(nodes)
 	, mThreadRenderer(renderer)
 	, mGridRenderer(grid_renderer)
 	, mAppConfig(app_config)
 {}
-
-AppEvent& AppGlobals::getEventProcessor()
-{
-	return mEventProcessor;
-}
 
 cinder::audio::Context& AppGlobals::getAudioContext()
 {

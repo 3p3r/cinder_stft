@@ -5,7 +5,7 @@ namespace cistft
 {
 
 Application::Application()
-	: mGlobals(mEventProcessor, mWorkManager, mAudioNodes, mStftRenderer, mGridRenderer, mAppConfig)
+	: mGlobals(mWorkManager, mAudioNodes, mStftRenderer, mGridRenderer, mAppConfig)
 	, mAudioNodes(mGlobals)
 	, mStftRenderer(mGlobals)
 	, mMonitorRenderer(mGlobals)
@@ -100,14 +100,23 @@ void Application::draw()
 
 void Application::mouseDown(ci::app::MouseEvent event)
 {
-	mEventProcessor.fireMouseCallbacks(
-		static_cast<float>(event.getX()),
-		static_cast<float>(event.getY()));
+	// If user clicks anywhere on screen
+	if (mAudioNodes.isInputReady())
+	{
+		mAudioNodes.toggleInput();
+	}
 }
 
 void Application::keyDown(ci::app::KeyEvent event)
 {
-	mEventProcessor.fireKeyboardCallbacks(event.getChar());
+	// If user enters SPACE
+	if (event.getChar() == ' ')
+	{
+		if (mAudioNodes.isInputReady())
+		{
+			mAudioNodes.toggleInput();
+		}
+	}
 }
 
 void Application::drawFps()

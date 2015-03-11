@@ -1,7 +1,6 @@
 #include "audio_nodes.h"
 #include "app_globals.h"
 #include "app_config.h"
-#include "app_event.h"
 #include "recorder_node.h"
 #include "stft_client.h"
 #include "stft_request.h"
@@ -55,9 +54,6 @@ void AudioNodes::setupInput()
 	}
 
 	enableInput();
-	mGlobals
-		.getEventProcessor()
-		.addMouseCallback([this](float, float){ toggleInput(); });
 	mIsInputReady = true;
 }
 

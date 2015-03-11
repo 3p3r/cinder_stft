@@ -16,7 +16,6 @@ class Manager;
 }; //!cistft::work
 class AudioNodes;
 class GridRenderer;
-class AppEvent;
 class AppConfig;
 
 /*!
@@ -27,14 +26,12 @@ class AppConfig;
 class AppGlobals
 {
 public:
-	AppGlobals(	AppEvent&,
-				work::Manager&,
+	AppGlobals(	work::Manager&,
 				AudioNodes&,
 				StftRenderer&,
 				GridRenderer&,
 				AppConfig&);
 
-	AppEvent&							getEventProcessor();
 	work::Manager&						getWorkManager();
 	AudioNodes&							getAudioNodes();
 	cinder::audio::Context&				getAudioContext();
@@ -43,7 +40,6 @@ public:
 	AppConfig&							getAppConfig();
 
 private:
-	AppEvent&							mEventProcessor;
 	work::Manager&						mWorkManager;
 	AudioNodes&							mAudioNodes;
 	StftRenderer&						mThreadRenderer;

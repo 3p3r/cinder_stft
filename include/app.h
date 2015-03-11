@@ -5,7 +5,6 @@
 #include <cinder/params/Params.h>
 
 #include "app_globals.h"
-#include "app_event.h"
 #include "audio_nodes.h"
 #include "work_manager.h"
 #include "app_config.h"
@@ -48,8 +47,6 @@ public:
 private:
 	//! all user configurable parameters
 	AppConfig		mAppConfig;
-	//! the event processor class instance
-	AppEvent		mEventProcessor;
 	//! the work manager that accepts background works from main thread
 	work::Manager	mWorkManager;
 	//! the globals class instance, used to store common data
