@@ -1,5 +1,5 @@
-#ifndef CIEQ_INCLUDE_SCOPED_FBO_H_
-#define CIEQ_INCLUDE_SCOPED_FBO_H_
+#ifndef CISTFT_INCLUDE_SCOPED_FBO_H_
+#define CISTFT_INCLUDE_SCOPED_FBO_H_
 
 #include <cinder/Area.h>
 #include <cinder/gl/gl.h>
@@ -25,4 +25,4 @@ private:
 
 } // !namespace cistft
 
-#endif // !CIEQ_INCLUDE_SCOPED_FBO_H_
+#endif // !CISTFT_INCLUDE_SCOPED_FBO_H_

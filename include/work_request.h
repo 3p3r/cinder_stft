@@ -1,5 +1,5 @@
-#ifndef CIEQ_INCLUDE_WORK_REQUEST_H_
-#define CIEQ_INCLUDE_WORK_REQUEST_H_
+#ifndef CISTFT_INCLUDE_WORK_REQUEST_H_
+#define CISTFT_INCLUDE_WORK_REQUEST_H_
 
 #include "work_manager.h"
 
@@ -41,4 +41,4 @@ static RequestRef make_request(Args... args)
 
 }}
 
-#endif //!CIEQ_INCLUDE_WORK_REQUEST_H_
+#endif //!CISTFT_INCLUDE_WORK_REQUEST_H_

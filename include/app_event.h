@@ -1,5 +1,5 @@
-#ifndef CIEQ_INCLUDE_APP_EVENT_H_
-#define CIEQ_INCLUDE_APP_EVENT_H_
+#ifndef CISTFT_INCLUDE_APP_EVENT_H_
+#define CISTFT_INCLUDE_APP_EVENT_H_
 
 #include <boost/signals2/signal.hpp>
 
@@ -53,4 +53,4 @@ private:
 
 } //!cistft
 
-#endif //!CIEQ_INCLUDE_APP_EVENT_H_
+#endif //!CISTFT_INCLUDE_APP_EVENT_H_

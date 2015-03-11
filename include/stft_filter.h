@@ -1,5 +1,5 @@
-#ifndef CIEQ_INCLUDE_STFT_FILTER_H_
-#define CIEQ_INCLUDE_STFT_FILTER_H_
+#ifndef CISTFT_INCLUDE_STFT_FILTER_H_
+#define CISTFT_INCLUDE_STFT_FILTER_H_
 
 namespace cinder {
 namespace params {
@@ -53,4 +53,4 @@ private:
 
 }
 
-#endif //!CIEQ_INCLUDE_STFT_FILTER_H_
+#endif //!CISTFT_INCLUDE_STFT_FILTER_H_

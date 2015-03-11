@@ -1,5 +1,5 @@
-#ifndef CIEQ_INCLUDE_WORK_MANAGER_H_
-#define CIEQ_INCLUDE_WORK_MANAGER_H_
+#ifndef CISTFT_INCLUDE_WORK_MANAGER_H_
+#define CISTFT_INCLUDE_WORK_MANAGER_H_
 
 #include <boost/asio/io_service.hpp>
 #include <boost/thread/thread.hpp>
@@ -42,4 +42,4 @@ private:
 
 }}
 
-#endif //!CIEQ_INCLUDE_WORK_MANAGER_H_
+#endif //!CISTFT_INCLUDE_WORK_MANAGER_H_

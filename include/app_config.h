@@ -1,5 +1,5 @@
-#ifndef CIEQ_INCLUDE_APP_CONFIG_H_
-#define CIEQ_INCLUDE_APP_CONFIG_H_
+#ifndef CISTFT_INCLUDE_APP_CONFIG_H_
+#define CISTFT_INCLUDE_APP_CONFIG_H_
 
 #include <string>
 #include <fstream>
@@ -47,4 +47,4 @@ private:
 
 } // !namespace cistft
 
-#endif // !CIEQ_INCLUDE_APP_CONFIG_H_
+#endif // !CISTFT_INCLUDE_APP_CONFIG_H_

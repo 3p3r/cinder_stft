@@ -1,5 +1,5 @@
-#ifndef CIEQ_INCLUDE_RECORDER_NODE_H_
-#define CIEQ_INCLUDE_RECORDER_NODE_H_
+#ifndef CISTFT_INCLUDE_RECORDER_NODE_H_
+#define CISTFT_INCLUDE_RECORDER_NODE_H_
 
 #include <cinder/audio/SampleRecorderNode.h>
 
@@ -82,4 +82,4 @@ private:
 
 }} // !namespace cistft
 
-#endif // !CIEQ_INCLUDE_RECORDER_NODE_H_
+#endif // !CISTFT_INCLUDE_RECORDER_NODE_H_

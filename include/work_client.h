@@ -1,5 +1,5 @@
-#ifndef CIEQ_INCLUDE_WORK_CLIENT_H_
-#define CIEQ_INCLUDE_WORK_CLIENT_H_
+#ifndef CISTFT_INCLUDE_WORK_CLIENT_H_
+#define CISTFT_INCLUDE_WORK_CLIENT_H_
 
 #include "work_manager.h"
 #include "work_request.h"
@@ -57,4 +57,4 @@ static ClientRef make_client(Manager& manager, Args... args)
 
 }}
 
-#endif //!CIEQ_INCLUDE_WORK_CLIENT_H_
+#endif //!CISTFT_INCLUDE_WORK_CLIENT_H_

@@ -1,5 +1,5 @@
-#ifndef CIEQ_INCLUDE_STFT_REQUEST_H_
-#define CIEQ_INCLUDE_STFT_REQUEST_H_
+#ifndef CISTFT_INCLUDE_STFT_REQUEST_H_
+#define CISTFT_INCLUDE_STFT_REQUEST_H_
 
 #include "work_request.h"
 
@@ -18,4 +18,4 @@ private:
 
 }} // !namespace cistft::stft
 
-#endif // !CIEQ_INCLUDE_STFT_REQUEST_H_
+#endif // !CISTFT_INCLUDE_STFT_REQUEST_H_

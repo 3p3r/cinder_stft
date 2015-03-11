@@ -1,5 +1,5 @@
-#ifndef CIEQ_INCLUDE_AUDIO_NODES_H_
-#define CIEQ_INCLUDE_AUDIO_NODES_H_
+#ifndef CISTFT_INCLUDE_AUDIO_NODES_H_
+#define CISTFT_INCLUDE_AUDIO_NODES_H_
 
 #include <memory>
 
@@ -116,4 +116,4 @@ private: //state
 
 } //!cistft
 
-#endif //!CIEQ_INCLUDE_AUDIO_NODES_H_
+#endif //!CISTFT_INCLUDE_AUDIO_NODES_H_

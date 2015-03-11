@@ -1,5 +1,5 @@
-#ifndef CIEQ_INCLUDE_PALETTE_MANAGER_H_
-#define CIEQ_INCLUDE_PALETTE_MANAGER_H_
+#ifndef CISTFT_INCLUDE_PALETTE_MANAGER_H_
+#define CISTFT_INCLUDE_PALETTE_MANAGER_H_
 
 #include "color_pallete.h"
 
@@ -54,4 +54,4 @@ private:
 
 }} // !namespace cistft::palette
 
-#endif // !CIEQ_INCLUDE_PALETTE_MANAGER_H_
+#endif // !CISTFT_INCLUDE_PALETTE_MANAGER_H_

@@ -1,5 +1,5 @@
-#ifndef CIEQ_INCLUDE_STFT_CLIENT_STORAGE_H_
-#define CIEQ_INCLUDE_STFT_CLIENT_STORAGE_H_
+#ifndef CISTFT_INCLUDE_STFT_CLIENT_STORAGE_H_
+#define CISTFT_INCLUDE_STFT_CLIENT_STORAGE_H_
 
 #include <cinder/audio/dsp/Dsp.h>
 #include <cinder/audio/dsp/Fft.h>
@@ -34,4 +34,4 @@ struct ClientStorage
 
 }} // !namespace cistft
 
-#endif // !CIEQ_INCLUDE_STFT_CLIENT_STORAGE_H_
+#endif // !CISTFT_INCLUDE_STFT_CLIENT_STORAGE_H_

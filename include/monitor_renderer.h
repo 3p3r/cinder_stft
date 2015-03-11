@@ -1,5 +1,5 @@
-#ifndef CIEQ_INCLUDE_MONITOR_RENDERER_H_
-#define CIEQ_INCLUDE_MONITOR_RENDERER_H_
+#ifndef CISTFT_INCLUDE_MONITOR_RENDERER_H_
+#define CISTFT_INCLUDE_MONITOR_RENDERER_H_
 
 namespace cistft {
 
@@ -17,4 +17,4 @@ private:
 
 } // !namespace cistft
 
-#endif // !CIEQ_INCLUDE_MONITOR_RENDERER_H_
+#endif // !CISTFT_INCLUDE_MONITOR_RENDERER_H_

@@ -1,5 +1,5 @@
-#ifndef CIEQ_INCLUDE_STFT_CLIENT_H_
-#define CIEQ_INCLUDE_STFT_CLIENT_H_
+#ifndef CISTFT_INCLUDE_STFT_CLIENT_H_
+#define CISTFT_INCLUDE_STFT_CLIENT_H_
 
 #include "work_client.h"
 
@@ -58,4 +58,4 @@ private:
 
 }} // !namespace cistft::stft
 
-#endif // !CIEQ_INCLUDE_STFT_CLIENT_H_
+#endif // !CISTFT_INCLUDE_STFT_CLIENT_H_

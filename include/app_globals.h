@@ -1,5 +1,5 @@
-#ifndef CIEQ_INCLUDE_APP_GLOBALS_H_
-#define CIEQ_INCLUDE_APP_GLOBALS_H_
+#ifndef CISTFT_INCLUDE_APP_GLOBALS_H_
+#define CISTFT_INCLUDE_APP_GLOBALS_H_
 
 #include <memory>
 
@@ -57,4 +57,4 @@ private:
 
 } //!cistft
 
-#endif //!CIEQ_INCLUDE_APP_GLOBALS_H_
+#endif //!CISTFT_INCLUDE_APP_GLOBALS_H_

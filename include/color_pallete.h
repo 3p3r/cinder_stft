@@ -1,5 +1,5 @@
-#ifndef CIEQ_INCLUDE_COLOR_PALETTE_H_
-#define CIEQ_INCLUDE_COLOR_PALETTE_H_
+#ifndef CISTFT_INCLUDE_COLOR_PALETTE_H_
+#define CISTFT_INCLUDE_COLOR_PALETTE_H_
 
 #include <array>
 
@@ -29,4 +29,4 @@ inline static const ci::Color& getColor(float value, float vmin, float vmax)
 
 }} // !namespace cistft::palette
 
-#endif // !CIEQ_INCLUDE_COLOR_PALETTE_H_
+#endif // !CISTFT_INCLUDE_COLOR_PALETTE_H_

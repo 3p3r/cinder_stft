@@ -1,5 +1,5 @@
-#ifndef CIEQ_INCLUDE_APP_H_
-#define CIEQ_INCLUDE_APP_H_
+#ifndef CISTFT_INCLUDE_APP_H_
+#define CISTFT_INCLUDE_APP_H_
 
 #include <cinder/app/AppNative.h>
 #include <cinder/params/Params.h>
@@ -72,4 +72,4 @@ private:
 
 } //!cistft
 
-#endif //!CIEQ_INCLUDE_APP_H_
+#endif //!CISTFT_INCLUDE_APP_H_

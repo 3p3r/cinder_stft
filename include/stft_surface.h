@@ -1,5 +1,5 @@
-#ifndef CIEQ_INCLUDE_STFT_SURFACE_H_
-#define CIEQ_INCLUDE_STFT_SURFACE_H_
+#ifndef CISTFT_INCLUDE_STFT_SURFACE_H_
+#define CISTFT_INCLUDE_STFT_SURFACE_H_
 
 #include <atomic>
 #include <mutex>
@@ -28,4 +28,4 @@ typedef std::unique_ptr<StftSurface> StftSurfaceRef;
 
 } // !namespace cistft
 
-#endif // !CIEQ_INCLUDE_STFT_SURFACE_H_
+#endif // !CISTFT_INCLUDE_STFT_SURFACE_H_
