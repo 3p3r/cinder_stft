@@ -156,6 +156,7 @@ void Application::setupPostLaunchGUI()
 		mGridRenderer.setupPostLaunchGUI(mGuiInstance.get());
 		mAppConfig.setupPostLaunchGUI(mGuiInstance.get());
 		mAppConfig.performLaunch();
+		mGridRenderer.setVerticalBoundary(mAppConfig.getActualHighPassFrequency(), mAppConfig.getActualLowPassFrequency());
 		mAudioNodes.setupRecorder();
 		mStftRenderer.setup();
 	});
