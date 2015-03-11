@@ -4,6 +4,7 @@
 #include <cinder/audio/SampleRecorderNode.h>
 
 namespace cistft {
+class AppGlobals;
 namespace audio {
 
 /*!
@@ -23,27 +24,8 @@ namespace audio {
 class RecorderNode : public ci::audio::BufferRecorderNode
 {
 public:
-	class Format : public ci::audio::BufferRecorderNode::Format
-	{
-	public:
-		//! Sets the window size, the number of samples that are recorded for one 'window' into the audio processor thread.
-		//! Default is 1024.
-		//! \note will be rounded up to the nearest power of two. (via zero padding)
-		Format&		windowSize(size_t size)		{ mWindowSize = size; return *this; }
-		//! Sets the hop size, the number of samples to skip to get next window. default is 256 samples
-		Format&		hopSize(size_t size)		{ mHopSize = size; return *this; }
-		//! Returns the window size.
-		size_t		getWindowSize() const		{ return mWindowSize; }
-		//! Returns the hop size.
-		size_t		getHopSize() const			{ return mHopSize; }
-
-	protected:
-		size_t		mWindowSize{ 1024 };
-		size_t		mHopSize{ 256 };
-	};
-
 	//! Constructs a RecorderNode and initializes its buffer to be large enough to hold \a numFrames frames.
-	RecorderNode(size_t numFrames, const Format &format = Format());
+	RecorderNode(AppGlobals&);
 
 	//! answers the raw internal recording buffer. Not thread safe.
 	ci::audio::BufferDynamic&		getBufferRaw();

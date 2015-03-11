@@ -61,11 +61,7 @@ void AudioNodes::setupRecorder()
 {
 	if (!isInputReady()) return;
 
-	auto recorderFormat = cistft::audio::RecorderNode::Format()
-		.hopSize(mGlobals.getAppConfig().getHopDurationInSamples())
-		.windowSize(mGlobals.getAppConfig().getWindowDurationInSamples());
-
-	mBufferRecorderNode = mGlobals.getAudioContext().makeNode(new cistft::audio::RecorderNode(mGlobals.getAppConfig().getRecordDurationInSamples(), recorderFormat));
+	mBufferRecorderNode = mGlobals.getAudioContext().makeNode(new cistft::audio::RecorderNode(mGlobals));
 	mInputDeviceNode >> mBufferRecorderNode;
 
 	auto stftClientFormat = stft::Client::Format()

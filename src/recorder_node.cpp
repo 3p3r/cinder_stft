@@ -1,14 +1,16 @@
 #include "recorder_node.h"
+#include "app_globals.h"
+#include "app_config.h"
 
 #include <cinder/audio/Context.h>
 
 namespace cistft {
 namespace audio {
 
-RecorderNode::RecorderNode(size_t numFrames, const Format &format /*= Format()*/)
-	: inherited(numFrames, format)
-	, mWindowSize(format.getWindowSize())
-	, mHopSize(format.getHopSize())
+RecorderNode::RecorderNode(AppGlobals& globals)
+	: inherited(globals.getAppConfig().getRecordDurationInSamples())
+	, mWindowSize(globals.getAppConfig().getWindowDurationInSamples())
+	, mHopSize(globals.getAppConfig().getHopDurationInSamples())
 	, mLastQueried(0)
 {
 	mMaxPopsPossible = getNumFrames() / getHopSize();
