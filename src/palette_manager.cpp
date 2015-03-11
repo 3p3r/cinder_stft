@@ -23,7 +23,7 @@ Manager& Manager::instance()
 }
 
 namespace {
-static int NUM_PALETTES = 6;
+static int NUM_PALETTES = 14;
 } //!namespace
 
 void Manager::setActivePalette(int palette_index)
@@ -53,6 +53,30 @@ void Manager::setActivePalette(int palette_index)
 		break;
 	case 5:
 		mColorProvider = [](float v, float min, float max)->const ci::Color&{ return getColor<MPLWinter>(v, min, max); };
+		break;
+	case 6:
+		mColorProvider = [](float v, float min, float max)->const ci::Color&{ return getColor<OceanLakeLandSnow>(v, min, max); };
+		break;
+	case 7:
+		mColorProvider = [](float v, float min, float max)->const ci::Color&{ return getColor<SVGBhw322>(v, min, max); };
+		break;
+	case 8:
+		mColorProvider = [](float v, float min, float max)->const ci::Color&{ return getColor<MPLGnuplot>(v, min, max); };
+		break;
+	case 9:
+		mColorProvider = [](float v, float min, float max)->const ci::Color&{ return getColor<MPLFlag>(v, min, max); };
+		break;
+	case 10:
+		mColorProvider = [](float v, float min, float max)->const ci::Color&{ return getColor<NCVManga>(v, min, max); };
+		break;
+	case 11:
+		mColorProvider = [](float v, float min, float max)->const ci::Color&{ return getColor<MPLPrism>(v, min, max); };
+		break;
+	case 12:
+		mColorProvider = [](float v, float min, float max)->const ci::Color&{ return getColor<SVGLindaa07>(v, min, max); };
+		break;
+	case 13:
+		mColorProvider = [](float v, float min, float max)->const ci::Color&{ return getColor<SVGGallet13>(v, min, max); };
 		break;
 	default:
 		mColorProvider = [](float v, float min, float max)->const ci::Color&{ return getColor<MatlabJet>(v, min, max); };
@@ -122,6 +146,14 @@ void Manager::setupPostLaunchGUI(cinder::params::InterfaceGl* const gui)
 	gui->addText("3 --> MPL Paired");
 	gui->addText("4 --> MPL Ocean");
 	gui->addText("5 --> MPL Winter");
+	gui->addText("6 --> Ocean Lake Land Snow");
+	gui->addText("7 --> SVG bhw3 22");
+	gui->addText("8 --> MPL gnuplot");
+	gui->addText("9 --> MPL flag");
+	gui->addText("10 --> NCV manga");
+	gui->addText("11 --> MPL prism");
+	gui->addText("12 --> SVG Lindaa07");
+	gui->addText("13 --> SVG Gallet13");
 
 	gui->addParam<int>("Color palette",
 		[](int p){ palette::Manager::instance().setActivePalette(p); },
