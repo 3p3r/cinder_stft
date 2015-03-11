@@ -105,8 +105,9 @@ void GridRenderer::setHorizontalBoundary(float min /*= 0.0f*/, float max /*= 1.0
 
 void GridRenderer::setVerticalBoundary(float min /*= 0.0f*/, float max /*= 1.0f*/)
 {
-	mMinY = min;
-	mMaxY = max;
+	// vertical axis draws upside down!
+	mMinY = max;
+	mMaxY = min;
 }
 
 }
