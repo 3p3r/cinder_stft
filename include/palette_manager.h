@@ -3,7 +3,9 @@
 
 #include "color_pallete.h"
 
+#include <functional>
 #include <atomic>
+#include <mutex>
 
 namespace cinder {
 namespace params {
@@ -37,10 +39,9 @@ public:
 	bool				getConvertToDb() const { return mConvertToDb; }
 
 	const ci::Color&	getActivePaletteColor(float FFT_value);
-	const ci::Color&	getActivePaletteMinColor();
 
-	void				addToGui(cinder::params::InterfaceGl* const);
-	void				removeFromGui(cinder::params::InterfaceGl* const);
+	void				setupPreLaunchGUI(cinder::params::InterfaceGl* const);
+	void				setupPostLaunchGUI(cinder::params::InterfaceGl* const);
 
 private:
 	Manager();
@@ -50,6 +51,11 @@ private:
 	std::atomic<float>	mMinThreshold;
 	std::atomic<float>	mMaxThreshold;
 	std::atomic<bool>	mConvertToDb;
+
+private:
+	std::mutex			mColorProviderLock;
+	std::function < const ci::Color&(float, float, float) >
+						mColorProvider;
 };
 
 }} // !namespace cistft::palette

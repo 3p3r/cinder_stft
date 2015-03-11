@@ -13,6 +13,7 @@ Manager::Manager()
 	, mConvertToDb(false)
 	, mMinThreshold(0.0f)
 	, mMaxThreshold(1.0f)
+	, mColorProvider([](float v, float min, float max)->const ci::Color&{ return getColor<MatlabJet>(v, min, max); })
 {}
 
 Manager& Manager::instance()
@@ -21,34 +22,52 @@ Manager& Manager::instance()
 	return _inst;
 }
 
+namespace {
+static int NUM_PALETTES = 6;
+} //!namespace
+
 void Manager::setActivePalette(int palette_index)
 {
-	if (palette_index < 0) return;
-	mActivePalette = palette_index % 6;
+	if (palette_index < 0 || mActivePalette == palette_index) return;
+
+	mActivePalette = palette_index % NUM_PALETTES;
+
+	std::lock_guard<std::mutex> _lock(mColorProviderLock);
+
+	switch (mActivePalette)
+	{
+	case 0:
+		mColorProvider = [](float v, float min, float max)->const ci::Color&{ return getColor<MatlabJet>(v, min, max); };
+		break;
+	case 1:
+		mColorProvider = [](float v, float min, float max)->const ci::Color&{ return getColor<MatlabHot>(v, min, max); };
+		break;
+	case 2:
+		mColorProvider = [](float v, float min, float max)->const ci::Color&{ return getColor<MPLSummer>(v, min, max); };
+		break;
+	case 3:
+		mColorProvider = [](float v, float min, float max)->const ci::Color&{ return getColor<MPLPaired>(v, min, max); };
+		break;
+	case 4:
+		mColorProvider = [](float v, float min, float max)->const ci::Color&{ return getColor<MPLOcean>(v, min, max); };
+		break;
+	case 5:
+		mColorProvider = [](float v, float min, float max)->const ci::Color&{ return getColor<MPLWinter>(v, min, max); };
+		break;
+	default:
+		mColorProvider = [](float v, float min, float max)->const ci::Color&{ return getColor<MatlabJet>(v, min, max); };
+		break;
+	}
 }
 
 const ci::Color& Manager::getActivePaletteColor(float FFT_value)
 {
-	int _active_palette = mActivePalette; // copy in case it changed during execution
 	float min = mMinThreshold;
 	float max = mMaxThreshold;
 
 	const float value = mConvertToDb ? ci::audio::linearToDecibel(FFT_value) / mDbDivisor : mLinearCoefficient * FFT_value;
-
-	if (_active_palette == 0)
-		return getColor<MatlabJet>(value, min, max);
-	else if (_active_palette == 1)
-		return getColor<MatlabHot>(value, min, max);
-	else if (_active_palette == 2)
-		return getColor<MPLSummer>(value, min, max);
-	else if (_active_palette == 3)
-		return getColor<MPLPaired>(value, min, max);
-	else if (_active_palette == 4)
-		return getColor<MPLOcean>(value, min, max);
-	else if (_active_palette == 5)
-		return getColor<MPLWinter>(value, min, max);
-	else
-		return getColor<MatlabJet>(value, min, max);
+	
+	return mColorProvider(value, min, max);
 }
 
 void Manager::setLinearCoefficient(float coeff)
@@ -80,28 +99,22 @@ void Manager::setMaxThreshold(float val)
 	mMaxThreshold = val;
 }
 
-const ci::Color& Manager::getActivePaletteMinColor()
-{
-	int _active_palette = mActivePalette; // copy in case it changed during execution
-
-	if (_active_palette == 0)
-		return MatlabJet::palette[0];
-	else if (_active_palette == 1)
-		return MatlabHot::palette[0];
-	else if (_active_palette == 2)
-		return MPLSummer::palette[0];
-	else if (_active_palette == 3)
-		return MPLPaired::palette[0];
-	else if (_active_palette == 4)
-		return MPLOcean::palette[0];
-	else if (_active_palette == 5)
-		return MPLWinter::palette[0];
-	else
-		return ci::Color::black();
+namespace {
+const static std::string GUI_SEPARATOR("_P");
+const static std::string PRE_LAUNCH_TEXT("Palettes will be configurable after you hit START.");
 }
 
-void Manager::addToGui(cinder::params::InterfaceGl* const gui)
+void Manager::setupPreLaunchGUI(cinder::params::InterfaceGl* const gui)
 {
+	gui->addSeparator(GUI_SEPARATOR);
+	gui->addText(PRE_LAUNCH_TEXT);
+}
+
+void Manager::setupPostLaunchGUI(cinder::params::InterfaceGl* const gui)
+{
+	gui->removeParam(GUI_SEPARATOR);
+	gui->removeParam(PRE_LAUNCH_TEXT);
+
 	gui->addText("Palette settings. Type:");
 	gui->addText("0 --> Matlab JET");
 	gui->addText("1 --> Matlab HOT");
@@ -134,12 +147,6 @@ void Manager::addToGui(cinder::params::InterfaceGl* const gui)
 		[](float val){ palette::Manager::instance().setMaxThreshold(val); },
 		[]()->float{ return palette::Manager::instance().getMaxThreshold(); });
 	gui->addSeparator();
-	// -----------------------------------------------
-}
-
-void Manager::removeFromGui(cinder::params::InterfaceGl* const gui)
-{
-	/* no op */
 }
 
 }} //!cistft::palette

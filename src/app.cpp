@@ -145,6 +145,7 @@ void Application::setupPreLaunchGUI()
 		// -----------------------------------------------
 		mAppConfig.setupPreLaunchGUI(mGuiInstance.get());
 		mGridRenderer.setupPreLaunchGUI(mGuiInstance.get());
+		palette::Manager::instance().setupPreLaunchGUI(mGuiInstance.get());
 	});
 }
 
@@ -161,6 +162,8 @@ void Application::setupPostLaunchGUI()
 		mGridRenderer.setVerticalUnit("s");
 		mGridRenderer.setVerticalBoundary(mAppConfig.getActualHighPassFrequency(), mAppConfig.getActualLowPassFrequency());
 		
+		palette::Manager::instance().setupPostLaunchGUI(mGuiInstance.get());
+
 		mAudioNodes.setupRecorder();
 		mStftRenderer.setup();
 	});
