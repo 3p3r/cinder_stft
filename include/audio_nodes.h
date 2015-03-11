@@ -49,8 +49,6 @@ public:
 	bool												isRecorderReady() const;
 	bool												isMonitorReady() const;
 
-	// \brief returns a pointer to the node which is reading data from input
-	cinder::audio::InputDeviceNode* const				getInputDeviceNode();
 	// \brief returns a pointer to the node which is recording audio
 	cistft::audio::RecorderNode* const					getBufferRecorderNode();
 	// \brief returns a pointer to the node which is having raw data in it
@@ -58,19 +56,19 @@ public:
 
 private:
 	std::shared_ptr<cinder::audio::InputDeviceNode>		mInputDeviceNode;
-	std::shared_ptr<cistft::audio::RecorderNode>			mBufferRecorderNode;
+	std::shared_ptr<cistft::audio::RecorderNode>		mBufferRecorderNode;
 	std::shared_ptr<cinder::audio::MonitorNode>			mMonitorNode;
 
 private:
 	AppGlobals&											mGlobals;
-	bool												mIsEnabled;
 	work::ClientRef										mStftClient;
-	std::size_t											mQueryPosition;
 
 private: //state
 	bool												mIsInputReady;
 	bool												mIsRecorderReady;
 	bool												mIsMonitorReady;
+	bool												mIsEnabled;
+	std::size_t											mQueryPosition;
 };
 
 } //!cistft

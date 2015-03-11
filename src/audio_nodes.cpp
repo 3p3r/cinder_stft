@@ -115,11 +115,6 @@ void AudioNodes::update()
 	}
 }
 
-cinder::audio::InputDeviceNode* const AudioNodes::getInputDeviceNode()
-{
-	return mInputDeviceNode.get();
-}
-
 cistft::audio::RecorderNode* const AudioNodes::getBufferRecorderNode()
 {
 	return mBufferRecorderNode.get();
