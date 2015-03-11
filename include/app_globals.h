@@ -16,9 +16,8 @@ class Manager;
 }; //!cistft::work
 class AudioNodes;
 class GridRenderer;
-struct AppConfig;
 class AppEvent;
-class StftFilter;
+class AppConfig;
 
 /*!
  * \class AppGlobals
@@ -33,8 +32,7 @@ public:
 				AudioNodes&,
 				StftRenderer&,
 				GridRenderer&,
-				AppConfig&,
-				StftFilter&);
+				AppConfig&);
 
 	AppEvent&							getEventProcessor();
 	work::Manager&						getWorkManager();
@@ -43,7 +41,6 @@ public:
 	StftRenderer&						getThreadRenderer();
 	GridRenderer&						getGridRenderer();
 	AppConfig&							getAppConfig();
-	StftFilter&							getFilter();
 
 private:
 	AppEvent&							mEventProcessor;
@@ -52,7 +49,6 @@ private:
 	StftRenderer&						mThreadRenderer;
 	GridRenderer&						mGridRenderer;
 	AppConfig&							mAppConfig;
-	StftFilter&							mFilter;
 };
 
 } //!cistft

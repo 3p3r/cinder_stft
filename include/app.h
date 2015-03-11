@@ -12,7 +12,6 @@
 #include "stft_renderer.h"
 #include "monitor_renderer.h"
 #include "grid_renderer.h"
-#include "stft_filter.h"
 
 namespace cistft
 {
@@ -49,8 +48,6 @@ public:
 private:
 	//! all user configurable parameters
 	AppConfig		mAppConfig;
-	//! The class that holds all Filter calculations
-	StftFilter		mFilter;
 	//! the event processor class instance
 	AppEvent		mEventProcessor;
 	//! the work manager that accepts background works from main thread

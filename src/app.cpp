@@ -5,8 +5,7 @@ namespace cistft
 {
 
 Application::Application()
-	: mGlobals(mEventProcessor, mWorkManager, mAudioNodes, mStftRenderer, mGridRenderer, mAppConfig, mFilter)
-	, mFilter(mGlobals)
+	: mGlobals(mEventProcessor, mWorkManager, mAudioNodes, mStftRenderer, mGridRenderer, mAppConfig)
 	, mAudioNodes(mGlobals)
 	, mStftRenderer(mGlobals)
 	, mMonitorRenderer(mGlobals)
@@ -58,7 +57,7 @@ void Application::update()
 	// Update audio input and pull the latest data in
 	mAudioNodes.update();
 	// Check if we have to swap GUI with post-launch one
-	if (mAppConfig.shouldRemoveLaunchParams())
+	if (mAppConfig.shouldLaunch())
 		setupPostLaunchGUI();
 }
 
@@ -138,8 +137,6 @@ void Application::setupPreLaunchGUI()
 		// -----------------------------------------------
 
 		mAppConfig.addToGui(mGuiInstance.get());
-		mFilter.addToGui(mGuiInstance.get());
-		palette::Manager::instance().addToGui(mGuiInstance.get());
 	});
 }
 
@@ -149,14 +146,8 @@ void Application::setupPostLaunchGUI()
 	std::call_once(__setup_gui_flag, [this]
 	{
 		mAppConfig.removeFromGui(mGuiInstance.get());
-
-		mGridRenderer.removeFromGui(mGuiInstance.get());
-		mFilter.removeFromGui(mGuiInstance.get());
-		palette::Manager::instance().removeFromGui(mGuiInstance.get());
-
-		mAppConfig.LaunchParamsRemoved();
-
-		mAudioNodes.setFormat(mAppConfig.getAsNodeFromat());
+		//mGridRenderer.removeFromGui(mGuiInstance.get());
+		mAppConfig.performLaunch();
 		mAudioNodes.setupRecorder();
 		mStftRenderer.setup();
 	});

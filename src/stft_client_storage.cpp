@@ -1,6 +1,6 @@
 #include "stft_client_storage.h"
 #include "app_globals.h"
-#include "stft_filter.h"
+#include "app_config.h"
 
 #include <cinder/CinderMath.h>
 
@@ -15,7 +15,7 @@ ClientStorage::ClientStorage(const Client::Format& fmt, AppGlobals* const global
 	, mSmoothingFactor(0.5f)
 {
 	// This makes sure that we are zero padding
-	mFftSize = globals->getFilter().getCalculatedFftSize();
+	mFftSize = globals->getAppConfig().getCalculatedFftSize();
 
 	// The actual FFT processor instance
 	mFft = std::make_unique<ci::audio::dsp::Fft>(mFftSize);

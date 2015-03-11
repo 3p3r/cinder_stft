@@ -15,34 +15,79 @@ class InterfaceGl;
 
 namespace cistft {
 
-struct AppConfig
+class AppConfig
 {
 public:
 	AppConfig();
 	~AppConfig();
 
-	float			mRecordDuration;
-	float			mTimeRange;
-	float			mWindowDuration;
-	float			mHopDuration;
-	float			mCutoffFrequency;
-	int				mGuaranteedBins;
-	int				mFftSize;
+	AppConfig&		recordDuration(float val);
+	AppConfig&		timeRange(float val);
+	AppConfig&		windowDuration(float val);
+	AppConfig&		hopDuration(float val);
+	AppConfig&		samplesCacheSize(int val);
+	AppConfig&		minimumViewableBins(int val);
+	AppConfig&		lowPassFrequency(float val);
+	AppConfig&		highPassFrequency(float val);
 
-	void			setRemoveLaunchParams();
-	void			LaunchParamsRemoved();
-	bool			shouldRemoveLaunchParams() const;
-	AudioNodes::Format
-					getAsNodeFromat();
+	float			getRecordDuration() const;
+	float			getTimeRange() const;
+	float			getWindowDuration() const;
+	float			getHopDuration() const;
+	int				getSamplesCacheSize() const;
+	int				getMinimumViewableBins() const;
+	float			getLowPassFrequency() const;
+	float			getHighPassFrequency() const;
+
+	int				getActualViewableBins() const;
+	float			getActualLowPassFrequency() const;
+	float			getActualHighPassFrequency() const;
+
+	int				getCalculatedFftSize() const;
+	int				getMagnitudeIndexStart() const;
+	int				getSampleRate() const;
+
+	void			prepareLaunch();
+	void			performLaunch();
+	bool			shouldLaunch() const;
+
+	int				getRecordDurationInSamples() const;
+	int				getTimeSpanInSamples() const;
+	int				getHopDurationInSamples() const;
+	int				getWindowDurationInSamples() const;
 
 	void			addToGui(cinder::params::InterfaceGl* const);
 	void			removeFromGui(cinder::params::InterfaceGl* const);
 
+	void			setup() const;
+
 private:
 	std::string		generateConfig() const;
-	void			checkSanity();
 	std::fstream	mConfigFile;
-	bool			mRemoveStartButton;
+	bool			mPreparedForLaunch;
+
+private:
+	void			checkSanity();
+	void			buildBandPass() const;
+	void			checkDirty() const;
+
+private:
+	float			mRecordDuration;
+	float			mTimeRange;
+	float			mWindowDuration;
+	float			mHopDuration;
+	int				mMinimumViewableBins;
+	float			mLowPassFrequency;
+	float			mHighPassFrequency;
+
+	mutable int		mSamplesCacheSize;
+	mutable int		mActualViewableBins;
+	mutable float	mActualLowPassFrequency;
+	mutable float	mActualHighPassFrequency;
+	mutable int		mCalculatedFftSize;
+	mutable int		mMagnitudeIndexStart;
+	mutable int		mSampleRate;
+	mutable bool	mDirty;
 };
 
 } // !namespace cistft

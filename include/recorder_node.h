@@ -42,11 +42,8 @@ public:
 		size_t		mHopSize{ 256 };
 	};
 
-	RecorderNode(const Format &format = Format());
 	//! Constructs a RecorderNode and initializes its buffer to be large enough to hold \a numFrames frames.
 	RecorderNode(size_t numFrames, const Format &format = Format());
-	//! Constructs a RecorderNode and initializes its buffer to be large enough to hold \a numSeconds frames.
-	RecorderNode(float numSeconds, const Format &format = Format());
 
 	//! answers the raw internal recording buffer. Not thread safe.
 	ci::audio::BufferDynamic&		getBufferRaw();

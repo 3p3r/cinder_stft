@@ -3,7 +3,7 @@
 #include "audio_nodes.h"
 #include "recorder_node.h"
 #include "scoped_fbo.h"
-#include "stft_filter.h"
+#include "app_config.h"
 
 #include <cinder/app/App.h>
 
@@ -11,8 +11,8 @@ namespace cistft {
 
 StftRenderer::StftRenderer(AppGlobals& globals)
 	: mGlobals(globals)
-	, mFramesPerSurface(mGlobals.getAudioNodes().getFormat().getSamplesCacheSize())
-	, mViewableBins(mGlobals.getFilter().getActualViewableBins())
+	, mFramesPerSurface(0)
+	, mViewableBins(0)
 	, mLastPopPos(0)
 	, mLastSurfaceLength(0)
 	, mTotalSurfacesLength(0)
@@ -22,13 +22,14 @@ void StftRenderer::setup()
 {
 	if (!mGlobals.getAudioNodes().isRecorderReady()) return;
 
-	mViewableBins = mGlobals.getFilter().getActualViewableBins();
+	mFramesPerSurface = mGlobals.getAppConfig().getSamplesCacheSize();
+	mViewableBins = mGlobals.getAppConfig().getActualViewableBins();
 
 	mNumSurfaces = mGlobals.getAudioNodes().getBufferRecorderNode()->getMaxPossiblePops() / mFramesPerSurface;
 	if (mGlobals.getAudioNodes().getBufferRecorderNode()->getMaxPossiblePops() % mFramesPerSurface != 0)
 		mNumSurfaces += 1;
 
-	const auto _time_span_percentage = mGlobals.getAudioNodes().getFormat().getTimeSpan() / mGlobals.getAudioNodes().getFormat().getRecordDuration();
+	const auto _time_span_percentage = mGlobals.getAppConfig().getTimeRange() / mGlobals.getAppConfig().getRecordDuration();
 	mNumSurfaces = static_cast<std::size_t>(_time_span_percentage * mNumSurfaces);
 
 	mSurfaceTexturePool.resize(2 * mNumSurfaces);
@@ -120,11 +121,11 @@ StftSurface& StftRenderer::getSurface(int index, int pop_pos)
 		{
 			if (_moded_index != mNumSurfaces - 1 || _moded_index != 2 * (mNumSurfaces - 1))
 			{
-				mSurfaceTexturePool[_moded_index].first = std::make_unique<StftSurface>(mViewableBins, mLastSurfaceLength, mGlobals.getFilter().getMagnitudeIndexStart());
+				mSurfaceTexturePool[_moded_index].first = std::make_unique<StftSurface>(mViewableBins, mLastSurfaceLength, mGlobals.getAppConfig().getMagnitudeIndexStart());
 			}
 			else
 			{
-				mSurfaceTexturePool[_moded_index].first = std::make_unique<StftSurface>(mViewableBins, getFramesPerSurface(), mGlobals.getFilter().getMagnitudeIndexStart());
+				mSurfaceTexturePool[_moded_index].first = std::make_unique<StftSurface>(mViewableBins, getFramesPerSurface(), mGlobals.getAppConfig().getMagnitudeIndexStart());
 			}
 		}
 	}
@@ -152,7 +153,7 @@ std::size_t StftRenderer::getIndexInSurfaceByQueryPos(std::size_t pos) const
 
 std::size_t StftRenderer::calculateLastSurfaceLength() const
 {
-	const auto _time_span_percentage = mGlobals.getAudioNodes().getFormat().getTimeSpan() / mGlobals.getAudioNodes().getFormat().getRecordDuration();
+	const auto _time_span_percentage = mGlobals.getAppConfig().getTimeRange() / mGlobals.getAppConfig().getRecordDuration();
 	const auto _max_pops = mGlobals.getAudioNodes().getBufferRecorderNode()->getMaxPossiblePops();
 	const auto _pops_per_fbo = static_cast<std::size_t>(_time_span_percentage * _max_pops);
 	const auto _max_num_pops_in_surfaces = mNumSurfaces * mFramesPerSurface;
@@ -162,7 +163,7 @@ std::size_t StftRenderer::calculateLastSurfaceLength() const
 
 std::size_t StftRenderer::calculateTotalSurfacesLength() const
 {
-	const auto _time_span_percentage = mGlobals.getAudioNodes().getFormat().getTimeSpan() / mGlobals.getAudioNodes().getFormat().getRecordDuration();
+	const auto _time_span_percentage = mGlobals.getAppConfig().getTimeRange() / mGlobals.getAppConfig().getRecordDuration();
 	const auto _max_pops = mGlobals.getAudioNodes().getBufferRecorderNode()->getMaxPossiblePops();
 	const auto _pops_per_fbo = static_cast<std::size_t>(_time_span_percentage * _max_pops);
 	const auto _max_num_pops_in_surfaces = mNumSurfaces * mFramesPerSurface;

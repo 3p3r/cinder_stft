@@ -14,14 +14,6 @@ RecorderNode::RecorderNode(size_t numFrames, const Format &format /*= Format()*/
 	mMaxPopsPossible = getNumFrames() / getHopSize();
 }
 
-RecorderNode::RecorderNode(const Format &format /*= Format()*/)
-	: RecorderNode(0.0f, format)
-{}
-
-RecorderNode::RecorderNode(float numSeconds, const Format &format /*= Format()*/)
-	: RecorderNode(static_cast<size_t>(ci::audio::Context::master()->getSampleRate() * numSeconds), format)
-{}
-
 ci::audio::BufferDynamic& RecorderNode::getBufferRaw()
 {
 	return mRecorderBuffer;
