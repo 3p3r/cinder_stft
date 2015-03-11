@@ -16,33 +16,30 @@ class GridRenderer
 {
 public:
 	GridRenderer(AppGlobals&);
+	
 	void			draw();
 
-	struct
-	{
-		// to be configured via GUI
+	void			setHorizontalBoundary(float min = 0.0f, float max = 1.0f);
+	void			setVerticalBoundary(float min = 0.0f, float max = 1.0f);
 
-		int			mStepX;
-		int			mStepY;
-		int			mLabelFrequency; // per step
-		float		mLabelMargin;
-		float		mMaxX;
-		float		mMaxY;
-		float		mMinX;
-		float		mMinY;
-		ci::Color	mLabelColor;
-		ci::Color	mGridColor;
-		bool		mVisible;
-
-	} mConfiguration;
-
-	void			resetConfiguration();
-
-	void			addToGui(cinder::params::InterfaceGl* const);
-	void			removeFromGui(cinder::params::InterfaceGl* const);
+	void			setupPreLaunchGUI(cinder::params::InterfaceGl* const);
+	void			setupPostLaunchGUI(cinder::params::InterfaceGl* const);
 
 private:
 	AppGlobals&		mGlobals;
+
+private:
+	int				mStepX;
+	int				mStepY;
+	int				mLabelFrequency; // per step
+	float			mLabelMargin;
+	float			mMaxX;
+	float			mMaxY;
+	float			mMinX;
+	float			mMinY;
+	ci::Color		mLabelColor;
+	ci::Color		mGridColor;
+	bool			mVisible;
 };
 
 } // !namespace cistft

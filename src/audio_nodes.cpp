@@ -103,8 +103,7 @@ void AudioNodes::update()
 		auto _time_diff = getBufferRecorderNode()->getWritePosition() / static_cast<float>(getBufferRecorderNode()->getSampleRate()) - mGlobals.getAppConfig().getTimeRange();
 		if (_time_diff < 0) _time_diff = 0.0f;
 
-		mGlobals.getGridRenderer().mConfiguration.mMinX = 0.0f + _time_diff;
-		mGlobals.getGridRenderer().mConfiguration.mMaxX = mGlobals.getAppConfig().getTimeRange() + _time_diff;
+		mGlobals.getGridRenderer().setHorizontalBoundary(_time_diff, mGlobals.getAppConfig().getTimeRange() + _time_diff);
 
 		if (!getBufferRecorderNode()->isRecording())
 		{
