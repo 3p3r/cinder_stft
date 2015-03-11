@@ -56,8 +56,8 @@ public:
 	int				getHopDurationInSamples() const;
 	int				getWindowDurationInSamples() const;
 
-	void			addToGui(cinder::params::InterfaceGl* const);
-	void			removeFromGui(cinder::params::InterfaceGl* const);
+	void			setupPreLaunchGUI(cinder::params::InterfaceGl* const);
+	void			setupPostLaunchGUI(cinder::params::InterfaceGl* const);
 
 	void			setup() const;
 

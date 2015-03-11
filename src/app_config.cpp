@@ -473,7 +473,7 @@ const static std::string HOP_TEXT_KEY("Hop duration (s)");
 const static std::string START_BUTTON_KEY("START");
 }}
 
-void AppConfig::addToGui(cinder::params::InterfaceGl* const gui)
+void AppConfig::setupPreLaunchGUI(cinder::params::InterfaceGl* const gui)
 {
 	gui->addText("Filter parameters");
 	gui->addParam<int>(GUI_STATICS::BINS_TEXT_KEY, [this](int val){ minimumViewableBins(val); }, [this]()->int{ return getMinimumViewableBins(); });
@@ -499,7 +499,7 @@ void AppConfig::addToGui(cinder::params::InterfaceGl* const gui)
 	});
 }
 
-void AppConfig::removeFromGui(cinder::params::InterfaceGl* const gui)
+void AppConfig::setupPostLaunchGUI(cinder::params::InterfaceGl* const gui)
 {
 	gui->setOptions(GUI_STATICS::BINS_TEXT_KEY, "readonly=true");
 	gui->setOptions(GUI_STATICS::LOW_PASS_FREQ_KEY, "readonly=true");

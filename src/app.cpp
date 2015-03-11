@@ -145,7 +145,7 @@ void Application::setupPreLaunchGUI()
 		mGuiInstance->addSeparator();
 		// -----------------------------------------------
 
-		mAppConfig.addToGui(mGuiInstance.get());
+		mAppConfig.setupPreLaunchGUI(mGuiInstance.get());
 	});
 }
 
@@ -154,7 +154,7 @@ void Application::setupPostLaunchGUI()
 	static std::once_flag __setup_gui_flag;
 	std::call_once(__setup_gui_flag, [this]
 	{
-		mAppConfig.removeFromGui(mGuiInstance.get());
+		mAppConfig.setupPostLaunchGUI(mGuiInstance.get());
 		//mGridRenderer.removeFromGui(mGuiInstance.get());
 		mAppConfig.performLaunch();
 		mAudioNodes.setupRecorder();
