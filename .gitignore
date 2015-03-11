@@ -1,6 +1,7 @@
 /*
 !/build/gitkeep
 !/src
+/src/*.aps
 !/include
 !/thirdparty
 !README.md

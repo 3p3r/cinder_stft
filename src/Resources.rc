@@ -1,5 +1,3 @@
-#include "Resources.h"
+#include <cinder/CinderResources.h>
 
-ID FONTX "../thirdparty/gnufont/FreeSans.ttf"
-
-LABEL_FONT
+1	ICON	"../src/stft_icon.ico"
