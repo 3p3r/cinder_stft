@@ -135,10 +135,10 @@ void AppConfig::buildBandPass() const
 	if (!ci::isPowerOf2(mCalculatedFftSize))
 		mCalculatedFftSize = ci::nextPowerOf2(mCalculatedFftSize);
 
-	if (mCalculatedFftSize <= static_cast<int>(getWindowDurationInSamples()) + MINIMUM_ZERO_PADDING_OFFSET)
+	if (mCalculatedFftSize < static_cast<int>(getWindowDurationInSamples()) + MINIMUM_ZERO_PADDING_OFFSET)
 	{
 		// The while loop guarantees we ALWAYS get zero padding
-		while (mCalculatedFftSize <= static_cast<int>(getWindowDurationInSamples()))
+		while (mCalculatedFftSize < static_cast<int>(getWindowDurationInSamples()) + MINIMUM_ZERO_PADDING_OFFSET)
 		{
 			mCalculatedFftSize = ci::nextPowerOf2(mCalculatedFftSize);
 		}
@@ -458,6 +458,8 @@ void AppConfig::checkDirty() const
 
 namespace {
 namespace GUI_STATICS {
+const static std::string SAMPLE_CACHE_SIZE_KEY("Sample cache size (Pixels)");
+const static std::string SAMPLE_RATE_KEY("Sample Rate (Hz)");
 const static std::string BINS_TEXT_KEY("Guaranteed FFT bins");
 const static std::string LOW_PASS_FREQ_KEY("Low pass frequency (Hz)");
 const static std::string HIGH_PASS_FREQ_KEY("High pass frequency (Hz)");
@@ -476,6 +478,8 @@ const static std::string START_BUTTON_KEY("START");
 void AppConfig::setupPreLaunchGUI(cinder::params::InterfaceGl* const gui)
 {
 	gui->addText("Filter parameters");
+	gui->addParam<int>(GUI_STATICS::SAMPLE_CACHE_SIZE_KEY, &mSamplesCacheSize);
+	gui->addParam<int>(GUI_STATICS::SAMPLE_RATE_KEY, &mSampleRate).optionsStr("readonly=true");
 	gui->addParam<int>(GUI_STATICS::BINS_TEXT_KEY, [this](int val){ minimumViewableBins(val); }, [this]()->int{ return getMinimumViewableBins(); });
 	gui->addParam<float>(GUI_STATICS::LOW_PASS_FREQ_KEY, [this](float val){ lowPassFrequency(val); }, [this]()->float{ return getLowPassFrequency(); });
 	gui->addParam<float>(GUI_STATICS::HIGH_PASS_FREQ_KEY, [this](float val){ highPassFrequency(val); }, [this]()->float{ return getHighPassFrequency(); });
@@ -501,6 +505,7 @@ void AppConfig::setupPreLaunchGUI(cinder::params::InterfaceGl* const gui)
 
 void AppConfig::setupPostLaunchGUI(cinder::params::InterfaceGl* const gui)
 {
+	gui->setOptions(GUI_STATICS::SAMPLE_CACHE_SIZE_KEY, "readonly=true");
 	gui->setOptions(GUI_STATICS::BINS_TEXT_KEY, "readonly=true");
 	gui->setOptions(GUI_STATICS::LOW_PASS_FREQ_KEY, "readonly=true");
 	gui->setOptions(GUI_STATICS::HIGH_PASS_FREQ_KEY, "readonly=true");

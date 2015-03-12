@@ -139,6 +139,7 @@ void Manager::setupPostLaunchGUI(cinder::params::InterfaceGl* const gui)
 	gui->removeParam(GUI_SEPARATOR);
 	gui->removeParam(PRE_LAUNCH_TEXT);
 
+	gui->addSeparator();
 	gui->addText("Palette settings. Type:");
 	gui->addText("0 --> Matlab JET");
 	gui->addText("1 --> Matlab HOT");

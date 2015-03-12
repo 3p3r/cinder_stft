@@ -92,7 +92,6 @@ void GridRenderer::setupPostLaunchGUI(cinder::params::InterfaceGl* const gui)
 	gui->removeParam(GUI_SEPARATOR);
 	gui->removeParam(PRE_LAUNCH_TEXT);
 
-	gui->addSeparator();
 	gui->addText("Grid options:");
 	gui->addParam("Draw grids?", &mVisible);
 	gui->addParam("Grid Color", &mGridColor);
