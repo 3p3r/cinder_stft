@@ -97,7 +97,7 @@ void AudioNodes::update()
 		}
 
 		auto _time_diff = getBufferRecorderNode()->getWritePosition() / static_cast<float>(getBufferRecorderNode()->getSampleRate()) - mGlobals.getAppConfig().getTimeRange();
-		if (_time_diff < 0) _time_diff = 0.0f;
+		if (_time_diff < mGlobals.getAppConfig().getTimeRange()) _time_diff = 0.0f;
 
 		mGlobals.getGridRenderer().setHorizontalBoundary(_time_diff, mGlobals.getAppConfig().getTimeRange() + _time_diff);
 
